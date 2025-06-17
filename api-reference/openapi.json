@@ -471,18 +471,18 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/collector/operation": {
+      "get": {
+        "description": "GET a single plant based on the ID supplied",
         "parameters": [
           {
-            "name": "id",
+            "name": "reference_id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "Идентификатор операции присвоенный системой",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "format": "guid"
             }
           }
         ],
