@@ -21,7 +21,7 @@
     }
   ],
   "paths": {
-    "/checkout": {
+    "/prepare2/api/v3/checkout": {
       "post": {
         "operationId": "mutation.entry.getUrl",
         "summary": "checkout",
