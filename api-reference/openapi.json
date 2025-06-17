@@ -394,7 +394,44 @@
         }
       }
     },
-    "/plants": {
+    "collector/api/v3/operation": {
+      
+    },
+    "/collector/operation": {
+      "get": {
+        "description": "GET a single plant based on the ID supplied",
+        "parameters": [
+          {
+            "name": "reference_id",
+            "in": "path",
+            "description": "Идентификатор операции присвоенный системой",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Plant deleted",
+            "content": {}
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+      "/plants": {
       "get": {
         "description": "Returns all plants from the system that the user has access to",
         "parameters": [
@@ -471,40 +508,6 @@
         }
       }
     },
-    "/collector/operation": {
-      "get": {
-        "description": "GET a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "reference_id",
-            "in": "path",
-            "description": "Идентификатор операции присвоенный системой",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "webhooks": {
     "/plant/webhook": {
       "post": {
