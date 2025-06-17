@@ -24,8 +24,8 @@
           {
             "group": "Продукты",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
+              "products/checkout",
+              "essentials/cardrouting",
               "essentials/images",
               "essentials/settings",
               "essentials/navigation",
