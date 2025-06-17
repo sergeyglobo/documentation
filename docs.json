@@ -42,6 +42,14 @@
         ]
       },
       {
+        "tab": "API Reference",
+        "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+    }, 
+      {
+        "tab": "Finmart",
+        "openapi": "https://finmar.tech/prepare2/docsV3/json"
+    },
+      {
         "tab": "API методы",
         "groups": [
           {
