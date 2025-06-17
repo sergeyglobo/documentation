@@ -394,10 +394,7 @@
         }
       }
     },
-    "collector/api/v3/operation": {
-      
-    },
-    "/collector/operation": {
+    "/collector/api/v3/operation": {
       "get": {
         "description": "GET a single plant based on the ID supplied",
         "parameters": [

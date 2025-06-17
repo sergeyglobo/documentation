@@ -54,9 +54,9 @@
           {
             "group": "Методы",
             "pages": [
-              "api-reference/endpoint/get",
               "api-reference/endpoint/checkout",
-              "api-reference/endpoint/create",
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/operation",
               "api-reference/endpoint/webhook"
             ]
           }
