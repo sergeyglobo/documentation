@@ -67,30 +67,24 @@
       }
     ],
     "global": {
-      "anchors": [
-        {
-          "anchor": "Документация",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        }
-      ]
+      
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/logo.vimapay.svg",
+    "dark": "/logo/logo.vimapay.dark.svg"
   },
   "navbar": {
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@vimapay.com"
+        "href": "mailto:support@vimapay.com"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Integration Manager",
+      "href": "https://t.me/integrationVimapay"
     }
   },
   "footer": {
