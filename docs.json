@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "palm",
   "name": "Vimapay Starter Kit",
   "colors": {
     "primary": "#16A34A",
@@ -25,15 +25,12 @@
             "group": "Продукты",
             "pages": [
               "products/checkout",
-              "essentials/cardrouting",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
+              "products/cardrouting",
               "essentials/reusable-snippets"
             ]
           },
                {
-            "group": "Essentials",
+            "group": "Разное",
             "pages": [
               "essentials/markdown",
               "essentials/code",
@@ -46,7 +43,7 @@
         ]
       },
       {
-        "tab": "API Reference",
+        "tab": "API методы",
         "groups": [
           {
             "group": "API документация",
@@ -58,8 +55,8 @@
             "group": "Методы",
             "pages": [
               "api-reference/endpoint/get",
+              "api-reference/endpoint/checkout",
               "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
               "api-reference/endpoint/webhook"
             ]
           }
