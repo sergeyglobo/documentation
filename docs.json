@@ -42,10 +42,6 @@
         ]
       },
       {
-        "tab": "Finmart",
-        "openapi": "https://finmar.tech/prepare2/docsV3/json"
-    },
-      {
         "tab": "API методы",
         "groups": [
           {
