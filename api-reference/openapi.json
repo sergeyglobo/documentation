@@ -2,19 +2,17 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Finmar API",
-    "version": "3.0.3"
+    "version": "3.0.0"
   },
   "externalDocs": {
     "url": "https://finmar.tech/prepare2/docsV3/json"
   },
   "servers": [
     {
-      "url": "https://finmar.tech/",
-      "description": "Продакшен-сервер"
+      "url": "https://finmar.tech/"
     },
     {
-      "url": "https://sandbox.finmar.tech/",
-      "description": "Тестовая среда"
+      "url": "https://sandbox.finmar.tech/"
     }
   ],
   "paths": {
@@ -24,11 +22,10 @@
           "Фиатные платежи"
         ],
         "summary": "Получить страницу оплаты",
-        "description": "Генерирует уникальную ссылку для проведения платежной операции",
+        "description": "Получить ссылку на страницу оплаты",
         "operationId": "checkout",
         "parameters": [],
         "requestBody": {
-          "description": "Параметры создания платежной сессии",
           "content": {
             "application/json": {
               "schema": {
@@ -40,7 +37,7 @@
         },
         "responses": {
           "200": {
-            "description": "Успешный ответ содержит URL платежной страницы",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -49,24 +46,12 @@
               }
             }
           },
-          "500": {
-            "description": "Ошибка сервера при обработке запроса",
+        "500": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_500"
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "success": false,
-                      "trace_id": "string",
-                      "error": {
-                        "code": "INTERNAL_SERVER_ERROR",
-                        "details": "invalid profile example"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/inline_response_500_1"
                 }
               }
             }
@@ -82,54 +67,20 @@
     "/collector/api/v3/operation": {
       "get": {
         "summary": "Получить операции",
-        "description": "Возвращает историю платежных операций с возможностью фильтрации",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "Количество возвращаемых операций (по умолчанию 100)",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "description": "Смещение для пагинации",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Фильтр по статусу операции",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": [
-                "success",
-                "pending",
-                "failed"
-              ]
-            }
-          }
-        ],
+        "description": "Получить список операций",
         "responses": {
           "200": {
-            "description": "Успешный ответ содержит список операций",
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_1"
+                  "$ref": "#/components/schemas/Operation"
                 }
               }
             }
           },
           "500": {
-            "description": "Ошибка при получении данных",
+            "description": "Fail",
             "content": {
               "application/json": {
                 "schema": {
@@ -160,20 +111,18 @@
         "properties": {
           "merchant_user_entry_point_url": {
             "type": "string",
-            "description": "URL для редиректа пользователя после создания операции"
+            "description": "Точка-входа пользователя при создании операции"
           },
           "report_metadata": {
             "maxLength": 255,
             "type": "string",
-            "description": "Идентификатор для финансовой отчетности (макс. 255 символов)"
+            "description": "Идентификатор операции для финансовых отчётов"
           },
           "project_id": {
-            "type": "string",
-            "description": "Идентификатор проекта/мерчанта в системе"
+            "type": "string"
           },
           "operation_display_id": {
-            "type": "string",
-            "description": "Публичный идентификатор операции для отображения пользователю"
+            "type": "string"
           },
           "user": {
             "$ref": "#/components/schemas/user"
@@ -182,36 +131,29 @@
             "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
           },
           "url_callback": {
-            "type": "string",
-            "description": "URL для отправки уведомлений о статусе платежа"
+            "type": "string"
           },
           "payment_profile": {
-            "type": "string",
-            "description": "Платежный профиль (настройки обработки платежа)"
+            "type": "string"
           },
           "locale": {
-            "type": "string",
-            "description": "Язык интерфейса (например: ru, en)",
-            "example": "ru"
+            "type": "string"
           },
           "description": {
-            "type": "string",
-            "description": "Описание платежа для отображения пользователю"
+            "type": "string"
           },
           "metadata": {
-            "type": "string",
-            "description": "Дополнительные метаданные в формате JSON-строки"
+            "type": "string"
           },
           "amount_alternatives": {
             "type": "array",
-            "description": "Альтернативные суммы для выбора пользователем",
             "items": {
               "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
             }
           },
           "method": {
             "type": "string",
-            "description": "Выбранный платежный метод",
+            "description":"Платёжный метод",
             "enum": [
               "card",
               "googlepay",
@@ -243,8 +185,7 @@
         "type": "object",
         "properties": {
           "url": {
-            "type": "string",
-            "description": "Сгенерированный URL платежной страницы"
+            "type": "string"
           }
         },
         "additionalProperties": true
@@ -257,7 +198,7 @@
         "properties": {
           "result": {
             "type": "string",
-            "description": "Результат верификации: SUCCESS или FAIL",
+            "description": "результат проверки - SUCCESS или FAIL",
             "enum": [
               "SUCCESS",
               "FAIL"
@@ -265,7 +206,7 @@
           },
           "verification_kind": {
             "type": "string",
-            "description": "Тип проведенной верификации",
+            "description": "тип проверки",
             "default": "NONE",
             "enum": [
               "NONE",
@@ -275,7 +216,7 @@
           },
           "id_document_kind": {
             "type": "string",
-            "description": "Тип документа при верификации",
+            "description": "информация об ID-документе (если verification_kind содержит ID_DOCUMENT)",
             "enum": [
               "ID_CARD",
               "PASSPORT",
@@ -284,23 +225,20 @@
             ]
           },
           "id_document_country": {
-            "type": "string",
-            "description": "Страна выдачи документа (ISO-код)"
+            "type": "string"
           },
           "sumsub_share_token": {
-            "type": "string",
-            "description": "Токен доступа к данным верификации в Sumsub"
+            "type": "string"
           },
           "sumsub_client_id": {
             "type": "string",
-            "description": "Идентификатор клиента в системе Sumsub"
+            "description": "информация о пользователе на стороне KYC провайдера"
           },
           "sumsub_applicant_id": {
-            "type": "string",
-            "description": "Идентификатор аппликанта в Sumsub"
+            "type": "string"
           }
         },
-        "description": "Данные о прохождении KYC-проверки"
+        "description": "информация о прохождении KYC"
       },
       "user_billing_address": {
         "required": [
@@ -309,27 +247,22 @@
         "type": "object",
         "properties": {
           "country": {
-            "type": "string",
-            "description": "Страна (ISO-код)"
+            "type": "string"
           },
           "state": {
-            "type": "string",
-            "description": "Регион/область"
+            "type": "string"
           },
           "city": {
-            "type": "string",
-            "description": "Город"
+            "type": "string"
           },
           "zip_code": {
-            "type": "string",
-            "description": "Почтовый индекс"
+            "type": "string"
           },
           "address_line_1": {
-            "type": "string",
-            "description": "Адресная строка 1"
+            "type": "string"
           }
         },
-        "description": "Платежный адрес пользователя"
+        "description": "адрес плательщика, может передаваться в платежную систему"
       },
       "user": {
         "required": [
@@ -338,56 +271,46 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "string",
-            "description": "Уникальный идентификатор пользователя в системе партнера"
+            "type": "string"
           },
           "user_display_id": {
-            "type": "string",
-            "description": "Отображаемое имя/идентификатор пользователя"
+            "type": "string"
           },
           "login": {
-            "type": "string",
-            "description": "Логин пользователя"
+            "type": "string"
           },
           "email": {
             "type": "string",
-            "description": "Контактный email"
+            "description": "контактные данные"
           },
           "email_verified": {
-            "type": "boolean",
-            "description": "Флаг подтверждения email"
+            "type": "boolean"
           },
           "email_verified_at": {
-            "type": "string",
-            "description": "Дата подтверждения email (ISO 8601)"
+            "type": "string"
           },
           "phone": {
-            "type": "string",
-            "description": "Номер телефона в международном формате"
+            "type": "string"
           },
           "phone_verified": {
-            "type": "boolean",
-            "description": "Флаг подтверждения телефона"
+            "type": "boolean"
           },
           "phone_verified_at": {
-            "type": "string",
-            "description": "Дата подтверждения телефона (ISO 8601)"
+            "type": "string"
           },
           "preferred_locale": {
-            "type": "string",
-            "description": "Предпочитаемый язык (например: ru_RU)"
+            "type": "string"
           },
           "preferred_timezone": {
-            "type": "string",
-            "description": "Часовой пояс (например: Europe/Moscow)"
+            "type": "string"
           },
           "profile_country": {
             "type": "string",
-            "description": "Страна профиля (ISO-код)"
+            "description": "страна пользователя в профиле на стороне партнера"
           },
           "current_ip_address": {
             "type": "string",
-            "description": "Текущий IP-адрес пользователя"
+            "description": "текущий IP адрес пользователя"
           },
           "billing_address": {
             "$ref": "#/components/schemas/user_billing_address"
@@ -399,11 +322,788 @@
             "$ref": "#/components/schemas/user_kyc"
           },
           "telegram_id": {
-            "type": "string",
-            "description": "ID пользователя в Telegram"
+            "type": "string"
           }
-        },
-        "description": "Модель данных пользователя"
+        }
+      },
+      
+      "Operation": {
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "deprecated":true,
+            "format": "uuid",
+            "description": "Уникальный идентификатор операции.",
+            "example": "082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "reference_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Идентификатор операции присвоенный сервисом",
+            "example": "082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "client_operation_id": {
+            "type": "string",
+            "description": "Идентификатор операции вызывающей стороны.",
+            "example": "16818595465"
+          },
+          "service": {
+            "type": "string",
+            "deprecated":true,
+            "description": "Название сервиса.",
+            "example": "buy-crypto-2"
+          },
+          "service_env": {
+            "type": "string",
+            "deprecated":true,
+            "description": "Окружение сервиса.",
+            "example": "prod-gp1"
+          },
+          "project": {
+            "type": "string",
+            "description": "Название проекта.",
+            "example": "preview"
+          },
+          "project_env": {
+            "type": "string",
+            "deprecated":true,
+            "description": "Окружение проекта.",
+            "example": "prod"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Идентификатор пользователя.",
+            "example": "214796231"
+          },
+          "ip_addr": {
+            "type": "string",
+            "format": "ipv4",
+            "description": "IP адрес пользователя.",
+            "example": "164.92.211.113"
+          },
+          "oper_meta": {
+            "$ref": "#/components/schemas/OperationMeta"
+          },
+          "create_params": {
+            "$ref": "#/components/schemas/OperationCreateParams"
+          },
+          "current_status": {
+            "type": "string",
+            "description": "Текущий статус операции.",
+            "example": "success"
+          },
+          "payment_product": {
+            "type": "string",
+            "description": "Продукт платежа.",
+            "example": "widget_card"
+          },
+          "payment_method_type": {
+            "type": "string",
+            "description": "Тип платежного метода.",
+            "example": "fiat"
+          },
+          "payment_method_code": {
+            "type": "string",
+            "description": "Код платежного метода.",
+            "example": "bank_card"
+          },
+          "operation_state": {
+            "type": "string",
+            "description": "Состояние операции. Вспомогательный параметр. Не путать со статусом. ",
+            "example": "complete"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Валютные пары. Можно заказать требуемые",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": {
+              "EUR-AUD": 1.7941231489426956,
+              "EUR-CAD": 1.602763637553463,
+              "EUR-USD": 1.169150331688
+            }
+          },
+          "credentials_owner": {
+            "type": "string",
+            "description": "Владелец учетных данных.",
+            "example": "preview"
+          },
+          "integration_type": {
+            "type": "string",
+            "description": "Тип интеграции.",
+            "example": "direct"
+          },
+          "operation_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания операции.",
+            "example": "2025-07-09T13:19:16.904Z"
+          },
+          "operation_modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения операции.",
+            "example": "2025-07-09T13:20:33.138Z"
+          },
+          "card_start": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardStart"
+            }
+          },
+          "card_info": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardInfo"
+            }
+          },
+          "card_finish": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardFinish"
+            }
+          },
+          "callbacks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Callback"
+            }
+          },
+          "complete_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Завершенная сумма.",
+            "example": 100.00000000
+          },
+          "complete_currency": {
+            "type": "string",
+            "description": "Валюта завершенной операции.",
+            "example": "EUR"
+          },
+          "complete_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания завершенной операции.",
+            "example": "2025-07-09T13:20:25.611Z"
+          },
+          "complete_modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения завершенной операции.",
+            "example": "2025-07-09T13:20:26.091Z"
+          },
+          "callback_internal": {
+            "type": "boolean",
+            "deprecated":true,
+            "description": "Флаг внутренней обратной связи.",
+            "example": false
+          },
+          "operation_create_id": {
+            "type": "string",
+            "description": "Идентификатор создания операции.Может использоваться в качестве курсора",
+            "example": "957025798895947776"
+          },
+          "operation_update_id": {
+            "type": "string",
+            "description": "Идентификатор обновления операции. Может использоваться в качестве курсора",
+            "example": "957026309997056000"
+          },
+          "payment_status": {
+            "type": "string",
+            "description": "Статус платежа.",
+            "example": "success"
+          },
+          "payment_status_flag": {
+            "$ref": "#/components/schemas/PaymentStatusFlag"
+          },
+          "payment_custom_data": {
+            "$ref": "#/components/schemas/PaymentCustomData"
+          }
+        }
+      },
+      "OperationMeta": {
+        "type": "object",
+        "deprecated":true,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "method": {
+            "type": "string",
+            "description": "Метод платежа.",
+            "example": "card"
+          },
+          "url_callback": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для обратного вызова.",
+            "example": "https://xpayserv-api.com/payment/notification/deposit/vimapay/vimapay_cards_trusted_1/1/"
+          },
+          "payment_profile": {
+            "type": "string",
+            "description": "Платежный профиль.",
+            "example": "checkout"
+          },
+          "url_redirect_fail": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для перенаправления в случае неудачи.",
+            "example": "https://ocg8ffld8exwb.com/onpay/fail/"
+          },
+          "client_operation_id": {
+            "type": "string",
+            "description": "Идентификатор операции со стороны клиента.",
+            "example": "16818595465"
+          },
+          "url_redirect_success": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для перенаправления в случае успеха.",
+            "example": "https://ocg8ffld8exwb.com/onpay/success/"
+          }
+        }
+      },
+      "OperationCreateParams": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "method": {
+            "type": "string",
+            "description": "Метод платежа.",
+            "example": "card"
+          },
+          "url_callback": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для обратного вызова.",
+            "example": "https://xpayserv-api.com/payment/notification/deposit/vimapay/vimapay_cards_trusted_1/1/"
+          },
+          "payment_profile": {
+            "type": "string",
+            "description": "Платежный профиль.",
+            "example": "checkout"
+          },
+          "url_redirect_fail": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для перенаправления в случае неудачи.",
+            "example": "https://ocg8ffld8exwb.com/onpay/fail/"
+          },
+          "client_operation_id": {
+            "type": "string",
+            "description": "Идентификатор операции со стороны клиента.",
+            "example": "16818595465"
+          },
+          "url_redirect_success": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL для перенаправления в случае успеха.",
+            "example": "https://ocg8ffld8exwb.com/onpay/success/"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "description": "Идентификатор пользователя.",
+            "example": "214796231"
+          }
+        }
+      },
+      "Amount": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "description": "Сумма.",
+            "example": "100.00"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Валюта.",
+            "example": "EUR"
+          }
+        }
+      },
+      "CardStart": {
+        "type": "object",
+        "properties": {
+          "oper_type": {
+            "type": "string",
+            "description": "Тип операции.",
+            "example": "deposit"
+          },
+          "action_id": {
+            "type": "string",
+            "description": "Идентификатор действия.",
+            "example": "f-082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "payment_id": {
+            "type": "string",
+            "description": "Идентификатор платежа.",
+            "example": "4df2a4a01dc55b188f4f3914c60f5bf3"
+          },
+          "payment_gate": {
+            "type": "string",
+            "description": "Платежный шлюз.",
+            "example": "paymentgate"
+          },
+          "user_ref": {
+            "type": "string",
+            "description": "Ссылка на пользователя.",
+            "example": "214796231"
+          },
+          "kyc_verification": {
+            "type": "integer",
+            "description": "Статус KYC верификации (0 или 1).",
+            "example": 0
+          },
+          "currency": {
+            "type": "string",
+            "description": "Валюта.",
+            "example": "EUR"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Сумма.",
+            "example": 100.00000000
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания записи.",
+            "example": "2025-07-09 13:19:34.587000"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения записи.",
+            "example": "2025-07-09 13:19:34.656000"
+          }
+        }
+      },
+      "CardInfo": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "description": "Идентификатор действия.",
+            "example": "f-082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "payment_id": {
+            "type": "string",
+            "description": "Идентификатор платежа.",
+            "example": "4df2a4a01dc55b188f4f3914c60f5bf3"
+          },
+          "payment_gate": {
+            "type": "string",
+            "description": "Платежный шлюз.",
+            "example": "paymentgate"
+          },
+          "user_ref": {
+            "type": "string",
+            "description": "Ссылка на пользователя.",
+            "example": "214796231"
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Статус карты.",
+            "example": [
+              "ok"
+            ]
+          },
+          "card_number": {
+            "type": "string",
+            "description": "Маскированный номер карты.",
+            "example": "416293......1620"
+          },
+          "pan_token": {
+            "type": "string",
+            "description": "Токен PAN.",
+            "example": "pan_9z8haj85vf1j62d5dgko4obh1qqqo4ew"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания записи.",
+            "example": "2025-07-09 13:20:15.588000"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения записи.",
+            "example": "2025-07-09 13:20:15.657000"
+          },
+          "payment_method_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Идентификатор платежного метода.",
+            "example": null
+          },
+          "payment_system_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Идентификатор платежной системы.",
+            "example": null
+          },
+          "payment_method_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Название платежного метода.",
+            "example": null
+          },
+          "payment_system_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Название платежной системы.",
+            "example": null
+          },
+          "payment_method_route_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Название маршрута платежного метода.",
+            "example": null
+          },
+          "payment_system_route_method": {
+            "type": "string",
+            "nullable": true,
+            "description": "Метод маршрута платежной системы.",
+            "example": null
+          }
+        }
+      },
+      "CardFinish": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "description": "Идентификатор действия.",
+            "example": "f-082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "payment_id": {
+            "type": "string",
+            "description": "Идентификатор платежа.",
+            "example": "4df2a4a01dc55b188f4f3914c60f5bf3"
+          },
+          "card_number": {
+            "type": "string",
+            "description": "Маскированный номер карты.",
+            "example": "416293......1620"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Валюта.",
+            "example": "EUR"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Сумма.",
+            "example": 100.00000000
+          },
+          "charged_currency": {
+            "type": "string",
+            "description": "Валюта списания.",
+            "example": "EUR"
+          },
+          "charged_amount": {
+            "type": "number",
+            "format": "double",
+            "description": "Списанная сумма.",
+            "example": 100.00000000
+          },
+          "charged_fee": {
+            "type": "number",
+            "format": "double",
+            "description": "Списанная комиссия.",
+            "example": 0.00000000
+          },
+          "result": {
+            "type": "string",
+            "description": "Результат операции.",
+            "example": "success"
+          },
+          "mcc_code": {
+            "type": "integer",
+            "description": "MCC код.",
+            "example": 0
+          },
+          "is_3d_secure_attempted": {
+            "type": "integer",
+            "description": "Была ли попытка 3D Secure (0 или 1).",
+            "example": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания записи.",
+            "example": "2025-07-09 13:20:25.602000"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения записи.",
+            "example": "2025-07-09 13:20:25.693000"
+          }
+        }
+      },
+      "Callback": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/CallbackState"
+          },
+          "result": {
+            "type": "string",
+            "description": "Результат обратного вызова.",
+            "example": "complete"
+          },
+          "ack_key": {
+            "type": "string",
+            "description": "Ключ подтверждения.",
+            "example": "46a2bfe630fc49bebb9fa77715ca45d4"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CallbackPayload"
+          },
+          "internal": {
+            "type": "integer",
+            "description": "Внутренний флаг (0 или 1).",
+            "example": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время создания обратного вызова.",
+            "example": "2025-07-09 13:20:25.611000"
+          },
+          "modified_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Время последнего изменения обратного вызова.",
+            "example": "2025-07-09 13:20:26.915000"
+          },
+          "send_result": {
+            "type": "string",
+            "description": "Результат отправки.",
+            "example": "success"
+          },
+          "callback_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL обратного вызова.",
+            "example": "https://xpayserv-api.com/payment/notification/deposit/vimapay/vimapay_cards_trusted_1/1/"
+          },
+          "send_failure": {
+            "type": "string",
+            "nullable": true,
+            "description": "Причина сбоя отправки.",
+            "example": null
+          },
+          "error_details": {
+            "type": "string",
+            "nullable": true,
+            "description": "Детали ошибки.",
+            "example": null
+          },
+          "confirm_refill": {
+            "type": "integer",
+            "description": "Флаг подтверждения пополнения (0 или 1).",
+            "example": 0
+          }
+        }
+      },
+      "CallbackState": {
+        "type": "object",
+        "properties": {
+          "cardForm": {
+            "type": "boolean",
+            "description": "Форма карты.",
+            "example": true
+          },
+          "cryptoStart": {
+            "type": "boolean",
+            "description": "Начало криптооперации.",
+            "example": true
+          },
+          "cardAccepted": {
+            "type": "boolean",
+            "description": "Карта принята.",
+            "example": true
+          },
+          "cryptoFinish": {
+            "type": "boolean",
+            "description": "Завершение криптооперации.",
+            "example": true
+          },
+          "donorHasFunds": {
+            "type": "boolean",
+            "description": "У донора есть средства.",
+            "example": true
+          }
+        }
+      },
+      "CallbackPayload": {
+        "type": "object",
+        "properties": {
+          "card": {
+            "$ref": "#/components/schemas/PayloadCard"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/OperationMeta"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Обменные курсы валют.",
+            "additionalProperties": {
+              "type": "number",
+              "format": "double"
+            },
+            "example": {
+              "EUR-AUD": 1.7941231489426956,
+              "EUR-CAD": 1.602763637553463,
+              "EUR-USD": 1.169150331688
+            }
+          },
+          "result": {
+            "type": "string",
+            "description": "Результат.",
+            "example": "complete"
+          },
+          "deposit": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Идентификатор пользователя.",
+            "example": "214796231"
+          },
+          "reference_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Ссылочный идентификатор.",
+            "example": "082f67de-17cc-4f00-86ab-411224906d58"
+          },
+          "current_status": {
+            "type": "string",
+            "description": "Текущий статус.",
+            "example": "success"
+          },
+          "payment_product": {
+            "type": "string",
+            "description": "Продукт платежа.",
+            "example": "widget_card"
+          },
+          "client_operation_id": {
+            "type": "string",
+            "description": "Идентификатор операции клиента.",
+            "example": "16818595465"
+          },
+          "payment_custom_data": {
+            "$ref": "#/components/schemas/PaymentCustomData"
+          },
+          "payment_method_code": {
+            "type": "string",
+            "description": "Код платежного метода.",
+            "example": "bank_card"
+          },
+          "payment_method_type": {
+            "type": "string",
+            "description": "Тип платежного метода.",
+            "example": "fiat"
+          }
+        }
+      },
+      "PayloadCard": {
+        "type": "object",
+        "properties": {
+          "charged": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "initial": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "oper_type": {
+            "type": "string",
+            "description": "Тип операции.",
+            "example": "deposit"
+          },
+          "requested": {
+            "$ref": "#/components/schemas/Amount"
+          },
+          "payment_method": {
+            "type": "string",
+            "description": "Метод платежа.",
+            "example": "125_sgate"
+          },
+          "requested_changed": {
+            "type": "boolean",
+            "description": "Запрошенная сумма изменена.",
+            "example": false
+          },
+          "initial_chyment_anged": {
+            "type": "boolean",
+            "description": "Начальный платеж изменен.",
+            "example": false
+          },
+          "is_3d_secure_attempted": {
+            "type": "boolean",
+            "description": "Была ли попытка 3D Secure.",
+            "example": true
+          }
+        }
+      },
+      "PaymentStatusFlag": {
+        "type": "object",
+        "properties": {
+          "user_input_required": {
+            "type": "boolean",
+            "description": "Требуется ввод пользователя.",
+            "example": false
+          },
+          "in_process": {
+            "type": "boolean",
+            "description": "В процессе.",
+            "example": false
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Успешно.",
+            "example": true
+          },
+          "fail": {
+            "type": "boolean",
+            "description": "Сбой.",
+            "example": false
+          }
+        }
+      },
+      "PaymentCustomData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Пользовательское название платежа.",
+            "example": "bank_card"
+          }
+        }
       },
       "inline_response_200_1": {
         "required": [
@@ -413,97 +1113,83 @@
         "type": "object",
         "properties": {
           "success": {
-            "type": "boolean",
-            "description": "Флаг успешного выполнения запроса"
+            "type": "boolean"
           },
           "trace_id": {
-            "type": "string",
-            "description": "Идентификатор трассировки для диагностики"
+            "type": "string"
           },
           "result": {
             "type": "array",
-            "description": "Список операций (массив идентификаторов)",
             "items": {
               "type": "string"
             }
           }
-        },
-        "description": "Ответ на запрос списка операций"
+        }
       },
-      "inline_response_500_1": {
+"inline_response_500_1": {
         "required": [
-          "error",
-          "trace_id"
+          "trace_id",
+          "error"
         ],
         "type": "object",
         "properties": {
           "success": {
-            "type": "boolean",
-            "description": "Всегда false при ошибках"
+            "type": "boolean"
           },
           "trace_id": {
-            "type": "string",
-            "description": "Идентификатор трассировки ошибки"
+            "type": "string"
           },
           "error": {
             "$ref": "#/components/schemas/inline_response_error"
           }
-        },
-        "description": "Формат ответа при ошибке 5xx"
+        }
       },
       "user_statistics": {
         "type": "object",
         "properties": {
           "registered_at": {
             "type": "string",
-            "description": "Дата регистрации пользователя (ISO 8601)"
+            "description": "информация о регистрации пользователя"
           },
           "registration_ip_address": {
-            "type": "string",
-            "description": "IP-адрес при регистрации"
+            "type": "string"
           },
           "registration_traffic_source": {
-            "type": "string",
-            "description": "Источник трафика регистрации"
+            "type": "string"
           },
           "most_recent_retention_at": {
             "type": "string",
-            "description": "Дата последнего возврата пользователя"
+            "description": "информация о последнем возврате пользователя"
           },
           "most_recent_retention_ip_address": {
-            "type": "string",
-            "description": "IP последнего возврата"
+            "type": "string"
           },
           "most_recent_retention_traffic_source": {
-            "type": "string",
-            "description": "Источник трафика последнего возврата"
+            "type": "string"
           },
           "total_deposit_count": {
             "type": "number",
-            "description": "Общее количество депозитов"
+            "description": "общее количество успешных депозитов и выплат"
           },
           "total_withdrawal_count": {
-            "type": "number",
-            "description": "Общее количество выводов"
+            "type": "number"
           },
           "most_recent_deposit_at": {
             "type": "string",
-            "description": "Дата последнего депозита"
+            "description": "информация о последней активности"
           },
           "most_recent_withdrawal_at": {
-            "type": "string",
-            "description": "Дата последнего вывода"
+            "type": "string"
           },
           "most_recent_ip_address": {
-            "type": "string",
-            "description": "IP последней активности"
+            "type": "string"
           },
           "card_deposit_count": {
             "type": "number",
-            "description": "Количество депозитов по картам"
+            "description": "количество успешных депозитов по текущей карте"
           }
         },
-        "description": "Статистика активности пользователя"
+        "description": "агрегированная информация о поведении пользователя на стороне партнера"
       },
       "inline_response_200": {
         "required": [
@@ -513,18 +1199,15 @@
         "type": "object",
         "properties": {
           "success": {
-            "type": "boolean",
-            "description": "Флаг успешного выполнения"
+            "type": "boolean"
           },
           "trace_id": {
-            "type": "string",
-            "description": "Идентификатор трассировки запроса"
+            "type": "string"
           },
           "result": {
             "$ref": "#/components/schemas/inline_response_200_result"
           }
-        },
-        "description": "Успешный ответ API"
+        }
       },
       "inline_response_error": {
         "required": [
@@ -535,7 +1218,6 @@
         "properties": {
           "code": {
             "type": "string",
-            "description": "Код ошибки",
             "enum": [
               "PARSE_ERROR",
               "BAD_REQUEST",
@@ -544,7 +1226,7 @@
               "UNAUTHORIZED",
               "FORBIDDEN",
               "NOT_FOUND",
-              "METHOD_NOT_SUPPORTED",
+                "METHOD_NOT_SUPPORTED",
               "TIMEOUT",
               "CONFLICT",
               "PRECONDITION_FAILED",
@@ -555,11 +1237,9 @@
             ]
           },
           "details": {
-            "type": "string",
-            "description": "Детализированное описание ошибки"
+            "type": "string"
           }
-        },
-        "description": "Модель ошибки API"
+        }
       },
       "prepare2apiv3checkout_amount": {
         "required": [
@@ -571,49 +1251,13 @@
           "amount": {
             "pattern": "^[0-9]*[.]?[0-9]*$",
             "type": "string",
-            "description": "Сумма платежа",
-            "example": "10.00"
+            "example": "10.00",
+            "description":"Сумма"
           },
           "currency": {
             "type": "string",
-            "description": "Валюта платежа (ISO-код)",
-            "example": "EUR"
-          }
-        },
-        "description": "Модель денежной суммы"
-      },
-      "inline_response_500": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "trace_id": {
-            "type": "string"
-          },
-          "error": {
-            "$ref": "#/components/schemas/inline_response_500_error"
-          }
-        },
-        "x-examples": {
-          "Example 1": {
-            "success": true,
-            "trace_id": "string",
-            "error": {
-              "code": "PARSE_ERROR",
-              "details": "string"
-            }
-          }
-        }
-      },
-      "inline_response_500_error": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "details": {
-            "type": "string"
+            "example": "EUR",
+            "description":"Валюта"
           }
         }
       }
@@ -621,7 +1265,6 @@
     "securitySchemes": {
       "Basic": {
         "type": "http",
-        "description": "Базовая HTTP-аутентификация",
         "scheme": "basic"
       }
     }
