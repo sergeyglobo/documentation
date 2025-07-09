@@ -413,7 +413,7 @@
               "UNAUTHORIZED",
               "FORBIDDEN",
               "NOT_FOUND",
-                "METHOD_NOT_SUPPORTED",
+              "METHOD_NOT_SUPPORTED",
               "TIMEOUT",
               "CONFLICT",
               "PRECONDITION_FAILED",
