@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Finmar API",
-    "version": "3.0.0"
+    "version": "3.0.3"
   },
   "externalDocs": {
     "url": "https://finmar.tech/prepare2/docsV3/json"
