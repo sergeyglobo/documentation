@@ -1,5 +1,5 @@
 {
-  "theme": "palm",
+  "theme": "maple",
   "name": "Vimapay Starter Kit",
   "colors": {
     "primary": "#16A34A",
@@ -21,10 +21,13 @@
             ]
           },
           {
-            "group": "Продукты",
+            "group": "Приём платежей",
             "pages": [
-              "products/checkout",
-              "products/cardrouting",
+              "products/card",
+              "products/googlepay",
+              "products/applepay",
+              "products/blik",
+              "products/openbanking",
               "essentials/reusable-snippets"
             ]
           },
