@@ -70,7 +70,7 @@
         "description": "Получить список операций",
         "responses": {
           "200": {
-            "description": "Success",
+            "description": "Success responce",
             "content": {
               "application/json": {
                 "schema": {
@@ -79,8 +79,8 @@
               }
             }
           },
-          "500": {
-            "description": "Fail",
+          "200": {
+            "description": "Bad auth",
             "content": {
               "application/json": {
                 "schema": {
@@ -1125,22 +1125,15 @@
             }
           }
         }
-      },
-"inline_response_500_1": {
+      },"inline_response_500_1": {
         "required": [
           "trace_id",
           "error"
         ],
         "type": "object",
         "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "trace_id": {
-            "type": "string"
-          },
           "error": {
-            "$ref": "#/components/schemas/inline_response_error"
+            "type": "string"
           }
         }
       },
