@@ -166,7 +166,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/inline_response_500_1"
+                                    "$ref": "#/components/schemas/inline_response_error"
                                 },
                                 "examples": {
                                     "INTERNAL_SERVER_ERROR": {
@@ -417,9 +417,6 @@
                     {
                         "schema": {
                             "type": "string",
-                            "uniqueItems": false,
-                            "minItems": 1,
-                            "maxItems": 100,
                             "example": "3b957930-773e-4097-99fc-9a0b0dd80577"
                         },
                         "in": "query",
@@ -430,8 +427,6 @@
                     {
                         "schema": {
                             "type": "string",
-                            "minItems": 1,
-                            "maxItems": 1199,
                             "example": "15887785428"
                         },
                         "in": "query",
@@ -785,9 +780,6 @@
                     {
                         "schema": {
                             "type": "string",
-                            "uniqueItems": false,
-                            "minItems": 1,
-                            "maxItems": 100,
                             "example": "3b957930-773e-4097-99fc-9a0b0dd80577"
                         },
                         "in": "query",
@@ -798,8 +790,6 @@
                     {
                         "schema": {
                             "type": "string",
-                            "minItems": 1,
-                            "maxItems": 1199,
                             "example": "15887785428"
                         },
                         "in": "query",
@@ -2666,18 +2656,6 @@
                         "type": "string",
                         "description": "Пользовательское название платежа.",
                         "example": "bank_card"
-                    }
-                }
-            },
-            "inline_response_500_1": {
-                "required": [
-                    "trace_id",
-                    "error"
-                ],
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
                     }
                 }
             },
