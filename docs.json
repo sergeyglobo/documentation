@@ -56,10 +56,14 @@
           {
             "group": "Методы",
             "pages": [
-              "api-reference/endpoint/checkout",
+              "api-reference/endpoint/checkout", 
               "api-reference/endpoint/operation",
               "api-reference/endpoint/client_unconfirmed_success_payments",
               "api-reference/endpoint/client_unconfirmed_payments",
+              "api-reference/endpoint/client_confirm_payment_by_reference_id",
+              "api-reference/endpoint/client_confirm_payment_by_client_operation_id",
+              "api-reference/endpoint/client_confirm_success_payment_all",
+              "api-reference/endpoint/client_confirm_payment_all",
               "api-reference/endpoint/webhook"
             ]
           }
