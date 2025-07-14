@@ -4,6 +4,8 @@ description: "Description of your new file."
 icon: "credit-card"
 ---
 
+import Callback from '/snippets/callback.mdx';
+
 Оператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке. Внешний вид стандартной страницы оплаты может быть изменен по желанию оператора.
 
 ## **Общая схема работы**[**​**](https://finmar.tech/prepare/integrations-v2/vimapay/docs/api/payment/card/#%D0%BE%D0%B1%D1%89%D0%B0%D1%8F-%D1%81%D1%85%D0%B5%D0%BC%D0%B0-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B)
@@ -25,16 +27,6 @@ icon: "credit-card"
     
   </Step>
 </Steps>
-
-## Создание операции
-
-<RequestExample>
-
-```filename
-// add code here
-```
-
-</RequestExample>
 
 <RequestExample>
 
@@ -96,7 +88,7 @@ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
 
 <ResponseExample>
 
-```filename
+```bash Response
 {
     "success": true,
     "result": {
@@ -109,20 +101,22 @@ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
 
 </ResponseExample>
 
-## Тестовые карты 
+<Callback />
+
+## Тестовые карты
 
 Результат проведения тестовой операции зависит от введённого cvv-кода.
 
 <Note>
-  Данные карты можно использовать для проверки только на окружении sandbox. 
+  Данные карты можно использовать для проверки только на окружении sandbox.
 
   На production окружении они работать не будут.
 </Note>
 
-| Карта              | Срок действия | CVV    | Ожидаемый результат                                                              |                           |
-| ------------------ | ------------- | ------ | -------------------------------------------------------------------------------- | ------------------------- |
-| `4111111111111111` | `11/36`       | `190`  | `SUCCESS`                                                                        | Успех                     |
-| `4111111111111111` | `11/36`       | `360 ` | `PROCESSING_INSUFFICIENT_FUNDS`                                                  | Нехватка средтв           |
-| `4111111111111111` | `11/36`       | `320`  | `PROCESSING_3D_SECURE_FAILED `                                                   | Ошибка 3ds подтверждения  |
-| `4444444444444414` | `11/33`       | `111`  | `SUCCESS`  <u>PROCESSING_3D_SECURE_FAILED</u>  `PROCESSING_3D_SECURE_CANCELLED ` | Выбор результата в фрейме |
-|                    |               |        |                                                                                  |                           |
+| Карта              | Срок действия | CVV    | Ожидаемый результат                                                         |                           |
+| ------------------ | ------------- | ------ | --------------------------------------------------------------------------- | ------------------------- |
+| `4111111111111111` | `11/36`       | `190`  | `SUCCESS`                                                                   | Успех                     |
+| `4111111111111111` | `11/36`       | `360 ` | `PROCESSING_INSUFFICIENT_FUNDS`                                             | Нехватка средтв           |
+| `4111111111111111` | `11/36`       | `320`  | `PROCESSING_3D_SECURE_FAILED `                                              | Ошибка 3ds подтверждения  |
+| `4444444444444414` | `11/36`       | `111`  | `SUCCESS`  `PROCESSING_3D_SECURE_FAILED`  `PROCESSING_3D_SECURE_CANCELLED ` | Выбор результата в фрейме |
+|                    |               |        |                                                                             |                           |
