@@ -16,8 +16,7 @@
             "group": "Инструкции",
             "pages": [
               "index",
-              "quickstart",
-              "test-cards"
+              "quickstart"
             ]
           },
           {
@@ -28,7 +27,7 @@
               "products/applepay",
               "products/blik",
               "products/openbanking",
-              "essentials/reusable-snippets"
+              "products/widget"
             ]
           },
                {
@@ -45,7 +44,7 @@
         ]
       },
       {
-        "tab": "API методы",
+        "tab": "Finmar API",
         "groups": [
           {
             "group": "API документация",
@@ -68,7 +67,16 @@
             ]
           }
         ]
-      }
+      },
+        {
+      "tab": "API Reference",
+      "groups": [
+        {
+          "group": "Pets API",
+         "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+        }
+      ]
+    }
     ],
     "global": {
       
