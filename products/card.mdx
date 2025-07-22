@@ -8,31 +8,41 @@ import Callback from '/snippets/callback.mdx';
 import TestCards from '/snippets/test-cards.mdx';
 
 ## Общая схема работы
+
 ```mermaid
-  flowchart LR
-    subgraph subgraph1
-        direction TB
-        top1[top] --> bottom1[bottom]
-    end
-    subgraph subgraph2
-        direction TB
-        top2[top] --> bottom2[bottom]
-    end
-    %% ^ These subgraphs are identical, except for the links to them:
+sequenceDiagram
+autonumber
+    participant site as Ваш сайт #lightGreen
+    participant server as Ваш сервер
+    participant finmart as API Finmart 
+    participant	payment as Платёжный провайдер
 
-    %% Link *to* subgraph1: subgraph1 direction is maintained
-    outside --> subgraph1
-    %% Link *within* subgraph2:
-    %% subgraph2 inherits the direction of the top-level graph (LR)
-    outside ---> top2
+
+
+    site->>server: Пользователь нажимает кнопку метода 
+    server->>finmart: Запрос на получение ссылки на платёжную страницу 
+    finmart-->>payment: 
+    payment-->finmart: 
+    finmart-->>+server: Ссылка на платёжную страницу 
+    server->>site: Показ пользователю платёжной страницы
+    note over site:  Пользователь проходит платёжный флоу
+    payment-->>site: Перенаправление пользователя на url_success или url_result
+    finmart-->>server: Уведомление
+    server-->>-site: Обработка операций
+    server->>finmart: Установка POST /api/operation/set_ack_id    
+    loop Обработка новых успешных операций
+		    server->>finmart: GET /v3/operation/unconfirmed
+		    finmart-->>server: array()
+	     note over server: Обработка операций
+			  server->>finmart: Сообщить о успешной обработке POST /api/v3/operation/confirm
+        server -->>site: Обновление баланса
+        server->>finmart: Установка operation_ack_id POST /api/operation/set_ack_id    
+    endОператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
 ```
-
-Оператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
 
 Внешний вид стандартной страницы оплаты может быть изменен по желанию оператора.\\
 
 > asdasd
-
 
 <Steps>
   <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
@@ -53,9 +63,7 @@ import TestCards from '/snippets/test-cards.mdx';
 </Steps>
 
 <Expandable>
-
-
-
+  
 </Expandable>
 
 <Expandable>
@@ -76,73 +84,75 @@ import TestCards from '/snippets/test-cards.mdx';
 ## Создание операции
 
 ### Без передачи данных карты
-  ```bash Без передачи банковской карты
-  curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
-  --data '{
-      "payment_profile": "sandbox",
-      "method": "card",
-      "report_metadata": "Fz022tCSaBuvvfQckp",
-      "client_operation_id": "Fz022tCSaBuvvfQckp",
-      "user": {
-          "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
-      },
-      "amount": {
-          "amount": "9",
-          "currency": "EUR"
-      },
-      "url_callback": "https://gg.requestcatcher.com?callback",
-      "url_redirect_success": "https://gg.requestcatcher.com?success",
-      "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-      "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-  }'
-  ```
 
+```bash Без передачи банковской карты
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "card",
+    "report_metadata": "Fz022tCSaBuvvfQckp",
+    "client_operation_id": "Fz022tCSaBuvvfQckp",
+    "user": {
+        "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+    },
+    "amount": {
+        "amount": "9",
+        "currency": "EUR"
+    },
+    "url_callback": "https://gg.requestcatcher.com?callback",
+    "url_redirect_success": "https://gg.requestcatcher.com?success",
+    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+    "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+}'
+```
 
 ### С передачей банковской карты в запросе создания
 
-  ```bash С передачей банковской карты
-  curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
-  --data '{
-      "payment_profile": "sandbox",
-      "method": "card",
-      "report_metadata": "Fz022tCSaBuvvfQckp",
-      "client_operation_id": "Fz022tCSaBuvvfQckp",
-      "user": {
-          "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
-      },
-      "bank_card": {
-          "cardholder": "NAME FNAME",
-          "cvv": "190",
-          "pan": "4111111111111111",
-          "expiration_month": 11,
-          "expiration_year": 29
-      },
-      "amount": {
-          "amount": "9",
-          "currency": "EUR"
-      },
-      "url_callback": "https://gg.requestcatcher.com?callback",
-      "url_redirect_success": "https://gg.requestcatcher.com?success",
-      "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-      "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-  }'
-  ```
-  
+```bash С передачей банковской карты
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "card",
+    "report_metadata": "Fz022tCSaBuvvfQckp",
+    "client_operation_id": "Fz022tCSaBuvvfQckp",
+    "user": {
+        "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
+    },
+    "bank_card": {
+        "cardholder": "NAME FNAME",
+        "cvv": "190",
+        "pan": "4111111111111111",
+        "expiration_month": 11,
+        "expiration_year": 29
+    },
+    "amount": {
+        "amount": "9",
+        "currency": "EUR"
+    },
+    "url_callback": "https://gg.requestcatcher.com?callback",
+    "url_redirect_success": "https://gg.requestcatcher.com?success",
+    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+    "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+}'
+```
 
 ## Состояние операции
+
 Можно отслеживать состояние двумя способами:
+
 - Через обработку обратных уведомлений
 - Вызывая метод получения информации об операции
 
-
-
 ## Обратные уведомления
+
 фывфыв
+
 <TestCards />
 
 ### Тестовые карты
+
 <TestCards />
