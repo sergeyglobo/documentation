@@ -1,12 +1,9 @@
 ---
-title: 'Приём платежей'
-description: 'Платёжный фрейм'
+title: "Приём платежей"
+description: "Платёжный фрейм"
 ---
 
-
-## {{title}}
-
-
+## {title}
 
 ```mermaid
 sequenceDiagram
@@ -40,29 +37,63 @@ autonumber
     
 ```
 
-
-
 ## Возможные схемы взаимодействия
 
 ### Работа по колбекам
 
 <Steps>
   <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
-    
+    desc
   </Step>
-  <Step title="Пользователь вводит данные карты">
-    
+  <Step title="Пользователь подтверждает операцию">
+    desc
   </Step>
-  <Step title="3ds-подтверждение платежа">
-    
+  <Step title="Оператор получает уведомление о завершении операции">
+    desc
   </Step>
-  <Step title="Оператор получает уведомление о завершении платежа на переданный url_callback">
-    
+  <Step title="Оператор выполняет проверку подлинности уведомления">
+    Тут ссыль на описание алгоритмов проверки
   </Step>
-  <Step title="New Step">
-    
+  <Step title="Оператор выполняет обработку операции">
+    Ссыль на метод set_operation_ack_id
   </Step>
 </Steps>
+
+
+
+
+### Работа через запрос списка операций
+
+
+Работа по колбекам
+
+
+
+<Steps>
+  <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
+    desc
+  </Step>
+  <Step title="Пользователь подтверждает операцию">
+    desc
+  </Step>
+  <Step title="Оператор реализует интервальный запрос списка успешных неподтвержджённых операций">
+    client_unconfirmed_success_payments
+
+    
+  </Step>
+  <Step title="Оператор вызывает метод подтверждения операции">
+    Подтверждённая операция не будет возвращаться в ответе метода
+  </Step>
+  <Step title="Оператор выполняет обработку операции">
+    Используя методы https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_reference_id или https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_client_operation_id
+  </Step>
+  
+</Steps>
+
+
+
+
+
 
 <Expandable>
   
@@ -82,5 +113,3 @@ autonumber
 </Expandable>
 
 ...
-
-
