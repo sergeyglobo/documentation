@@ -1,9 +1,115 @@
 ---
-title: 'Приём платежей'
-description: 'Платёжный фрейм'
+title: "Приём платежей"
+description: "Платёжный фрейм"
 ---
 
+## {title}
 
-## {{title}}
+```mermaid
+sequenceDiagram
+autonumber
+    participant site as Ваш сайт #lightGreen
+    participant server as Ваш сервер
+    participant finmart as API Finmart 
+    participant	payment as Платёжный провайдер
 
 
+
+    site->>server: Пользователь нажимает кнопку метода 
+    server->>finmart: Запрос на получение ссылки на платёжную страницу 
+    finmart-->>payment: 
+    payment-->finmart: 
+    finmart-->>+server: Ссылка на платёжную страницу 
+    server->>site: Показ пользователю платёжной страницы
+    note over site:  Пользователь проходит платёжный флоу
+    payment-->>site: Перенаправление пользователя на url_success или url_result
+    finmart-->>server: Уведомление
+    server-->>-site: Обработка операций
+    server->>finmart: Установка POST /api/operation/set_ack_id    
+    loop Обработка новых успешных операций
+		    server->>finmart: GET /v3/operation/unconfirmed
+		    finmart-->>server: array()
+	     note over server: Обработка операций
+			  server->>finmart: Сообщить о успешной обработке POST /api/v3/operation/confirm
+        server -->>site: Обновление баланса
+        server->>finmart: Установка operation_ack_id POST /api/operation/set_ack_id    
+    end
+    
+```
+
+## Возможные схемы взаимодействия
+
+### Работа по колбекам
+
+<Steps>
+  <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
+    desc
+  </Step>
+  <Step title="Пользователь подтверждает операцию">
+    desc
+  </Step>
+  <Step title="Оператор получает уведомление о завершении операции">
+    desc
+  </Step>
+  <Step title="Оператор выполняет проверку подлинности уведомления">
+    Тут ссыль на описание алгоритмов проверки
+  </Step>
+  <Step title="Оператор выполняет обработку операции">
+    Ссыль на метод set_operation_ack_id
+  </Step>
+</Steps>
+
+
+
+
+### Работа через запрос списка операций
+
+
+Работа по колбекам
+
+
+
+<Steps>
+  <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
+    desc
+  </Step>
+  <Step title="Пользователь подтверждает операцию">
+    desc
+  </Step>
+  <Step title="Оператор реализует интервальный запрос списка успешных неподтвержджённых операций">
+    client_unconfirmed_success_payments
+
+    
+  </Step>
+  <Step title="Оператор вызывает метод подтверждения операции">
+    Подтверждённая операция не будет возвращаться в ответе метода
+  </Step>
+  <Step title="Оператор выполняет обработку операции">
+    Используя методы https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_reference_id или https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_client_operation_id
+  </Step>
+  
+</Steps>
+
+
+
+
+
+
+<Expandable>
+  
+</Expandable>
+
+<Expandable>
+  ```bash Response
+  {
+      "success": true,
+      "result": {
+          "url": "https://card.cheipho.com/transaction/6e89d40d-3fda-42a2-9c97-3564c8443c3a",
+          "reference_id": "6e89d40d-3fda-42a2-9c97-3564c8443c3a"
+      },
+      "trace_id": "8abfc59b1bd149b9a3e56e0226a4c796"
+  }
+  ```
+</Expandable>
+
+...
