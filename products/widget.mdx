@@ -1,5 +1,137 @@
 ---
-title: 'Widget Integration'
-description: 'Description of your new file.'
+title: "Widget Integration"
+description: "Description of your new file."
 ---
 
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Клиент
+    participant Сайт Проекта
+    participant Finmar API
+    Клиент->>Сайт Проекта: Выбор платежного виджета
+    Сайт Проекта->>Finmar API: Передача данных для создания операции
+    Finmar API-->>Сайт Проекта: Возврат URL виджета
+    Сайт Проекта->>Клиент: Перенаправление на URL виджета
+    Клиент->>Finmar API: Покупка криптовалюты<br>и подтверждение оферты
+    Finmar API->>Сайт Проекта: Уведомление<br>о завершении операции
+    Сайт Проекта->>Сайт Проекта: Обработка уведомления
+    Сайт Проекта->>Finmar API: Вызов /set_operation_ack_id<br>(operation_ack_id)
+```
+
+<Steps>
+  <Step title="Выбор платежного виджета">
+    Клиент выбирает иконку платежного виджета в интерфейсе сайта проекта
+  </Step>
+  <Step title="Передача данных для создания операции">
+    Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате
+
+    <RequestExample>
+
+    ``` Пример запроса для sandbox
+    curl --location 'https://finmar.tech/prepare2/api/v3/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Accept: application/json' \
+    --header 'Authorization: Basic e3t1c2VybmFtZX19Ont7cGFzc3dvcmR9fQ==' \
+    --data-raw '{
+        "report_metadata": "op12345678",
+        "client_operation_id": "op12345678",
+        "payment_profile": "sandbox",
+        "method": "widget",
+        "user": {
+            "user_id": "u123",
+            "email": "user@gmail.com",
+            "email_verified": true,
+            "statistics": {
+                "registered_at": "2021-11-02",
+                "total_deposit_count": 10,
+                "total_withdrawal_count": 2,
+                "card_deposit_count": 10
+            },
+            "kyc": {
+                "result": "SUCCESS",
+                "verification_kind": "NONE",
+                "id_document_kind": "ID_CARD"
+            }
+        },
+        "amount": {
+            "amount": "51",
+            "currency": "EUR"
+        },
+        "url_callback":"https://finmar.requestcatcher.com?callback",
+        "url_redirect_success":"https://finmar.requestcatcher.com?success",
+        "url_redirect_fail":"https://finmar.requestcatcher.com?fail"
+    }'
+    ```
+
+    </RequestExample>
+  </Step>
+  <Step title="Генерация платежной ссылки">
+    Finmar API создает уникальный URL виджета и возвращает его сайту проекта
+  </Step>
+  <Step title="Перенаправление клиента">
+    Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
+  </Step>
+  <Step title="Проведение операции">
+    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе Виджета
+  </Step>
+  <Step title="Уведомление о завершении операции">
+    Finmar API отправляет сайту проекта вебхук-уведомление о завершении транзакции
+
+    <ResponseExample>
+
+    ``` Пример уведомления
+            {
+              "card": 
+              {
+                "charged": 
+                {
+                  "amount": 12.0,
+                  "currency": "EUR"
+                },
+                "initial": 
+                {
+                  "amount": 12.0,
+                  "currency": "EUR"
+                },
+                "initial_chyment_anged": false,
+                "is_3d_secure_attempted": true,
+                "oper_type": "deposit",
+                "payment_method": "185_catalyst_preauth",
+                "requested": 
+                {
+                  "amount": 12.0,
+                  "currency": "EUR"
+                },
+                "requested_changed": false
+              },
+              "client_operation_id": "4129259",
+              "crypto": 
+              [
+                
+                {
+                  "amount": 13.337059,
+                  "crypto_txn_id": "0x11d5d41b6356c9f374f94858c832005ed22c04c15878678e39abf8ee72fb16a4",
+                  "currency": "ETH__USDC__137",
+                  "parent_fiat_amount": 12.0,
+                  "parent_fiat_currency": "EUR",
+                  "status": "success",
+                  "to_address": "0x4b8559b05abd654eb89a0a83b955d610a29e43a2"
+                },
+                
+                {
+                  "crypto_txn_id": "0xd5584c1bf07a02547f53944783cb584b5a0b93f0c6cb22f26dd2884b7e67c304",
+                  "status": "success",
+                  "to_address": null
+                }
+    ```
+
+    </ResponseExample>
+  </Step>
+  <Step title="Обработка уведомления">
+    Сайт проекта обрабатывает полученное уведомление и зачисляет полученную сумму на счёт пользователя.
+  </Step>
+  <Step title="Подтверждение обработки">
+    Сайт проекта вызывает метод Finmar API для подтверждения обработки операции.
+  </Step>
+</Steps>
