@@ -3,45 +3,39 @@ title: "Приём платежей"
 description: "Платёжный фрейм"
 ---
 
-## {title}
-
-
-
-## Возможные схемы взаимодействия
+## Основные схемы взаимодействия
 
 ### Работа по колбекам
 
 
 ```mermaid
 sequenceDiagram
-autonumber
-    participant site as Ваш сайт #lightGreen
-    participant server as Ваш сервер
-    participant finmart as API Finmart 
-    participant	payment as Платёжный провайдер
+  actor user as Пользователь
+  participant merchant as Мерчант
+  participant finmar as Finmar API
+  participant payment as Платёжный провайдер
 
-
-
-    site->>server: Пользователь нажимает кнопку метода 
-    server->>finmart: Запрос на получение ссылки на платёжную страницу 
-    finmart-->>payment: 
-    payment-->finmart: 
-    finmart-->>+server: Ссылка на платёжную страницу 
-    server->>site: Показ пользователю платёжной страницы
-    note over site:  Пользователь проходит платёжный флоу
-    payment-->>site: Перенаправление пользователя на url_success или url_result
-    finmart-->>server: Уведомление
-    server-->>-site: Обработка операций
-    server->>finmart: Установка POST /api/operation/set_ack_id    
-    
+  autonumber
+  user -->> merchant: Нажимает кнопку метода
+  merchant -->> finmar: Запрос на получение платёжной страницы
+  finmar -->> payment: 
+  payment --> finmar: 
+  finmar -->>+ merchant: Ссылка на платёжную страницу и идентификатор операции назначенный сервисом reference_id
+  merchant -->> user: Перенаправление на платёжную страницу
+  user -->> payment: Прохождение платёжного флоу
+  payment -->> finmar: Уведомление
+  finmar -->> user: Показ результата проведения операции
+  finmar -->> merchant: Уведомление
+  merchant -->>- merchant: Обработка операций
+  merchant ->> finmar: Установка идентификатора для финансовых выгрузок POST /api/operation/set_ack_id
 ```
 
 
 <Steps>
-  <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
+  <Step title="Пользователь выбирает платёжный метод">
     desc
   </Step>
-  <Step title="Пользователь подтверждает операцию">
+  <Step title="Оператор подтверждает операцию">
     desc
   </Step>
   <Step title="Оператор получает уведомление о завершении операции">
@@ -63,32 +57,30 @@ autonumber
 
 ```mermaid
 sequenceDiagram
-autonumber
-    participant site as Ваш сайт #lightGreen
-    participant server as Ваш сервер
-    participant finmart as API Finmart 
-    participant	payment as Платёжный провайдер
+  actor user as Пользователь
+  participant merchant as Мерчант
+  participant finmar as Finmar API
+  participant payment as Платёжный провайдер
 
+  autonumber
+  user -->> merchant: Нажимает кнопку метода
+  merchant -->> finmar: Запрос на получение платёжной страницы
+  finmar -->> payment: 
+  payment --> finmar: 
+  finmar -->>+ merchant: Ссылка на платёжную страницу и идентификатор операции назначенный сервисом reference_id
+  merchant -->> user: Перенаправление на платёжную страницу
+  user -->> payment: Прохождение платёжного флоу
+  finmar -->> user: Показ результата проведения операции
 
-
-    site->>server: Пользователь нажимает кнопку метода 
-    server->>finmart: Запрос на получение ссылки на платёжную страницу 
-    finmart-->>payment: 
-    payment-->finmart: 
-    finmart-->>+server: Ссылка на платёжную страницу 
-    server->>site: Показ пользователю платёжной страницы
-    note over site:  Пользователь проходит платёжный флоу
-    payment-->>site: Перенаправление пользователя на url_success или url_result
    loop Обработка новых успешных операций
-		    server->>finmart: GET /v3/operation/unconfirmed
-		    finmart-->>server: array()
-	     note over server: Обработка операций
-			  server->>finmart: Сообщить о успешной обработке POST /api/v3/operation/confirm
-        server -->>site: Обновление баланса
-        server->>finmart: Установка operation_ack_id POST /api/operation/set_ack_id    
+		    merchant->>finmar: GET /client_unconfirmed_success_payments 
+		    finmar-->>merchant: array()
+	     note over merchant: Обработка операций
+         merchant -->>merchant: Обновление баланса пользователя
+        merchant->>finmar: Подтвердить обработку операции POST /client_confirm_payment_by_reference_id 
+
     end
     
-   
 ```
  
 
