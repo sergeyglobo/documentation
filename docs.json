@@ -49,6 +49,8 @@
           {
             "group": "API документация",
             "pages": [
+              "api-reference/introduction",
+              "api-reference/status",
               "api-reference/introduction"
             ]
           },
