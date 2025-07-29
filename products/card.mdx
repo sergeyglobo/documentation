@@ -9,6 +9,7 @@ import TestCards from '/snippets/test-cards.mdx';
 
 ## Общая схема работы
 
+
 ```mermaid
 sequenceDiagram
 autonumber
@@ -16,9 +17,6 @@ autonumber
     participant server as Ваш сервер
     participant finmart as API Finmart 
     participant	payment as Платёжный провайдер
-
-
-
     site->>server: Пользователь нажимает кнопку метода 
     server->>finmart: Запрос на получение ссылки на платёжную страницу 
     finmart-->>payment: 
@@ -37,10 +35,10 @@ autonumber
 			  server->>finmart: Сообщить о успешной обработке POST /api/v3/operation/confirm
         server -->>site: Обновление баланса
         server->>finmart: Установка operation_ack_id POST /api/operation/set_ack_id    
-    endОператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
+    end
 ```
 
-Внешний вид стандартной страницы оплаты может быть изменен по желанию оператора.\\
+
 
 ## Создание операции
 
@@ -100,6 +98,9 @@ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
 }'
 ```
+
+Оператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
+
 
 ## Состояние операции
 

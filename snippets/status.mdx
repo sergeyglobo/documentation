@@ -1,0 +1,32 @@
+При обработке операций следует руководствоваться значением параметра `current_status`
+
+Фиатная операция депозита имеет следующую статусную модель:
+
+```mermaid
+stateDiagram 
+[*] --> user_input_required
+user_input_required --> in_process
+in_process --> fail
+in_process --> success
+```
+
+<ParamField path="user_input_required" type="string">
+  Ожидание направления пользователя на платёжную страницу
+</ParamField>
+
+<ParamField path="in_process" type="string">
+  Операция в процессе
+</ParamField>
+
+<ParamField path="fail" type="string">
+  Операция завершилась неуспешно
+</ParamField>
+
+<ParamField path="success" type="string">
+  Операция завершилась успешно
+</ParamField>
+
+
+<Warning>
+  Не путать с `operation_state` 
+</Warning>

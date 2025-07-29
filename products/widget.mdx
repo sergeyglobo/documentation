@@ -87,51 +87,110 @@ sequenceDiagram
   <Step title="Уведомление о завершении операции">
     Finmar API отправляет сайту проекта уведомление о завершении транзакции. Пример:
 
-    ```bash expandable
-            {
-              "card": 
-              {
-                "charged": 
-                {
-                  "amount": 12.0,
+    <Accordion title="New Accordion" icon="sparkles">
+
+    ```
+    {
+              "card": {
+                "charged": {
+                  "amount": 12,
                   "currency": "EUR"
                 },
-                "initial": 
-                {
-                  "amount": 12.0,
+                "initial": {
+                  "amount": 12,
                   "currency": "EUR"
                 },
-                "initial_chyment_anged": false,
-                "is_3d_secure_attempted": true,
                 "oper_type": "deposit",
-                "payment_method": "185_catalyst_preauth",
-                "requested": 
-                {
-                  "amount": 12.0,
+                "requested": {
+                  "amount": 12,
                   "currency": "EUR"
                 },
-                "requested_changed": false
+                "payment_method": "185_catalyst_preauth",
+                "requested_changed": false,
+                "initial_chyment_anged": false,
+                "is_3d_secure_attempted": true
               },
-              "client_operation_id": "4129259",
-              "crypto": 
-              [
-                
+              "meta": {
+                "user": {
+                  "kyc": {
+                    "result": "SUCCESS",
+                    "verification_kind": "ID_DOCUMENT",
+                    "sumsub_share_token": "_act-jwt-eyJhbGciOiJub25lIn0.eyJqdGkiOiJfYWN0LTljZDM2NTA0LTFhNzItNDUzNC05MjQ3LTUxMzE1ZmEzMTMxOSIsInVybCI6Imh0dHBzOi8vYXBpLnN1bXN1Yi5jb20ifQ."
+                  },
+                  "email": "donatpozsonyi@gmail.com",
+                  "login": "donatpozsonyi@gmail.com",
+                  "user_id": "14b6f144-840c-400b-83f7-4b89b4074ba1",
+                  "statistics": {
+                    "registered_at": "2024-09-24T17:44:54.256Z",
+                    "total_deposit_count": 54,
+                    "most_recent_deposit_at": "2025-07-24 12:50:18",
+                    "total_withdrawal_count": 8,
+                    "registration_ip_address": "94.44.100.47",
+                    "most_recent_withdrawal_at": "2025-06-23 18:45:22"
+                  },
+                  "email_verified": true
+                },
+                "amount": {
+                  "amount": "12.00",
+                  "currency": "EUR"
+                },
+                "locale": "HU",
+                "comment": {
+                  "guid": "4129259",
+                  "action": "deposit_v3",
+                  "variant": "open_banking"
+                },
+                "project_id": "weiss",
+                "url_callback": "https://api.pay-socket.services/pg/callback/f5bdfd53-086b-41af-9849-6bbbe5c93727/deposit",
+                "payment_profile": "widget_integration_weiss",
+                "url_redirect_fail": "https://api.pay-socket.services/redirect/result/f5bdfd53-086b-41af-9849-6bbbe5c93727/deposit/4129259/failure",
+                "client_operation_id": "4129259",
+                "operation_display_id": "4129259",
+                "url_redirect_success": "https://api.pay-socket.services/redirect/result/f5bdfd53-086b-41af-9849-6bbbe5c93727/deposit/4129259/success"
+              },
+              "rates": {
+                "ETH-AUD": 5958.39372449629,
+                "ETH-CAD": 5335.9483560368,
+                "ETH-EUR": 3327.71605539468,
+                "ETH-USD": 3886.46995424805,
+                "EUR-AUD": 1.7905354980143,
+                "EUR-CAD": 1.60348667590989,
+                "EUR-USD": 1.167909127327
+              },
+              "crypto": [
                 {
                   "amount": 13.337059,
-                  "crypto_txn_id": "0x11d5d41b6356c9f374f94858c832005ed22c04c15878678e39abf8ee72fb16a4",
+                  "status": "success",
                   "currency": "ETH__USDC__137",
-                  "parent_fiat_amount": 12.0,
-                  "parent_fiat_currency": "EUR",
-                  "status": "success",
-                  "to_address": "0x4b8559b05abd654eb89a0a83b955d610a29e43a2"
+                  "to_address": "0x4b8559b05abd654eb89a0a83b955d610a29e43a2",
+                  "crypto_txn_id": "0x11d5d41b6356c9f374f94858c832005ed22c04c15878678e39abf8ee72fb16a4",
+                  "parent_fiat_amount": 12,
+                  "parent_fiat_currency": "EUR"
                 },
-                
                 {
-                  "crypto_txn_id": "0xd5584c1bf07a02547f53944783cb584b5a0b93f0c6cb22f26dd2884b7e67c304",
                   "status": "success",
-                  "to_address": null
+                  "to_address": null,
+                  "crypto_txn_id": "0xd5584c1bf07a02547f53944783cb584b5a0b93f0c6cb22f26dd2884b7e67c304"
                 }
+              ],
+              "result": "complete",
+              "deposit": {
+                "amount": 12,
+                "currency": "EUR"
+              },
+              "user_id": "14b6f144-840c-400b-83f7-4b89b4074ba1",
+              "reference_id": "7bf874c3-43f6-4e7e-b78b-6b2ee3538665",
+              "current_status": "success",
+              "payment_product": "widget_integration",
+              "client_operation_id": "4129259",
+              "payment_custom_data": null,
+              "payment_method_type": "fiat"
+            }
     ```
+
+
+    </Accordion>
+
   </Step>
   <Step title="Обработка уведомления">
     Сайт проекта обрабатывает полученное уведомление и зачисляет полученную сумму на счёт пользователя.
