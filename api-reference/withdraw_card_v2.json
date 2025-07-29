@@ -1,0 +1,1491 @@
+
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Withdrawal card API",
+    "version": "2.0"
+  },
+  "servers": [
+    {
+      "url": "https://crypto.sopogai.com",
+      "description": "This server"
+    }
+  ],
+  "paths": {
+    "/public/api/withdraw/card/v2/check_health": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Returns current service status.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardCheckHealthRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardCheckHealthResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/get_balance": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Returns current merchant balance info.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardGetBalanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardGetBalanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/create_operation": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Creates a new card withdrawal operation or get its current state if already exists.\r\nWithdrawal engine will choose a suitable liquidity source automatically.\r\nNew transaction won't be executed until 'start' method's called.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardCreateResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/create_operation_using_explicit_source": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Creates a new card withdrawal operation or get its current state if already exists.\r\nWithdrawal engine will use explicitly provided liquidity source.\r\nNew transaction won't be executed until 'start' method's called.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardCreateExplicitSourceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardCreateExplicitSourceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/get_operation_state": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Returns operation's current state by its id.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardGetOperationStateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardGetOperationStateResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/start_operation": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Starts execution of operation.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardStartOperationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardStartOperationResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/abort_operation": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Attempts to abort operation's execution if possible.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardAbortOperationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardAbortOperationResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/open_operation_user_input": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Configures user input settings and returns user entry point parameters.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardOpenUserInputRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardOpenUserInputResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    },
+    "/public/api/withdraw/card/v2/confirm_operation": {
+      "post": {
+        "tags": [
+          "WithdrawCard"
+        ],
+        "summary": "Confirms operation's completion.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WithdrawCardConfirmOperationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithdrawCardConfirmOperationResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Basic": [ ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BankCardInfoApiView": {
+        "required": [
+          "bin6",
+          "card_token",
+          "expiration_month",
+          "expiration_year",
+          "last_four_digits",
+          "pan_token"
+        ],
+        "type": "object",
+        "properties": {
+          "pan_token": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "card_token": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "bin6": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "last_four_digits": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expiration_month": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expiration_year": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "network": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "issuer": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BankCardInputApiView": {
+        "required": [
+          "cardholder",
+          "expiration_month",
+          "expiration_year",
+          "pan"
+        ],
+        "type": "object",
+        "properties": {
+          "pan": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "cardholder": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expiration_month": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expiration_year": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardWithdrawalFailureApiView": {
+        "required": [
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardWithdrawalOperationStateApiView": {
+        "required": [
+          "bank_card",
+          "client_operation_id",
+          "created_at",
+          "disallow_end_user_interaction",
+          "disallow_transaction_split",
+          "operation_id",
+          "operation_status",
+          "order_amount",
+          "project_id",
+          "reference_id",
+          "updated_at",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "project_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "client_operation_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reference_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order_amount": {
+            "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+          },
+          "explicit_liquidity_source_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "order_amount_alternatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+            },
+            "nullable": true
+          },
+          "bank_card": {
+            "$ref": "#/components/schemas/BankCardInfoApiView"
+          },
+          "url_callback": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "report_metadata": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "disallow_end_user_interaction": {
+            "type": "boolean"
+          },
+          "disallow_transaction_split": {
+            "type": "boolean"
+          },
+          "operation_status": {
+            "enum": [
+              "PREPARING",
+              "UNPROCESSABLE",
+              "START_WAIT",
+              "START_REJECTED",
+              "PROCESSING",
+              "USER_INPUT",
+              "COMPLETE",
+              "COMPLETE_CONFIRMED"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "PREPARING"
+          },
+          "execution_suspended": {
+            "type": "boolean"
+          },
+          "result_status": {
+            "enum": [
+              "SUCCESS",
+              "PARTIAL_SUCCESS",
+              "FAILURE"
+            ],
+            "type": "string",
+            "format": "enum",
+            "nullable": true,
+            "example": "SUCCESS"
+          },
+          "transferred_total_amount": {
+            "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+          },
+          "failure_details": {
+            "$ref": "#/components/schemas/CardWithdrawalFailureApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FiatCurrencyAmountApiView": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "maxLength": 3,
+            "minLength": 3,
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "format": "decimal",
+            "default": "0",
+            "example": "12.34"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserApiView": {
+        "required": [
+          "user_id"
+        ],
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "user_display_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "email_verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "email_verified_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "phone_verified_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "preferred_locale": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferred_timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "profile_country": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_ip_address": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserInputParametersApiView": {
+        "required": [
+          "concurrency_stamp",
+          "requested_at",
+          "url"
+        ],
+        "type": "object",
+        "properties": {
+          "url": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "concurrency_stamp": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "requested_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "url_redirect": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardAbortOperationErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "OPERATION_NOT_FOUND",
+              "UNACCEPTABLE_COMMAND",
+              "ACCEPTED_WITHOUT_OBLIGATIONS"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardAbortOperationRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardAbortOperationResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardAbortOperationErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardAbortOperationResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardAbortOperationResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCheckHealthErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "DEGRADED"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCheckHealthRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "WithdrawCardCheckHealthResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardCheckHealthErrorCodeApiError"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardConfirmOperationErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "OPERATION_NOT_FOUND",
+              "UNACCEPTABLE_COMMAND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardConfirmOperationRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "operation_ack_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardConfirmOperationResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardConfirmOperationErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardConfirmOperationResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardConfirmOperationResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "AMBIGUOUS_PARAMETERS",
+              "UNSUPPORTED_CURRENCY",
+              "UNSUPPORTED_PROFILE"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateExplicitSourceErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "AMBIGUOUS_PARAMETERS",
+              "SOURCE_NOT_FOUND",
+              "UNSUPPORTED_CURRENCY"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateExplicitSourceRequest": {
+        "required": [
+          "bank_card",
+          "client_operation_id",
+          "liquidity_source_id",
+          "order_amount",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserApiView"
+          },
+          "bank_card": {
+            "$ref": "#/components/schemas/BankCardInputApiView"
+          },
+          "liquidity_source_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "order_amount": {
+            "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+          },
+          "url_callback": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "report_metadata": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "merchant_user_entry_point_url": {
+            "maxLength": 128,
+            "type": "string",
+            "nullable": true
+          },
+          "disallow_end_user_interaction": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "disallow_transaction_split": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateExplicitSourceResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardCreateExplicitSourceErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardCreateExplicitSourceResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateExplicitSourceResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateRequest": {
+        "required": [
+          "bank_card",
+          "client_operation_id",
+          "order_amount",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserApiView"
+          },
+          "bank_card": {
+            "$ref": "#/components/schemas/BankCardInputApiView"
+          },
+          "profile": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "order_amount": {
+            "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+          },
+          "url_callback": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "report_metadata": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "merchant_user_entry_point_url": {
+            "maxLength": 128,
+            "type": "string",
+            "nullable": true
+          },
+          "disallow_end_user_interaction": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "disallow_transaction_split": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardCreateErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardCreateResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardCreateResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetBalanceErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetBalanceRequest": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetBalanceResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardGetBalanceErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardGetBalanceResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetBalanceResult": {
+        "required": [
+          "liquidity_sources",
+          "total_available"
+        ],
+        "type": "object",
+        "properties": {
+          "total_available": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+            }
+          },
+          "liquidity_sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WithdrawCardLiquiditySourceBalanceApiView"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetOperationStateErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "OPERATION_NOT_FOUND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetOperationStateRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetOperationStateResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardGetOperationStateErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardGetOperationStateResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardGetOperationStateResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardLiquiditySourceBalanceApiView": {
+        "required": [
+          "source_id",
+          "total_available"
+        ],
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "total_available": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardOpenUserInputErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "OPERATION_NOT_FOUND",
+              "UNACCEPTABLE_COMMAND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardOpenUserInputRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "url_redirect": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardOpenUserInputResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardOpenUserInputErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardOpenUserInputResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardOpenUserInputResult": {
+        "required": [
+          "operation_state",
+          "user_input_parameters"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          },
+          "user_input_parameters": {
+            "$ref": "#/components/schemas/UserInputParametersApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardStartOperationErrorCodeApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "MAINTENANCE",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "OPERATION_NOT_FOUND",
+              "UNACCEPTABLE_COMMAND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardStartOperationRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "maxLength": 64,
+            "type": "string",
+            "nullable": true
+          },
+          "client_operation_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardStartOperationResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/WithdrawCardStartOperationErrorCodeApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/WithdrawCardStartOperationResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WithdrawCardStartOperationResult": {
+        "required": [
+          "operation_state"
+        ],
+        "type": "object",
+        "properties": {
+          "operation_state": {
+            "$ref": "#/components/schemas/CardWithdrawalOperationStateApiView"
+          },
+          "user_input_parameters": {
+            "$ref": "#/components/schemas/UserInputParametersApiView"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Basic": {
+        "type": "http",
+        "scheme": "Basic"
+      }
+    }
+  }
+}
