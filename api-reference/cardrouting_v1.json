@@ -1,0 +1,1826 @@
+
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "CardRouting API",
+    "version": "1.6"
+  },
+  "servers": [
+    {
+      "url": "https://crypto.sopogai.com/universal/mimic",
+      "description": "This server"
+    }
+  ],
+  "paths": {
+    "/cardrouting/api/v1/health/check": {
+      "post": {
+        "tags": [
+          "CardRoutingHealthCheck"
+        ],
+        "summary": "Verify server availability and authentication.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingHealthCheckRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingHealthCheckResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/health/get-callback-signing-keys": {
+      "post": {
+        "tags": [
+          "CardRoutingHealthCheck"
+        ],
+        "summary": "Get callback signing public keys",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingCallbackSignatureKeysRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingCallbackSignatureKeysResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/callback/v1/on-sale-update": {
+      "post": {
+        "tags": [
+          "CardRoutingNotification"
+        ],
+        "summary": "Sale state change notification, should be implemented on caller side.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingSaleApiView"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingSaleNotificationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cardrouting/callback/v1/on-kyc-waiting": {
+      "post": {
+        "tags": [
+          "CardRoutingNotification"
+        ],
+        "summary": "KYC data waiting notification, should be implemented on caller side.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingKycWaitingNotification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/cardrouting/api/v1/sale/create": {
+      "post": {
+        "tags": [
+          "CardRoutingSale"
+        ],
+        "summary": "Create a new sale or get its current state if already exists.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingCreateSaleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingCreateSaleResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/sale/get": {
+      "post": {
+        "tags": [
+          "CardRoutingSale"
+        ],
+        "summary": "Obtain current state of sale.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingGetSaleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingGetSaleResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/sale/accept": {
+      "post": {
+        "tags": [
+          "CardRoutingSale"
+        ],
+        "summary": "[DEPRECATED] Confirm sale charge in ACCEPTANCE_REQUIRED state. No more used.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingAcceptSaleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingAcceptSaleResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true,
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/sale/return": {
+      "post": {
+        "tags": [
+          "CardRoutingSale"
+        ],
+        "summary": "Return sale, reverts all charges to end user if any.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingReturnSaleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingReturnSaleResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/sale/set-operation-ack-id": {
+      "post": {
+        "tags": [
+          "CardRoutingSale"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingSetOperationAckIdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingSetOperationAckIdResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/user/set-data": {
+      "post": {
+        "tags": [
+          "CardRoutingUser"
+        ],
+        "summary": "Update external user info and statistics, all not-null fields will replace current values stored on server side.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingSetUserDataRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingSetUserDataResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/user/import-sumsub-applicant-reference": {
+      "post": {
+        "tags": [
+          "CardRoutingUser"
+        ],
+        "summary": "Import user's KYC data via SumSub applicant reference (shared SumSub account). Service will call SumSub using\r\nprovided client_id and applicant_id to obtain KYC results asynchronously.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingImportSumSubApplicantReferenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingImportSumSubApplicantReferenceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    },
+    "/cardrouting/api/v1/user/import-sumsub-share-token": {
+      "post": {
+        "tags": [
+          "CardRoutingUser"
+        ],
+        "summary": "Import user's KYC data via SumSub share_token (cross-account import with tripartite agreement). Service will call SumSub using\r\nprovided client_id and share_token to copy KYC results asynchronously.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRoutingImportSumSubShareTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardRoutingImportSumSubShareTokenResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cardrouting_v1_basic": [ ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CardRoutingAcceptSaleErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "SALE_NOT_FOUND",
+              "UNACCEPTABLE_COMMAND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingAcceptSaleRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "client_operation_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingAcceptSaleResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingAcceptSaleErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingSaleApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingBankCardFullData": {
+        "required": [
+          "cardholder",
+          "cvv",
+          "expiration_month",
+          "expiration_year",
+          "pan"
+        ],
+        "type": "object",
+        "properties": {
+          "pan": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "cardholder": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expiration_month": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "expiration_year": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cvv": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingBankCardInfo": {
+        "type": "object",
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "card_token": {
+            "type": "string",
+            "nullable": true
+          },
+          "pan_token": {
+            "type": "string",
+            "nullable": true
+          },
+          "network": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "bin": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_four_digits": {
+            "type": "string",
+            "nullable": true
+          },
+          "cardholder": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiration_month": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiration_year": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "issuer_name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingBillingAddress": {
+        "required": [
+          "country"
+        ],
+        "type": "object",
+        "properties": {
+          "country": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "zip_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "address_line_1": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCallbackSignatureKeySet": {
+        "required": [
+          "ecdsa_key_id",
+          "ecdsa_public_key_pem",
+          "rsa_key_id",
+          "rsa_public_key_pem"
+        ],
+        "type": "object",
+        "properties": {
+          "rsa_key_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "rsa_public_key_pem": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ecdsa_key_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ecdsa_public_key_pem": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCallbackSignatureKeysRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CardRoutingCallbackSignatureKeysResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingCallbackSignatureKeysResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCallbackSignatureKeysResult": {
+        "required": [
+          "current"
+        ],
+        "type": "object",
+        "properties": {
+          "current": {
+            "$ref": "#/components/schemas/CardRoutingCallbackSignatureKeySet"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCreateSaleErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "AMBIGUOUS_PARAMETERS",
+              "LIMITS_VIOLATION",
+              "MAINTENANCE"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCreateSaleRequest": {
+        "required": [
+          "amount",
+          "bank_card",
+          "client_operation_id",
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "client_operation_id": {
+            "type": "string"
+          },
+          "operation_display_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/CardRoutingUserData"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+          },
+          "amount_alternatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+            },
+            "nullable": true
+          },
+          "url_redirect_success": {
+            "type": "string",
+            "nullable": true
+          },
+          "url_redirect_fail": {
+            "type": "string",
+            "nullable": true
+          },
+          "url_callback": {
+            "type": "string",
+            "nullable": true
+          },
+          "bank_card": {
+            "$ref": "#/components/schemas/CardRoutingBankCardFullData"
+          },
+          "payment_profile": {
+            "type": "string",
+            "nullable": true
+          },
+          "locale": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "report_metadata": {
+            "maxLength": 255,
+            "type": "string",
+            "nullable": true
+          },
+          "merchant_user_entry_point_url": {
+            "maxLength": 128,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCreateSaleResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingCreateSaleErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingSaleApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingCurrencyAmount": {
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object",
+        "properties": {
+          "currency": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "amount": {
+            "type": "string",
+            "format": "decimal",
+            "default": "0",
+            "example": "12.34"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingDepositProcessingInfoView": {
+        "type": "object",
+        "properties": {
+          "has_3d_secure_attempt": {
+            "type": "boolean"
+          },
+          "amount_changed": {
+            "type": "boolean"
+          },
+          "changed_amount": {
+            "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+          },
+          "payment_channel_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "attempted_payment_channel_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingGetSaleErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "SALE_NOT_FOUND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingGetSaleRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "client_operation_id": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingGetSaleResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingGetSaleErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingSaleApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingHealthCheckRequest": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CardRoutingHealthCheckResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingErrorCodeCardRoutingApiError"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubApplicantReferenceErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "TRY_LATER",
+              "UNSUPPORTED_SUMSUB_CLIENT_ID"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubApplicantReferenceRequest": {
+        "required": [
+          "contact",
+          "sumsub_applicant_id",
+          "sumsub_client_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "contact": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sumsub_client_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sumsub_applicant_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "kyc_result": {
+            "enum": [
+              "SUCCESS",
+              "FAIL"
+            ],
+            "type": "string",
+            "format": "enum",
+            "nullable": true,
+            "example": "SUCCESS"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubApplicantReferenceResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingImportSumSubApplicantReferenceErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingImportSumSubApplicantReferenceSuccess"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubApplicantReferenceSuccess": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubShareTokenErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "TRY_LATER",
+              "UNSUPPORTED_SUMSUB_CLIENT_ID",
+              "TOKEN_EXPIRES_TOO_SOON"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubShareTokenRequest": {
+        "required": [
+          "contact",
+          "expires_at",
+          "sumsub_share_token",
+          "target_sumsub_client_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "contact": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "target_sumsub_client_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sumsub_share_token": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "kyc_result": {
+            "enum": [
+              "SUCCESS",
+              "FAIL"
+            ],
+            "type": "string",
+            "format": "enum",
+            "nullable": true,
+            "example": "SUCCESS"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubShareTokenResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingImportSumSubShareTokenErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingImportSumSubShareTokenSuccess"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingImportSumSubShareTokenSuccess": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CardRoutingKycData": {
+        "required": [
+          "result"
+        ],
+        "type": "object",
+        "properties": {
+          "result": {
+            "enum": [
+              "SUCCESS",
+              "FAIL"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "SUCCESS"
+          },
+          "verification_kind": {
+            "enum": [
+              "NONE",
+              "ID_DOCUMENT",
+              "SELFIE",
+              "PROOF_OF_RESIDENCE"
+            ],
+            "type": "string",
+            "format": "enum-flags",
+            "default": "NONE",
+            "nullable": true,
+            "example": "NONE, ID_DOCUMENT, SELFIE"
+          },
+          "id_document_kind": {
+            "enum": [
+              "ID_CARD",
+              "PASSPORT",
+              "DRIVING_LICENSE",
+              "RESIDENCE_PERMIT"
+            ],
+            "type": "string",
+            "format": "enum",
+            "nullable": true,
+            "example": "ID_CARD"
+          },
+          "id_document_country": {
+            "type": "string",
+            "description": "Two-letter ISO country code (ISO 3166-1 alpha 2) preferred.",
+            "nullable": true
+          },
+          "sumsub_share_token": {
+            "type": "string",
+            "description": "SumSub share token for automatic applicant data transfer between different SubSub clients.",
+            "nullable": true
+          },
+          "sumsub_client_id": {
+            "type": "string",
+            "description": "SumSub account's Client ID (dashboard -> settings -> account details -> business information).",
+            "nullable": true
+          },
+          "sumsub_applicant_id": {
+            "type": "string",
+            "description": "User-related applicant id in SumSub.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingKycWaitingNotification": {
+        "required": [
+          "contacts",
+          "supported_sumsub_client_ids"
+        ],
+        "type": "object",
+        "properties": {
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User's contacts which are waiting for KYC data. Data should be imported via API call."
+          },
+          "supported_sumsub_client_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of SumSub client_id which can be used for import via applicant reference (shared SumSub account)\r\nor share_token (cross-account import with tripartite agreement)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingReturnApiView": {
+        "required": [
+          "amount",
+          "created_at",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "enum": [
+              "VOID",
+              "REFUND",
+              "CHARGEBACK"
+            ],
+            "type": "string",
+            "format": "enum",
+            "example": "VOID"
+          },
+          "details": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingReturnSaleErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "SALE_NOT_FOUND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingReturnSaleRequest": {
+        "required": [
+          "client_operation_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "client_operation_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingReturnSaleResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingReturnSaleErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingSaleApiView"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSaleApiView": {
+        "required": [
+          "amount_initial",
+          "client_operation_id",
+          "created_at",
+          "payment_profile",
+          "project_id",
+          "reference_id",
+          "sale_id",
+          "status",
+          "updated_at",
+          "url_processing",
+          "url_redirect_fail",
+          "url_redirect_success",
+          "user",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "client_operation_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "sale_id": {
+            "minLength": 1,
+            "type": "string",
+            "readOnly": true,
+            "deprecated": true
+          },
+          "status": {
+            "enum": [
+              "PREPARING",
+              "USER_INPUT_REQUIRED",
+              "CHARGING",
+              "CHARGED",
+              "DECLINING",
+              "DECLINED",
+              "RETURNING",
+              "RETURNED"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "PREPARING",
+            "example": "PREPARING"
+          },
+          "processing_acceptance_status": {
+            "enum": [
+              "PENDING",
+              "ACCEPTED",
+              "DECLINED"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "PENDING",
+            "example": "PENDING"
+          },
+          "decline_info": {
+            "$ref": "#/components/schemas/CardRoutingSaleDecline"
+          },
+          "amount_initial": {
+            "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+          },
+          "amount_initial_alternatives": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+            },
+            "nullable": true
+          },
+          "amount_charged": {
+            "$ref": "#/components/schemas/CardRoutingCurrencyAmount"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "url_processing": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "url_redirect_success": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "url_redirect_fail": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "url_callback": {
+            "type": "string",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/CardRoutingUserReference"
+          },
+          "bank_card": {
+            "$ref": "#/components/schemas/CardRoutingBankCardInfo"
+          },
+          "processing_info": {
+            "$ref": "#/components/schemas/CardRoutingDepositProcessingInfoView"
+          },
+          "return": {
+            "$ref": "#/components/schemas/CardRoutingReturnApiView"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "payment_profile": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reference_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "report_metadata": {
+            "type": "string",
+            "nullable": true
+          },
+          "operation_display_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSaleDecline": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "OTHER",
+              "INTERNAL_ERROR",
+              "TIMEOUT",
+              "TIMEOUT_USER_INPUT",
+              "TIMEOUT_ACCEPTANCE",
+              "CANCELLATION",
+              "CANCELLATION_USER",
+              "CANCELLATION_API",
+              "FILTER",
+              "FILTER_KYC",
+              "FILTER_FRAUD_SCREENING",
+              "FILTER_CARD",
+              "FILTER_CARD_INVALID",
+              "FILTER_CARD_BLACKLIST",
+              "FILTER_CARD_REGION",
+              "FILTER_CARD_EXPIRATION",
+              "FILTER_LIMITS",
+              "PROCESSING",
+              "PROCESSING_INSUFFICIENT_FUNDS",
+              "PROCESSING_3D_SECURE_ERROR"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "OTHER",
+            "example": "OTHER"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSaleNotificationResponse": {
+        "type": "object",
+        "properties": {
+          "operation_ack_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSetOperationAckIdErrorCodeCardRoutingApiError": {
+        "required": [
+          "code",
+          "details"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "enum": [
+              "INTERNAL_ERROR",
+              "UNAUTHORIZED",
+              "BAD_REQUEST",
+              "SALE_NOT_FOUND"
+            ],
+            "type": "string",
+            "format": "enum",
+            "default": "INTERNAL_ERROR",
+            "example": "INTERNAL_ERROR"
+          },
+          "details": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSetOperationAckIdRequest": {
+        "required": [
+          "client_operation_id",
+          "operation_ack_id"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "sale_id": {
+            "type": "string",
+            "nullable": true,
+            "deprecated": true
+          },
+          "client_operation_id": {
+            "type": "string"
+          },
+          "operation_ack_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSetOperationAckIdResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingSetOperationAckIdErrorCodeCardRoutingApiError"
+          },
+          "result": {
+            "$ref": "#/components/schemas/CardRoutingSetOperationAckIdResult"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSetOperationAckIdResult": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "CardRoutingSetUserDataRequest": {
+        "required": [
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CardRoutingUserData"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingSetUserDataResponse": {
+        "required": [
+          "success",
+          "trace_id"
+        ],
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "trace_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CardRoutingErrorCodeCardRoutingApiError"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingUserData": {
+        "required": [
+          "user_id"
+        ],
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "user_display_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "email_verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "email_verified_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_verified": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "phone_verified_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "preferred_locale": {
+            "type": "string",
+            "nullable": true
+          },
+          "preferred_timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "profile_country": {
+            "type": "string",
+            "nullable": true
+          },
+          "current_ip_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "billing_address": {
+            "$ref": "#/components/schemas/CardRoutingBillingAddress"
+          },
+          "statistics": {
+            "$ref": "#/components/schemas/CardRoutingUserStatistics"
+          },
+          "kyc": {
+            "$ref": "#/components/schemas/CardRoutingKycData"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingUserReference": {
+        "required": [
+          "user_id"
+        ],
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "user_display_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "login": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CardRoutingUserStatistics": {
+        "type": "object",
+        "properties": {
+          "registered_at": {
+            "type": "string",
+            "nullable": true
+          },
+          "registration_ip_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "registration_traffic_source": {
+            "type": "string",
+            "nullable": true
+          },
+          "most_recent_retention_at": {
+            "type": "string",
+            "nullable": true
+          },
+          "most_recent_retention_ip_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "most_recent_retention_traffic_source": {
+            "type": "string",
+            "nullable": true
+          },
+          "total_deposit_count": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "total_withdrawal_count": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "most_recent_deposit_at": {
+            "type": "string",
+            "nullable": true
+          },
+          "most_recent_withdrawal_at": {
+            "type": "string",
+            "nullable": true
+          },
+          "most_recent_ip_address": {
+            "type": "string",
+            "nullable": true
+          },
+          "card_deposit_count": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "cardrouting_v1_basic": {
+        "type": "http",
+        "scheme": "Basic"
+      }
+    }
+  }
+}

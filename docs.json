@@ -74,8 +74,8 @@
       "tab": "Cardrouting API",
       "groups": [
         {
-          "group": "Pets API",
-         "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+          "group": "Cardrouting API",
+         "openapi": "api-reference/cardrouting_v1.json"
         }
       ]
     },
@@ -83,8 +83,8 @@
       "tab": "Withdrawal API",
       "groups": [
         {
-          "group": "Pets API",
-         "openapi": "https://petstore3.swagger.io/api/v3/openapi.json"
+          "group": "Withdrawal API",
+         "openapi": "https://pastebin.com/raw/N0k7Dxea"
         }
       ]
     }
