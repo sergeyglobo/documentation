@@ -20,10 +20,21 @@
             ]
           },
           {
-            "group": "Приём платежей",
+            "group": "Фиатные платежи",
             "pages": [
               "products/card",
               "products/googlepay",
+              "products/applepay",
+              "products/blik",
+              "products/openbanking",
+              "products/widget"
+            ]
+          },
+                    {
+            "group": "Криптовалютные платежи",
+            "pages": [
+              "products/cryptogate/deposit",
+              "products/cryptogate/pay-out",
               "products/applepay",
               "products/blik",
               "products/openbanking",
