@@ -62,7 +62,7 @@
             ]
           },
           {
-            "group": "Методы",
+            "group": "Платёжная страница",
             "pages": [
               "api-reference/endpoint/checkout", 
               "api-reference/endpoint/operation",
@@ -77,7 +77,7 @@
           },
           {
           "group": "Криптогейт",
-          "openapi": "https://pastebin.com/raw/rySTLF2u"
+          "openapi": "https://pastebin.com/raw/mMwV9kcf"
           }
         ]
       },
@@ -85,8 +85,8 @@
       "tab": "Cryptogate",
       "groups": [
         {
-          "group": "Cryptogate API",
-         "openapi": "https://pastebin.com/raw/rySTLF2u"
+         "group": "Cryptogate API",
+         "openapi": "https://pastebin.com/raw/mMwV9kcf"
         }
       ]
     },
