@@ -31,18 +31,14 @@
             ]
           },
                     {
-            "group": "Криптовалютные платежи",
+            "group": "Криптогейт",
             "pages": [
               "products/cryptogate/deposit",
-              "products/cryptogate/pay-out",
-              "products/applepay",
-              "products/blik",
-              "products/openbanking",
-              "products/widget"
+              "products/cryptogate/pay-out"
             ]
           },
                {
-            "group": "Разное",
+            "group": "Дашборд",
             "pages": [
               "essentials/markdown",
               "essentials/code",
