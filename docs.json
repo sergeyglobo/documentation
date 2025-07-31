@@ -74,6 +74,10 @@
               "api-reference/endpoint/client_confirm_payment_all",
               "api-reference/endpoint/webhook"
             ]
+          },
+          {
+          "group": "Криптогейт",
+          "openapi": "https://pastebin.com/raw/rySTLF2u"
           }
         ]
       },
@@ -82,7 +86,7 @@
       "groups": [
         {
           "group": "Cryptogate API",
-         "openapi": "https://pastebin.com/raw/HP47VaDa"
+         "openapi": "https://pastebin.com/raw/rySTLF2u"
         }
       ]
     },
