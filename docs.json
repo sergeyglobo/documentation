@@ -70,6 +70,15 @@
           }
         ]
       },
+      {
+      "tab": "Cryptogate",
+      "groups": [
+        {
+          "group": "Cryptogate API",
+         "openapi": "https://pastebin.com/raw/HP47VaDa"
+        }
+      ]
+    },
         {
       "tab": "Cardrouting API",
       "groups": [
