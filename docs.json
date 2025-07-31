@@ -20,7 +20,7 @@
             ]
           },
           {
-            "group": "Приём платежей",
+            "group": "Фиатные платежи",
             "pages": [
               "products/card",
               "products/googlepay",
@@ -30,8 +30,15 @@
               "products/widget"
             ]
           },
+                    {
+            "group": "Криптогейт",
+            "pages": [
+              "products/cryptogate/deposit",
+              "products/cryptogate/pay-out"
+            ]
+          },
                {
-            "group": "Разное",
+            "group": "Дашборд",
             "pages": [
               "essentials/markdown",
               "essentials/code",
