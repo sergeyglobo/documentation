@@ -57,39 +57,34 @@
             "group": "API документация",
             "pages": [
               "api-reference/introduction",
-              "api-reference/status",
-              "api-reference/introduction"
+              "api-reference/status"
             ]
           },
           {
             "group": "Платёжная страница",
             "pages": [
               "api-reference/endpoint/checkout", 
-              "api-reference/endpoint/operation",
-              "api-reference/endpoint/client_unconfirmed_success_payments",
-              "api-reference/endpoint/client_unconfirmed_payments",
-              "api-reference/endpoint/client_confirm_payment_by_reference_id",
-              "api-reference/endpoint/client_confirm_payment_by_client_operation_id",
-              "api-reference/endpoint/client_confirm_success_payment_all",
-              "api-reference/endpoint/client_confirm_payment_all",
               "api-reference/endpoint/webhook"
             ]
           },
           {
           "group": "Криптогейт",
           "openapi": "https://pastebin.com/raw/mMwV9kcf"
+          },
+          {
+          "group": "Операции",
+             "pages": [
+              "api-reference/endpoint/operation",
+              "api-reference/endpoint/client_unconfirmed_success_payments",
+              "api-reference/endpoint/client_unconfirmed_payments",
+              "api-reference/endpoint/client_confirm_payment_by_reference_id",
+              "api-reference/endpoint/client_confirm_payment_by_client_operation_id",
+              "api-reference/endpoint/client_confirm_success_payment_all",
+              "api-reference/endpoint/client_confirm_payment_all"
+            ]
           }
         ]
       },
-      {
-      "tab": "Cryptogate",
-      "groups": [
-        {
-         "group": "Cryptogate API",
-         "openapi": "https://pastebin.com/raw/mMwV9kcf"
-        }
-      ]
-    },
         {
       "tab": "Cardrouting API",
       "groups": [
