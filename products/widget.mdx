@@ -4,6 +4,7 @@ description: "Передовое платежное решение для при
 icon: "dumpster-fire"
 ---
 
+import TestCards from '/snippets/test-cards.mdx';
 
 ## Общая схема работы
 
@@ -30,61 +31,71 @@ sequenceDiagram
   <Step title="Передача данных для создания операции">
     Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате
 
-  <Accordion title="Пример запроса создания" icon="sparkles">
+  <Accordion title="Пример запроса создания" icon="terminal">
 
     
      
     ```bash Запрос создания операции
-    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
-    --header 'Content-Type: application/json' \
-    --header 'Accept: application/json' \
-    --header 'Authorization: Basic e3t1c2VybmFtZX19Ont7cGFzc3dvcmR9fQ==' \
-    --data-raw '{
-        "report_metadata": "op12345678",
-        "client_operation_id": "op12345678",
-        "payment_profile": "sandbox",
-        "method": "widget",
-        "user": {
-            "user_id": "u123",
-            "email": "user@gmail.com",
-            "email_verified": true,
-            "statistics": {
-                "registered_at": "2021-11-02",
-                "total_deposit_count": 10,
-                "total_withdrawal_count": 2,
-                "card_deposit_count": 10
-            },
-            "kyc": {
-                "result": "SUCCESS",
-                "verification_kind": "NONE",
-                "id_document_kind": "ID_CARD"
-            }
-        },
-        "amount": {
-            "amount": "51",
-            "currency": "EUR"
-        },
-        "url_callback":"https://finmar.requestcatcher.com?callback",
-        "url_redirect_success":"https://finmar.requestcatcher.com?success",
-        "url_redirect_fail":"https://finmar.requestcatcher.com?fail"
-    }'
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E=' \
+--data-raw '{
+    "client_operation_id": "DSPn7pryR4QYBQpCGq",
+    "report_metadata": "DSPn7pryR4QYBQpCGq",
+    "payment_profile": "sandbox",
+    "method": "widget_integration",
+    "project_id":"s002",
+    "amount": {
+        "amount": "100",
+        "currency": "EUR"
+    },
+    "user": {
+        "user_id": "u123",
+        "email": "globocheck@gmail.com",
+        "statistics": {
+            "registered_at": "2021-11-02",
+            "total_deposit_count": 485,
+            "total_withdrawal_count": 693
+        }
+    },
+    "url_callback": "https://finmar.requestcatcher.com/?callback",
+    "url_redirect_success": "https://finmar.requestcatcher.com?success",
+    "url_redirect_fail": "https://finmar.requestcatcher.com?fail"
+}'
     ```
      </Accordion>
 
   </Step>
   <Step title="Генерация платежной ссылки">
     Finmar API создает уникальный URL виджета и возвращает его сайту проекта
+  <Accordion title="Пример ответа" icon="sparkles">
+    ```json
+    {
+    "success": true,
+    "result": {
+        "url": "https://card.cheipho.com/transaction/a32f658c-df98-4fc2-8bad-cbcf49aa8ee3",
+        "reference_id": "a32f658c-df98-4fc2-8bad-cbcf49aa8ee3"
+    },
+    "trace_id": "22c0f041f9b149f8b24ca9ce7df501fa"
+}
+    ```
+   </Accordion>
   </Step>
   <Step title="Перенаправление клиента">
     Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
   </Step>
   <Step title="Проведение операции">
-    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе Виджета
+    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе Виджета.
+
+При отладке на sandbox окружении используйте тестовые карты:
+
+<TestCards/>
+  
   </Step>
   <Step title="Уведомление о завершении операции">
     Finmar API отправляет сайту проекта уведомление о завершении транзакции. Пример:
 
-    <Accordion title="Пример уведомления" icon="sparkles">
+<Accordion title="Пример уведомления" icon="sparkles">
     
 ```json
 {
@@ -185,10 +196,9 @@ sequenceDiagram
 }
 ```
             
-    ```
+asd
 
-
-    </Accordion>
+</Accordion>
 
   </Step>
   <Step title="Обработка уведомления">
