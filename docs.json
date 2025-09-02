@@ -84,25 +84,7 @@
             ]
           }
         ]
-      },
-        {
-      "tab": "Cardrouting API",
-      "groups": [
-        {
-          "group": "Cardrouting API",
-         "openapi": "api-reference/cardrouting_v1.json"
-        }
-      ]
-    },
-              {
-      "tab": "Withdrawal API",
-      "groups": [
-        {
-          "group": "Withdrawal API",
-         "openapi": "https://pastebin.com/raw/N0k7Dxea"
-        }
-      ]
-    }
+      }
     ],
     "global": {
       
