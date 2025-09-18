@@ -13,16 +13,17 @@ import TestCards from '/snippets/test-cards.mdx';
 sequenceDiagram
     autonumber
     actor Клиент
-    participant Сайт Проекта
+    participant Проект
     participant Finmar API
-    Клиент->>Сайт Проекта: Выбор платежного виджета
-    Сайт Проекта->>Finmar API: Передача данных для создания операции
-    Finmar API-->>Сайт Проекта: Возврат URL виджета
-    Сайт Проекта->>Клиент: Перенаправление на URL виджета
+    Клиент->>Проект: Выбор платежного виджета
+    Проект->>Finmar API: Передача данных для создания операции
+    Finmar API-->>Проект: Возврат URL виджета
+    Проект->>Клиент: Перенаправление на URL виджета
     Клиент->>Finmar API: Покупка криптовалюты<br>и подтверждение оферты
-    Finmar API->>Сайт Проекта: Уведомление<br>о завершении операции
-    Сайт Проекта->>Сайт Проекта: Обработка уведомления
-    Сайт Проекта->>Finmar API: Вызов /set_operation_ack_id<br>(operation_ack_id)
+    Finmar API->>Проект: Уведомление<br>о завершении операции
+    Проект->>Проект: Обработка уведомления
+    Проект->>Finmar API: Подтверждение обработки операции
+
 ```
 
 <Steps>
@@ -67,7 +68,7 @@ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
      </Accordion>
 
   </Step>
-  <Step title="Генерация платежной ссылки">
+  <Step title="Получение URL виджета">
     Finmar API создает уникальный URL виджета и возвращает его сайту проекта
   <Accordion title="Пример ответа" icon="server">
     ```json
