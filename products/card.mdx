@@ -8,37 +8,53 @@ tag: "NEW"
 import Callback from '/snippets/callback.mdx';
 import TestCards from '/snippets/test-cards.mdx';
 import Status from '/snippets/status.mdx';
-  
 
 ## Общая схема работы
 
-
 ```mermaid
 sequenceDiagram
+
 autonumber
-    participant site as Ваш сайт #lightGreen
-    participant server as Ваш сервер
-    participant finmart as API Finmart 
-    participant	payment as Платёжный провайдер
-    site->>server: Пользователь нажимает кнопку метода 
-    server->>finmart: Запрос на получение ссылки на платёжную страницу 
-    finmart-->>payment: 
-    payment-->finmart: 
-    finmart-->>+server: Ссылка на платёжную страницу 
-    server->>site: Показ пользователю платёжной страницы
-    note over site:  Пользователь проходит платёжный флоу
-    payment-->>site: Перенаправление пользователя на url_success или url_result
-    finmart-->>server: Уведомление
-    server-->>-site: Обработка операций
-    server->>finmart: Установка POST /api/operation/set_ack_id    
-    loop Обработка новых успешных операций
-		    server->>finmart: GET /v3/operation/unconfirmed
-		    finmart-->>server: array()
-	     note over server: Обработка операций
-			  server->>finmart: Сообщить о успешной обработке POST /api/v3/operation/confirm
-        server -->>site: Обновление баланса
-        server->>finmart: Установка operation_ack_id POST /api/operation/set_ack_id    
-    end
+
+    participant site as Ваш сайт #lightGreen
+
+    participant server as Ваш сервер
+
+    participant finmart as API Finmart
+
+    site->>server: Пользователь нажимает кнопку метода
+
+    server->>finmart: Запрос на получение ссылки на платёжную страницу
+
+    finmart-->>server: Ссылка на платёжную страницу
+
+    server-->>site: Показ пользователю платёжной страницы
+
+    note over site:  Пользователь проходит платёжный флоу
+
+    finmart-->>site: Перенаправление пользователя на `url_redirect_success` или `url_redirect_fail`
+
+    finmart-->>server: Обратное уведомление
+
+    server-->>site: Обработка операции (зачисление средств пользователю)
+
+    server->>finmart: Подтверждение операции    
+
+    loop Запрос успешных неподтверждённых операций
+
+            server->>finmart: GET /collector/api/v3/client_unconfirmed_success_payments
+
+            finmart-->>server: array()
+
+        note over server: Обработка операций
+
+        server -->> site: Обработка операции
+
+        server -->>site: Обновление баланса
+
+        server->>finmart: Подтверждение операции        
+
+    end
 ```
 
 <Steps>
@@ -51,83 +67,94 @@ autonumber
   <Step title="Получение ссылки на платёжную страницу">
     API Finmart взаимодействует с платёжным провайдером и передаёт вашему серверу сгенерированную ссылку на платёжную страницу.
   </Step>
-  <Step title="Отображение платёжной страницы пользователю">
+  <Step title="Показ пользователю платёжной страницы">
     Ваш сервер перенаправляет пользователя на полученную платёжную страницу, где он проходит процесс оплаты.
   </Step>
-  <Step title="Перенаправление пользователя после оплаты">
+  <Step title="Перенаправление пользователя на `url_redirect_success` или `url_redirect_fail`">
     После завершения платежа платёжный провайдер перенаправляет пользователя обратно на ваш сайт по заранее определённым URL-адресам (`url_success` или `url_result`).
   </Step>
-  <Step title="Уведомление от Finmart и обработка операций">
+  <Step title="Обратное уведомление">
+    API Finmart отправляет уведомление на ваш сервер о статусе операции. Ваш сервер обрабатывает эту информацию
+  </Step>
+  <Step title="Обработка операции (зачисление средств пользователю)">
     API Finmart отправляет уведомление на ваш сервер о статусе операции. Ваш сервер обрабатывает эту информацию, а затем подтверждает получение уведомления, отправляя запрос `POST /api/operation/set_ack_id` в Finmart.
+  </Step>
+  <Step title="Подтверждение операции">
+    После успешной обработки операции (зачислению средств пользователю), ваш сервер API Finmart отправляет уведомление на ваш сервер о статусе операции. Ваш сервер обрабатывает эту информацию, а затем подтверждает получение уведомления, отправляя запрос `POST /api/operation/set_ack_id` в Finmart.
   </Step>
   <Step title="Обработка новых успешных операций (цикл)">
     Ваш сервер периодически запрашивает у Finmart список неподтверждённых успешных операций (`GET /v3/operation/unconfirmed`). После получения и обработки этих операций, ваш сервер сообщает Finmart об успешной обработке (`POST /api/v3/operation/confirm`), обновляет баланс пользователя на вашем сайте и снова устанавливает `operation_ack_id` (`POST /api/operation/set_ack_id`) для предотвращения дублирования. Этот цикл повторяется для обработки всех новых успешных операций.
   </Step>
 </Steps>
 
-
-
 ## Создание операции
 
-### Без передачи данных карты
+<Tabs>
+  <Tab title="Без передачи банковской карты">
+    ### Пример запроса
 
-```bash Без передачи банковской карты
-curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
---header 'Content-Type: application/json' \
---header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
---data '{
-    "payment_profile": "sandbox",
-    "method": "card",
-    "report_metadata": "Fz022tCSaBuvvfQckp",
-    "client_operation_id": "Fz022tCSaBuvvfQckp",
-    "user": {
-        "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
-    },
-    "amount": {
-        "amount": "9",
-        "currency": "EUR"
-    },
-    "url_callback": "https://gg.requestcatcher.com?callback",
-    "url_redirect_success": "https://gg.requestcatcher.com?success",
-    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-    "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-}'
-```
+    ```
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "card",
+        "report_metadata": "Fz022tCSaBuvvfQckp",
+        "client_operation_id": "Fz022tCSaBuvvfQckp",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+  <Tab title="С передачей банковской карты">
+    ### Пример запроса
 
-### С передачей банковской карты в запросе создания
+    ```
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "card",
+        "report_metadata": "Fz022tCSaBuvvfQckp",
+        "client_operation_id": "Fz022tCSaBuvvfQckp",
+        "user": {
+            "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
+        },
+        "bank_card": {
+            "cardholder": "NAME FNAME",
+            "cvv": "190",
+            "pan": "4111111111111111",
+            "expiration_month": 11,
+            "expiration_year": 29
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+</Tabs>
 
-```bash С передачей банковской карты
-curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
---header 'Content-Type: application/json' \
---header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
---data '{
-    "payment_profile": "sandbox",
-    "method": "card",
-    "report_metadata": "Fz022tCSaBuvvfQckp",
-    "client_operation_id": "Fz022tCSaBuvvfQckp",
-    "user": {
-        "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
-    },
-    "bank_card": {
-        "cardholder": "NAME FNAME",
-        "cvv": "190",
-        "pan": "4111111111111111",
-        "expiration_month": 11,
-        "expiration_year": 29
-    },
-    "amount": {
-        "amount": "9",
-        "currency": "EUR"
-    },
-    "url_callback": "https://gg.requestcatcher.com?callback",
-    "url_redirect_success": "https://gg.requestcatcher.com?success",
-    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-    "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-}'
-```
+### 
 
 Оператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
-
 
 ## Состояние операции
 
@@ -136,17 +163,67 @@ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
 - Через обработку обратных уведомлений
 - Вызывая метод получения информации об операции
 
-<Status/>
+<Status />
 
+## Обработка операции
 
+При обработке массива успешных операций, наиболее значимые параметры:
 
+<ParamField path="user_id" type="string">
+  Идентификатор пользователя
+</ParamField>
+<ParamField path="reference_id" type="string">
+  Идентификатор операции на стороне сервиса
+</ParamField>
+
+<ParamField path="complete_amount" type="string">
+Сумма зачисления
+</ParamField>
+
+<ParamField path="complete_currency" type="string">
+Валюта зачисления
+</ParamField>
+
+<ParamField path="payment_method_type" type="string">
+  Тип операции.
+</ParamField>
+<ParamField path="payment_method_product" type="string">
+  Платёжный продукт. `widget_card`
+</ParamField>
+<ParamField path="payment_method_product" type="string">
+  Платёжный продукт. `widget_card`
+</ParamField>
+
+ 
 ## Обратные уведомления
+
 <Callback />
 
+## Подтверждение операции
 
-
-## Установка идентификатора для клиринга
-Тыры пыры
+После успешной обработки операции, необходимо подтвердить её обработку, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id)
 
 ## Тестовые карты
+
 <TestCards />
+
+## Проверка интеграции
+
+- **Передача параметров**:
+  - Статистика пользователя.
+  - Информация о KYC
+  - Альтернативные суммы платежа 
+- **Обработка ошибок**:
+  - `MAINTENANCE`и `FAST_DECLINE`
+  - `INSUFFICIENT_FUNDS` нехватка средств (не считать ошибкой)
+- **Идемпотентность операций** (избежать двойных начислений)
+- **Обработка колбеков**: 
+  - Проверка подписи
+- **Сопоставление идентификаторов:**
+  - client_operation_id соответствует идентификаторам оператора, с которыми обращаются в поддержку
+  - reference_id сохраняется на стороне оператора
+- **Подтверждение обработки операции**
+- **Интервальный запрос неподтверждённых успешных операций**
+- **Работа с возвратами**
+- **Корректировка статусов**
+- **Сверка**
