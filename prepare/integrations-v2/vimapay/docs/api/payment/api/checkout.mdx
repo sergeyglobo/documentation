@@ -1,0 +1,324 @@
+---
+title: "Получить страницу оплаты"
+---
+
+* Sandbox
+* Production
+
+```
+POST https://sandbox.finmar.tech/prepare2/api/v3/checkout
+```
+
+```
+POST https://finmar.tech/prepare2/api/v3/checkout
+```
+
+* HTTP: Basic Auth
+
+* application/json
+
+<Accordion title="Тело запроса requiredbank_card objectБанковская карта.amount object requiredНачальные валюта и сумма платежаamount_alternatives objectАльтернативные начальные суммы в других валютахamount_recommended objectРекомендуемые суммы операцииuser object requiredИнформация о пользователеbilling_address objectstatistics objectkyc objectaccounts arraybalance objectБаланс пользователя в момент вызова метода">
+  - **client\_operation\_id** string
+
+    Идентификатор операции вызывающей стороны
+
+  - **report\_metadata** string
+
+    Идентификатор для финансовых выгрузок
+
+  - **method** string **required**
+
+    Платёжный метод: `card`, `volt`, `payler`, `crypto_protect`, `cashbox_v2`, `blik`, `openbanking`
+
+  - **payment\_profile** string **required**
+
+    Идентификатор платежного профиля, влияет на выбор методов процессинга платежа
+
+  -
+
+    Опционально можно передать данные банковской карты. Процессинг начнётся сразу после перенаправления пользователя на страницу оплаты
+
+    - **pan** string **required**
+
+      Номер банковской карты
+
+    - **cardholder** string
+
+      Имя и фамилия владельца карты
+
+    - **expiration\_month** int32 **required**
+
+      Месяц срока действия
+
+    - **expiration\_year** int32 **required**
+
+      Год срока действия
+
+    - **cvv** string **required**
+
+      **Possible values:** `non-empty`
+
+  - ****
+
+    - **amount** string **required**
+
+    - **currency** string **required**
+
+  -
+
+    - **amount** string **required**
+
+    - **currency** string **required**
+
+  -
+
+    - **amount\_min** string
+
+      Минимально допустимая сумма операции
+
+    - **amount\_max** string
+
+      Максимально допустимая сумма операции
+
+    - **currency** string **required**
+
+  - **url\_callback** string
+
+    Адрес для отправке уведомлений об изменении состояния платежа
+
+  - ****
+
+    - **user\_id** string **required**
+
+      Идентификатор пользователя
+
+    - **user\_display\_id** string
+
+      Отображаемый идентификатор пользователя
+
+    - **login** string
+
+      Логин пользователя
+
+    - **email** string
+
+      Email пользователя
+
+    - **email\_verified** boolean
+
+      Email подтверждён
+
+    - **email\_verified\_at** string
+
+      Дата подтверждения email
+
+    - **phone** string
+
+      Телефон пользователя
+
+    - **phone\_verified** boolean
+
+      Телефон подтверждён
+
+    - **phone\_verified\_at** string
+
+      Дата подтверждения телефона
+
+    - **preferred\_locale** string
+
+      Предпочитаемая локализация интерфейса, IETF language tag
+
+    - **preferred\_timezone** string
+
+      Часовой появ пользователя
+
+    - **profile\_country** string
+
+      Страна пользователя в профиле в формате ISO 3166-2
+
+    - **current\_ip\_address** string
+
+      Текущий IP адрес пользователя
+
+    -
+
+      - **country** string **required**
+
+        Страна пользователя в профиле в формате ISO 3166-2
+
+      - **state** string
+
+        Штат
+
+      - **city** string
+
+        Город
+
+      - **zip\_code** string
+
+        Индекс
+
+      - **address\_line\_1** string
+
+        Адрес
+
+    -
+
+      - **registered\_at** string
+
+        Дата регистрации пользователя
+
+      - **registration\_ip\_address** string
+
+        IP-адрес регистрации пользователя
+
+      - **registration\_traffic\_source** string
+
+        Источник трафика
+
+      - **most\_recent\_retention\_at** string
+
+        информация о последнем возврате пользователя
+
+      - **most\_recent\_retention\_ip\_address** string
+
+      - **most\_recent\_retention\_traffic\_source** string
+
+      - **total\_deposit\_count** number
+
+        общее количество успешных депозитов и выплат
+
+      - **total\_withdrawal\_count** number
+
+      - **most\_recent\_deposit\_at** string
+
+        информация о последней активности
+
+      - **most\_recent\_withdrawal\_at** string
+
+      - **most\_recent\_ip\_address** string
+
+      - **card\_deposit\_count** number
+
+        количество успешных депозитов по текущей карте
+
+    -
+
+      информация о прохождении KYC
+
+      - **result** string **required**
+
+        Возможные значения: \[`SUCCESS`, `FAIL`]
+
+      - **verification\_kind** string
+
+        Возможные значения: \[`NONE`, `ID_DOCUMENT`, `SELFIE`]
+
+        **Default value:** `NONE`
+
+        тип проверки
+
+      - **id\_document\_kind** string
+
+        Возможные значения: \[`ID_CARD`, `PASSPORT`, `DRIVING_LICENSE`, `RESIDENCE_PERMIT`]
+
+        информация об ID-документе (если verification\_kind содержит ID\_DOCUMENT)
+
+      - **id\_document\_country** string
+
+      - **sumsub\_share\_token** string
+
+      - **sumsub\_client\_id** string
+
+        информация о пользователе на стороне KYC провайдера
+
+      - **sumsub\_applicant\_id** string
+
+    - **user\_segment** string
+
+      Сегмент пользователя согласно классификации мерчанта
+
+    - **user\_level** string
+
+      Уровень пользователя с точки зрения иерархии программы лояльности
+
+    -
+
+      Информация о счетах пользователя
+
+      - **currency** string **required**
+
+        Валюта счёта
+
+      - **amount** string **required**
+
+        Баланс счёта
+
+    -
+
+      - **currency** string **required**
+
+        Валюта активного счёта пользователя
+
+      - **amount** string **required**
+
+        Сумма основного счёта
+
+      - **bonuses** string
+
+        Сумма бонусного счёта
+
+  - **merchant\_user\_entry\_point\_url** string
+
+    Точка-входа пользователя при создании операции
+
+  - **metadata** string
+
+    Произвольные данные, которые вызывающая сторона может прикрепить к платежу. Будут возвращаться в запросах состояния и уведомлениях об изменениях.
+</Accordion>
+
+**Responses**
+
+* 200
+* 500
+
+***
+
+* application/json
+
+* Schema
+* Example (from schema)
+
+<Accordion title="Schemaresult objecterror object">
+  - **success** boolean **required**
+
+  - **trace\_id** string **required**
+
+  -
+
+    - **url** string **required**
+
+      Адрес платёжной страницы, на который следует перенаправить пользователя
+
+    - **reference\_id** string
+
+      Уникальный идентификатор операции на стороне сервиса
+
+  -
+
+    - **code** string **required**
+
+      Возможные значения: \[`PARSE_ERROR`, `BAD_REQUEST`, `INTERNAL_SERVER_ERROR`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `METHOD_NOT_SUPPORTED`, `TIMEOUT`, `CONFLICT`, `PRECONDITION_FAILED`, `PAYLOAD_TOO_LARGE`, `TOO_MANY_REQUESTS`, `CLIENT_CLOSED_REQUEST`]
+
+    - **details** string **required**
+</Accordion>
+
+```
+{  "success": true,  "trace_id": "string",  "result": {    "url": "string", "rererence_id": "string"   },  "error": {    "code": "PARSE_ERROR",    "details": "string"  }}
+```
+
+```
+{  "success": false,  "error": {    "details": "invalid profile prev2iew",    "code": "INTERNAL_SERVER_ERROR"  },  "trace_id": "a10b0e08894244ce8865f2941dbc9d26"}
+```
+
+Loading...
