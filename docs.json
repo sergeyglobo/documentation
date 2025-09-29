@@ -16,7 +16,7 @@
             "group": "Инструкции",
             "pages": [
               "index",
-              "quickstart"
+              "go-live-checklist"
             ]
           },
           {
@@ -57,7 +57,8 @@
             "group": "API документация",
             "pages": [
               "api-reference/introduction",
-              "api-reference/status"
+              "api-reference/status",
+              "go-live-checklist"
             ]
           },
           {
