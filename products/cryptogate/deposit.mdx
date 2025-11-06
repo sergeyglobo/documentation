@@ -12,26 +12,19 @@ description: "Приём платежей в криптовалютах"
 
     Пример запроса:
 
-    <RequestExample>
-
     ```bash get-address/currencies
     curl --request GET \
-      --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address/currencies/sandbox \
-      --header 'Authorization: Basic b3BlcmF0b3JfZGVtbzo5XkpkNEo0dThQNmk='
+    --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address/currencies/sandbox \
+    --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
     ```
 
-    
     ```bash get-url/currencies
     curl --request GET \
-      --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url/currencies/sandbox \
-      --header 'Authorization: Basic b3BlcmF0b3JfZGVtbzo5XkpkNEo0dThQNmk='
+    --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url/currencies/sandbox \
+    --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
     ```
 
-    </RequestExample>
-
     Пример ответа:
-
-    <ResponseExample>
 
     ```json get-address/currencies
     {
@@ -56,31 +49,28 @@ description: "Приём платежей в криптовалютах"
     }
     ```
 
-    
     ```json get-url/currencies
     {
-      "success": true,
-      "result": [
-        {
-          "crypto_network": "TRX",
-          "crypto_assets": [
-            "TRX",
-            "USDT"
-          ]
-        },
-        {
-          "crypto_network": "MATIC",
-          "crypto_assets": [
-            "MATIC",
-            "USDC"
-          ]
-        }
-      ],
-      "trace_id": "99395c4231744dbd934a6342ecca878a"
+    "success": true,
+    "result": [
+    {
+      "crypto_network": "TRX",
+      "crypto_assets": [
+        "TRX",
+        "USDT"
+      ]
+    },
+    {
+      "crypto_network": "MATIC",
+      "crypto_assets": [
+        "MATIC",
+        "USDC"
+      ]
+    }
+    ],
+    "trace_id": "9cc9e282a6d641f1add088fce54051de"
     }
     ```
-
-    </ResponseExample>
   </Step>
   <Step title="Пользователь осуществляет отправку криптоактивов на полученный адрес">
     
