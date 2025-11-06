@@ -10,67 +10,66 @@ description: "Приём платежей в криптовалютах"
   <Step title="Проект запрашивает список доступных сетей и ассетов">
     Проект запрашивает список доступных сетей и ассетов используя метод [/api/v3/gate/get-address/currencies/](https://vima.mintlify.app/api-reference/%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D1%85-%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82-%D0%B4%D0%BB%D1%8F-%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D1%8F-%D0%B0%D0%B4%D1%80%D0%B5%D1%81%D0%B0?playground=open) или [/api/v3/gate/get-url/currencies/](https://vima.mintlify.app/api-reference/%D0%BF%D0%BE%D0%BB%D1%83%D1%87%D0%B8%D1%82%D1%8C-%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D1%85-%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%BE%D0%B2%D0%B0%D0%BB%D1%8E%D1%82-%D0%B4%D0%BB%D1%8F-%D0%B3%D0%B5%D0%BD%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8-url?playground=open).
 
-    Пример запроса:
+    <Expandable title="Пример запроса">
+      ```bash get-address/currencies
+      curl --request GET \
+      --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address/currencies/sandbox \
+      --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
+      ```
 
-    ```bash get-address/currencies
-    curl --request GET \
-    --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address/currencies/sandbox \
-    --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
-    ```
+      ```bash get-url/currencies
+      curl --request GET \
+      --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url/currencies/sandbox \
+      --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
+      ```
+    </Expandable>
+    <Expandable title="Пример ответа">
+      ```json get-address/currencies
+      {
+        "success": true,
+        "result": [
+          {
+            "crypto_network": "TRX",
+            "crypto_assets": [
+              "TRX",
+              "USDT"
+            ]
+          },
+          {
+            "crypto_network": "MATIC",
+            "crypto_assets": [
+              "MATIC",
+              "USDC"
+            ]
+          }
+        ],
+        "trace_id": "99395c4231744dbd934a6342ecca878a"
+      }
+      ```
 
-    ```bash get-url/currencies
-    curl --request GET \
-    --url https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url/currencies/sandbox \
-    --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E='
-    ```
-
-    Пример ответа:
-
-    ```json get-address/currencies
-    {
+      ```json get-url/currencies
+      {
       "success": true,
       "result": [
-        {
-          "crypto_network": "TRX",
-          "crypto_assets": [
-            "TRX",
-            "USDT"
-          ]
-        },
-        {
-          "crypto_network": "MATIC",
-          "crypto_assets": [
-            "MATIC",
-            "USDC"
-          ]
-        }
+      {
+        "crypto_network": "TRX",
+        "crypto_assets": [
+          "TRX",
+          "USDT"
+        ]
+      },
+      {
+        "crypto_network": "MATIC",
+        "crypto_assets": [
+          "MATIC",
+          "USDC"
+        ]
+      }
       ],
-      "trace_id": "99395c4231744dbd934a6342ecca878a"
-    }
-    ```
-
-    ```json get-url/currencies
-    {
-    "success": true,
-    "result": [
-    {
-      "crypto_network": "TRX",
-      "crypto_assets": [
-        "TRX",
-        "USDT"
-      ]
-    },
-    {
-      "crypto_network": "MATIC",
-      "crypto_assets": [
-        "MATIC",
-        "USDC"
-      ]
-    }
-    ],
-    "trace_id": "9cc9e282a6d641f1add088fce54051de"
-    }
-    ```
+      "trace_id": "9cc9e282a6d641f1add088fce54051de"
+      }
+      ```
+    </Expandable>
   </Step>
   <Step title="Пользователь осуществляет отправку криптоактивов на полученный адрес">
     
@@ -78,87 +77,87 @@ description: "Приём платежей в криптовалютах"
   <Step title="Сервис осуществляет отправку уведомления в проект">
     При получении достаточного числа подтверждений для используемой сети, сервис отправляет на заранее указанный адрес получения уведомлений `url_callback` колбек, о получении криптоактивов
 
-    Примеры колбеков:
+    <Expandable title="Примеры колбеков">
+      <RequestExample>
 
-    <RequestExample>
-
-    ```json TRX
-    {
-             "crypto": [
+      ```json TRX
+      {
+               "crypto": [
+                 {
+                   "amount": 1.11,
+                   "currency": "TRX",
+                   "status": "success",
+                   "to_address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
+                 }
+               ],
+               "deposit": 
                {
+                  // Полученная от пользователя сумма. Её необходимо зачислить на баланс пользователя.
                  "amount": 1.11,
-                 "currency": "TRX",
-                 "status": "success",
-                 "to_address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
-               }
-             ],
-             "deposit": 
-             {
-                // Полученная от пользователя сумма. Её необходимо зачислить на баланс пользователя.
-               "amount": 1.11,
-               "currency": "TRX"
-             },
-             "result": "complete",
+                 "currency": "TRX"
+               },
+               "result": "complete",
+              
+               // тип платёжного метода
+               "payment_method_type": "crypto_deposit",
+             
+               // платёжный продукт
+               "payment_product": "cryptogate",
             
-             // тип платёжного метода
-             "payment_method_type": "crypto_deposit",
-           
-             // платёжный продукт
-             "payment_product": "cryptogate",
-          
-             // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции. 
-             "rates": 
-             {
-               "TRX-AUD": 0.25037386021435254,
-               "TRX-CAD": 0.22943992050960907,
-               "TRX-EUR": 0.15417145982562155,
-               "TRX-USD": 0.164771894913
-             },
-               // глобально уникальный идентификатор операции, назначенный сервисом. Следует сохранять его на стороне проекта.
-             "reference_id": "b5ba93ba-7eae-42f1-8955-5d13eec2f6cf",
-             
-              // статус операции. success - успешна. 
-              "current_status": "success",
-             
-             // идентификатор пользователя на стороне проекта
-             "user_id": "d4177559-2a1d-40e3-a4f2-6e32e607b8b1"
-           }
-    ```
+               // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции. 
+               "rates": 
+               {
+                 "TRX-AUD": 0.25037386021435254,
+                 "TRX-CAD": 0.22943992050960907,
+                 "TRX-EUR": 0.15417145982562155,
+                 "TRX-USD": 0.164771894913
+               },
+                 // глобально уникальный идентификатор операции, назначенный сервисом. Следует сохранять его на стороне проекта.
+               "reference_id": "b5ba93ba-7eae-42f1-8955-5d13eec2f6cf",
+               
+                // статус операции. success - успешна. 
+                "current_status": "success",
+               
+               // идентификатор пользователя на стороне проекта
+               "user_id": "d4177559-2a1d-40e3-a4f2-6e32e607b8b1"
+             }
+      ```
 
-    
-    ```json USDC
-    {
-      "deposit": { 
-        "amount": 2, 
-        "currency": "USDC"
-      },
-      "crypto": [
-        {
-          "amount": 2,
-          "status": "success",
-          "currency": "USDC",
-          "oper_type": "deposit",
-          "to_address": "0xb971b4a175d8c2dc2b9a454da834244320e1d4cc",
-          "crypto_txn_id": "0xc6443ee59d106020f1a162f2d262e012d9a19baea2a8f154e3c472765a9d0a9f"
-        }
-      ],
-    // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции. 
-      "rates": {
-        "USDC-EUR": 0.879283902353817,
-        "USDC-RUB": 82.2496786216588,
-        "USDC-USD": 1.012387556321
-      },
-      "result": "complete",
-      "user_id": "21",//идентификатор пользователя на стороне проекта
-      "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c", // идентификатор операции на стороне сервиса. Проекту следует сохранить его на своей стороне
-      "current_status": "success",
-      "payment_product": "cryptogate_direct",
-      "payment_method_type": "crypto_deposit",
-      "payment_custom_data": null
-    }
-    ```
+      
+      ```json USDC
+      {
+        "deposit": { 
+          "amount": 2, 
+          "currency": "USDC"
+        },
+        "crypto": [
+          {
+            "amount": 2,
+            "status": "success",
+            "currency": "USDC",
+            "oper_type": "deposit",
+            "to_address": "0xb971b4a175d8c2dc2b9a454da834244320e1d4cc",
+            "crypto_txn_id": "0xc6443ee59d106020f1a162f2d262e012d9a19baea2a8f154e3c472765a9d0a9f"
+          }
+        ],
+      // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции. 
+        "rates": {
+          "USDC-EUR": 0.879283902353817,
+          "USDC-RUB": 82.2496786216588,
+          "USDC-USD": 1.012387556321
+        },
+        "result": "complete",
+        "user_id": "21",//идентификатор пользователя на стороне проекта
+        "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c", // идентификатор операции на стороне сервиса. Проекту следует сохранить его на своей стороне
+        "current_status": "success",
+        "payment_product": "cryptogate_direct",
+        "payment_method_type": "crypto_deposit",
+        "payment_custom_data": null
+      }
+      ```
 
-    </RequestExample>
+      </RequestExample>
+    </Expandable>
   </Step>
   <Step title="Проект выполняет обработку операции">
     Проект выполняет зачисление полученной суммы на баланс пользователя
