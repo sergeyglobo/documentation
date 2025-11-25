@@ -1,10 +1,13 @@
 ---
 title: "Openbanking"
-description: "SEPA, INSTANT SEPA, etc "
+description: ""
 icon: "money-bill-transfer"
-tag: "NEW"
 ---
- 
+
+
+# {{title}}
+
+
 ## Общая схема работы
 
 ```mermaid
@@ -24,11 +27,11 @@ sequenceDiagram
 
 <Steps>
   <Step title="Выбор платежного виджета">
-    Клиент выбирает иконку платежного виджета в интерфейсе сайта проекта
+    Клиент выбирает иконку платежного метода в интерфейсе сайта проекта
   </Step>
   <Step title="Передача данных для создания операции">
-    Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате
-
+    Сайт проекта отправляет в Finmar API реквизиты операции.
+    
     <Accordion title="Пример запроса создания" icon="terminal">
       ```bash Запрос создания операции
       curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
@@ -80,7 +83,7 @@ sequenceDiagram
     Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
   </Step>
   <Step title="Проведение операции">
-    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе Виджета.
+    Клиент совершает оплату в банковском приложении.
 
     При отладке на sandbox окружении используйте тестовые суммы `100.10`:
 
@@ -88,43 +91,61 @@ sequenceDiagram
   <Step title="Уведомление о завершении операции">
     Finmar API отправляет сайту проекта уведомление о завершении транзакции. Пример:
 
-    <Accordion title="Пример уведомления" icon="sparkles">
+    <Accordion title="Пример уведомления openbanking" icon="server">
       ```json
-    {
-          "card": {
-            "charged": {
-              "amount": 17,
-              "currency": "EUR"
+           {
+            "reference_id": "584cc07e-c402-4b1b-8f87-8aa51c567dd8",
+            "client_operation_id": "gXWCmoB379YxA0kiN4",
+            "result": "complete",
+            "deposit": {
+                "amount": 20.0,
+                "currency": "EUR"
             },
-            "initial": {
-              "amount": 17,
-              "currency": "EUR"
+            "meta": {
+                "user": {
+                    "email": "globocheck.kyc@gmail.com",
+                    "user_id": "u123",
+                    "email_verified": true
+                },
+                "amount": {
+                    "amount": "20",
+                    "currency": "EUR"
+                },
+                "method": "openbanking",
+                "url_callback": "https://webhook-test.com/d6357ae34082392a5d35200dbf994b30",
+                "payment_profile": "sandbox",
+                "url_redirect_fail": "https://finmar.requestcatcher.com?fail",
+                "client_operation_id": "gXWCmoB379YxA0kiN4",
+                "url_redirect_success": "https://finmar.requestcatcher.com?success"
             },
-            "card_info": null,
-            "oper_type": "deposit",
-            "initial_changed": false,
-            "requested_changed": false
-          },
-          "rates": {
-            "EUR-AUD": 1.7885761918160703,
-            "EUR-CAD": 1.629880760510181,
-            "EUR-USD": 1.154526436346
-          },
-          "result": "complete",
-          "deposit": {
-            "amount": 17,
-            "currency": "EUR"
-          },
-          "user_id": "00000000-0000-0000-0000-000000000000",
-          "reference_id": "00000000-0000-0000-0000-000000000000",
-          "current_status": "success",
-          "payment_product": "apm",
-          "client_operation_id": "1234567",
-          "payment_custom_data": {
-            "name": "acme_payment_method"
-          },
-          "payment_method_code": "999_acme",
-          "payment_method_type": "fiat"
+            "card": {
+                "oper_type": "deposit",
+                "bank_name": "",
+                "iban": "",
+                "initial": {
+                    "amount": 20.0,
+                    "currency": "EUR"
+                },
+                "charged": {
+                    "amount": 20.0,
+                    "currency": "EUR"
+                },
+                "initial_changed": false,
+                "requested_changed": false,
+                "card_info": null
+            },
+            "rates": {
+                "EUR-RUB": 91.20875909217102,
+                "EUR-USD": 1.156681803776
+            },
+            "payment_custom_data": {
+                "name": "test_openbanking"
+            },
+            "user_id": "u123",
+            "current_status": "success",
+            "payment_product": "apm",
+            "payment_method_type": "fiat",
+            "payment_method_code": "000_test_openbanking"
         }
       ```
 
@@ -161,17 +182,17 @@ sequenceDiagram
 </ParamField>
 
 <ParamField path="payment_method_product" type="string">
-  Платёжный продукт. `widget_card`
+  Платёжный продукт. `apm`
 </ParamField>
 
 <ParamField path="payment_method_code" type="string">
-  Код пплатёжного метода. `999_acme`
+  Код платёжного метода. `000_test_openbanking`
 </ParamField>
 
   </Step>
 
   <Step title="Подтверждение обработки">
-  После успешной обработки операции, необходимо подтвердить её обработку, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id)
+  После успешной обработки операции, необходимо подтвердить операцию, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id).
   </Step>
 
 </Steps>

@@ -98,17 +98,14 @@ sequenceDiagram
 
     
   </Step>
-  <Step title="Оператор вызывает метод подтверждения операции">
-    Подтверждённая операция не будет возвращаться в ответе метода
-  </Step>
+
   <Step title="Оператор выполняет обработку операции">
     Используя методы https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_reference_id или https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_client_operation_id
   </Step>
-  
+    <Step title="Оператор вызывает метод подтверждения операции">
+ После успешной обработки операции, необходимо подтвердить её обработку, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id)
+  </Step>
 </Steps>
-
-
-
 
 
 
