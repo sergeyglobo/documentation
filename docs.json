@@ -16,8 +16,7 @@
             "group": "Документация",
             "pages": [
               "index",
-                "api-reference/go-live-checklist",
-                "requirements"
+              "requirements"
             ]
           },
           {
