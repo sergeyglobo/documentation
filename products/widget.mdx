@@ -16,38 +16,35 @@ sequenceDiagram
     actor Клиент
     participant Проект
     participant Finmar API
-    Клиент->>Проект: Выбор платежного виджета
-    Проект->>Finmar API: Передача данных для создания операции
+    Проект->>Finmar API: Создание операции
     Finmar API-->>Проект: Возврат URL виджета
-    Проект->>Клиент: Перенаправление на URL виджета
-    Клиент->>Finmar API: Покупка криптовалюты<br>и подтверждение оферты
-    Finmar API->>Проект: Уведомление<br>о завершении операции
-    Проект->>Проект: Обработка уведомления
+    Проект->>Клиент: Перенаправление пользователя на полученный URL
+    Клиент->>Finmar API: Покупка криптовалюты и подтверждение оферты
+    Finmar API->>Проект: Уведомление о завершении операции
+    Проект->>Проект: Обработка обратного уведомления
     Проект->>Finmar API: Подтверждение обработки операции
 ```
 
 <Steps>
-  <Step title="Выбор платежного виджета">
-    Клиент выбирает иконку платежного виджета в интерфейсе сайта проекта. </Step>
-  <Step title="Передача данных для создания операции">
-    Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате.  
+  <Step title="Создание операции">
+    Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате.
   </Step>
-  <Step title="Получение URL виджета">
+  <Step title="Возврат URL виджета">
     Finmar API создает уникальный URL виджета и возвращает его сайту проекта.
   </Step>
-  <Step title="Перенаправление клиента">
-    Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
+  <Step title="Перенаправление пользователя на полученный URL">
+    Сайт проекта перенаправляет клиента на полученный платежный URL.
   </Step>
   <Step title="Проведение операции">
-    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе Виджета.
+    Клиент совершает покупку криптовалюты и подтверждает условия оферты в интерфейсе продукта. 
 
-    При отладке на sandbox окружении используйте тестовые карты:
+    <Tip>
+      При отладке на sandbox окружении используйте тестовые карты:
+    </Tip>
     <TestCards />
   </Step>
   <Step title="Уведомление о завершении операции">
-    Finmar API отправляет сайту проекта уведомление о завершении транзакции.  
-
-   
+    Finmar API отправляет сайту проекта уведомление о завершении транзакции.
   </Step>
   <Step title="Обработка уведомления">
     Сайт проекта обрабатывает полученное уведомление и зачисляет полученную сумму на счёт пользователя.
@@ -58,10 +55,11 @@ sequenceDiagram
 </Steps>
 
 ## Получение платёжной страницы
+
 ### Пример запроса
 
-   ```bash Запрос создания операции
-   curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+```bash Запрос создания операции
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E=' \
 --data-raw '{
@@ -71,17 +69,17 @@ sequenceDiagram
 "method": "widget_integration",
 "project_id":"s002",
 "amount": {
-    "amount": "100",
-    "currency": "EUR"
+ "amount": "100",
+ "currency": "EUR"
 },
 "user": {
-    "user_id": "u123",
-    "email": "globocheck@gmail.com",
-    "statistics": {
-        "registered_at": "2021-11-02",
-        "total_deposit_count": 485,
-        "total_withdrawal_count": 693
-    }
+ "user_id": "u123",
+ "email": "globocheck@gmail.com",
+ "statistics": {
+     "registered_at": "2021-11-02",
+     "total_deposit_count": 485,
+     "total_withdrawal_count": 693
+ }
 },
 "url_callback": "https://finmar.requestcatcher.com/?callback",
 "url_redirect_success": "https://finmar.requestcatcher.com?success",
@@ -90,22 +88,24 @@ sequenceDiagram
 ```
 
 ### Пример ответа
-     
-  ```json
+
+```json
 {
 "success": true,
 "result": {
-    "url": "https://card.cheipho.com/transaction/a32f658c-df98-4fc2-8bad-cbcf49aa8ee3",
-    "reference_id": "a32f658c-df98-4fc2-8bad-cbcf49aa8ee3"
+  "url": "https://card.cheipho.com/transaction/a32f658c-df98-4fc2-8bad-cbcf49aa8ee3",
+  "reference_id": "a32f658c-df98-4fc2-8bad-cbcf49aa8ee3"
 },
 "trace_id": "22c0f041f9b149f8b24ca9ce7df501fa"
 }
 ```
 
 ## Обратные уведомления
-<Callback/>
+
+<Callback />
+
 ### Пример уведомления об успешной операции:
- 
+
 ```json
    {
     "card": {
@@ -203,8 +203,8 @@ sequenceDiagram
               "payment_custom_data": null,
               "payment_method_type": "fiat"
 }
-  ```
-  
+```
+
 ## Обработка операции
 
 <ParamField path="user_id" type="string">
@@ -218,18 +218,21 @@ sequenceDiagram
 <ParamField path="reference_id" type="string">
   Идентификатор операции на стороне сервиса.
 </ParamField>
+
 <ParamField path="client_operation_id" type="string">
-  Идентификатор операции вызвающей стороны. 
+  Идентификатор операции вызвающей стороны.
 </ParamField>
+
 <ParamField path="deposit.amount" type="string">
   Сумма полученная от пользователя.
 </ParamField>
+
 <ParamField path="deposit.currency" type="string">
-Валюта операции.
+  Валюта операции.
 </ParamField>
 
 <ParamField path="payment_method_type" type="string">
-  Тип операции. 
+  Тип операции.
 </ParamField>
 
 <ParamField path="payment_method_product" type="string">
@@ -240,18 +243,14 @@ sequenceDiagram
   Код пплатёжного метода.
 </ParamField>
 
-
 ## Подтверждение обработки операции
 
-  После успешной обработки операции, необходимо подтвердить её обработку, используя методы [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id) или 
-  [/collector/api/v3/client_confirm_payment_by_client_operation_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-client_operation_id)
+После успешной обработки операции, необходимо подтвердить её обработку, используя методы [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id) или [/collector/api/v3/client_confirm_payment_by_client_operation_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-client_operation_id)
+
+```bash Подтверждение операции
   
- ```bash Подтверждение операции
-   
- curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_success_payment_by_reference_id' \
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_success_payment_by_reference_id' \
 --data '{
-    "reference_id": "f9e8d7c6-b5a4-3210-fedc-ba9876543210"
+   "reference_id": "f9e8d7c6-b5a4-3210-fedc-ba9876543210"
 }'
 ```
-
-
