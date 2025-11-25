@@ -1,11 +1,11 @@
 ---
 title: "Openbanking"
-description: ""
+description: " "
 icon: "money-bill-transfer"
+tag: "NEW"
 ---
 
-
-# {{title}}
+#  {{title}}
 
 
 ## Общая схема работы
@@ -27,11 +27,11 @@ sequenceDiagram
 
 <Steps>
   <Step title="Выбор платежного виджета">
-    Клиент выбирает иконку платежного метода в интерфейсе сайта проекта
+    Клиент выбирает платёжный метод в интерфейсе сайта проекта.
   </Step>
   <Step title="Передача данных для создания операции">
-    Сайт проекта отправляет в Finmar API реквизиты операции.
-    
+    Сайт проекта отправляет в Finmar API данные требуемые для создания операции.
+
     <Accordion title="Пример запроса создания" icon="terminal">
       ```bash Запрос создания операции
       curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
@@ -68,14 +68,14 @@ sequenceDiagram
 
     <Accordion title="Пример ответа" icon="server">
       ```json
-      {
-      "success": true,
-      "result": {
-          "url": "https://card.cheipho.com/transaction/a32f658c-df98-4fc2-8bad-cbcf49aa8ee3",
-          "reference_id": "a32f658c-df98-4fc2-8bad-cbcf49aa8ee3"
-      },
-      "trace_id": "22c0f041f9b149f8b24ca9ce7df501fa"
-      }
+    {
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/76b6a829-a186-4dac-bfc2-17092882fc17",
+        "reference_id": "584cc07e-c402-4b1b-8f87-8aa51c567dd8"
+    },
+    "trace_id": "9d560b7391224345b68a0ae38244013c"
+}
       ```
     </Accordion>
   </Step>
@@ -83,17 +83,16 @@ sequenceDiagram
     Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
   </Step>
   <Step title="Проведение операции">
-    Клиент совершает оплату в банковском приложении.
-
+    Клиент выбирает банк в списке банков, подтверждает оплату и перенаправляется на url_redirect_success или url_redirect_fail
     При отладке на sandbox окружении используйте тестовые суммы `100.10`:
 
   </Step>
   <Step title="Уведомление о завершении операции">
     Finmar API отправляет сайту проекта уведомление о завершении транзакции. Пример:
 
-    <Accordion title="Пример уведомления openbanking" icon="server">
+    <Accordion title="Пример уведомления" icon="sparkles">
       ```json
-           {
+         {
             "reference_id": "584cc07e-c402-4b1b-8f87-8aa51c567dd8",
             "client_operation_id": "gXWCmoB379YxA0kiN4",
             "result": "complete",
@@ -148,12 +147,10 @@ sequenceDiagram
             "payment_method_code": "000_test_openbanking"
         }
       ```
-
- 
     </Accordion>
   </Step>
+
   <Step title="Обработка уведомления">
-   
 При обратного уведомления, наиболее значимые параметры:
 
 <ParamField path="user_id" type="string">
@@ -178,21 +175,22 @@ sequenceDiagram
 </ParamField>
 
 <ParamField path="payment_method_type" type="string">
-  Тип операции. `fiat`
+  Тип операции. 
 </ParamField>
 
 <ParamField path="payment_method_product" type="string">
-  Платёжный продукт. `apm`
+  Платёжный продукт.
 </ParamField>
 
 <ParamField path="payment_method_code" type="string">
-  Код платёжного метода. `000_test_openbanking`
+  Код пплатёжного метода.
 </ParamField>
 
   </Step>
 
   <Step title="Подтверждение обработки">
-  После успешной обработки операции, необходимо подтвердить операцию, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id).
+  После успешной обработки операции, необходимо подтвердить её обработку, используя методы [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id) или 
+  [/collector/api/v3/client_confirm_payment_by_client_operation_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-client_operation_id)
   </Step>
 
 </Steps>
