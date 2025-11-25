@@ -6,6 +6,8 @@ tag: "NEW"
 ---
  
 
+import Callback from '/snippets/callback.mdx';
+
 ## Общая схема работы
 
 ```mermaid
@@ -33,20 +35,9 @@ sequenceDiagram
   
   </Step>
   <Step title="Получение платёжной страницы">
-    Finmar API создает уникальный URL и возвращает его сайту проекта
+    Finmar API создает уникальный URL и возвращает его сайту проекта.
 
-    <Accordion title="Пример ответа" icon="server">
-      ```json
-    {
-    "success": true,
-    "result": {
-        "url": "https://crypto.cheipho.com/payment-front/76b6a829-a186-4dac-bfc2-17092882fc17",
-        "reference_id": "584cc07e-c402-4b1b-8f87-8aa51c567dd8"
-    },
-    "trace_id": "9d560b7391224345b68a0ae38244013c"
-}
-      ```
-    </Accordion>
+ 
   </Step>
   <Step title="Перенаправление клиента">
     Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
@@ -118,7 +109,8 @@ sequenceDiagram
 ```
 
 ## Обратные уведомления
-
+<Callback/>
+  
 ### Пример уведомления об успешной операции:
  
 ```json
@@ -216,6 +208,8 @@ sequenceDiagram
 
 ## Подтверждение обработки операции
 
+  После успешной обработки операции, необходимо подтвердить её обработку, используя методы [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id) или 
+  [/collector/api/v3/client_confirm_payment_by_client_operation_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-client_operation_id)
 
  ```bash Подтверждение операции
    

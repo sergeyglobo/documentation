@@ -7,53 +7,27 @@ description: "Платёжный фрейм"
 
 ### Работа по колбекам
 
-
-```mermaid
-sequenceDiagram
-  actor user as Пользователь
-  participant merchant as Мерчант
-  participant finmar as Finmar API
-  participant payment as Платёжный провайдер
-
-  autonumber
-  user -->> merchant: Нажимает кнопку метода
-  merchant -->> finmar: Запрос на получение платёжной страницы
-  finmar -->> payment: 
-  payment --> finmar: 
-  finmar -->>+ merchant: Ссылка на платёжную страницу и идентификатор операции назначенный сервисом reference_id
-  merchant -->> user: Перенаправление на платёжную страницу
-  user -->> payment: Прохождение платёжного флоу
-  payment -->> finmar: Уведомление
-  finmar -->> user: Показ результата проведения операции
-  finmar -->> merchant: Уведомление
-  merchant -->>- merchant: Обработка операций
-  merchant ->> finmar: Установка идентификатора для финансовых выгрузок POST /api/operation/set_ack_id
-```
-
-
 <Steps>
   <Step title="Пользователь выбирает платёжный метод">
-    desc
+     
   </Step>
   <Step title="Оператор подтверждает операцию">
-    desc
+ 
   </Step>
   <Step title="Оператор получает уведомление о завершении операции">
-    desc
+   
   </Step>
   <Step title="Оператор выполняет проверку подлинности уведомления">
-    Тут ссыль на описание алгоритмов проверки
+   
   </Step>
   <Step title="Оператор выполняет обработку операции">
-    Ссыль на метод set_operation_ack_id
+ 
   </Step>
 </Steps>
 
 
 
-
 ### Работа через запрос списка операций
-
 
 ```mermaid
 sequenceDiagram
@@ -80,50 +54,36 @@ sequenceDiagram
         merchant->>finmar: Подтвердить обработку операции POST /client_confirm_payment_by_reference_id 
 
     end
-    
 ```
- 
-
 
 
 <Steps>
   <Step title="Оператор отправляет запрос на создание операции и перенаправляет пользователя на полученный URL">
     desc
   </Step>
-  <Step title="Пользователь подтверждает операцию">
-    desc
+  <Step title="Пользователь подтверждает операцию и перенаправляется на URL-возврата">
+ 
   </Step>
+  
   <Step title="Оператор реализует интервальный запрос списка успешных неподтвержджённых операций">
-    client_unconfirmed_success_payments
 
-    
+Пример запроса:    
+```bash Получение списка успешных неподтверждённых операций
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments'
+```
+
   </Step>
 
   <Step title="Оператор выполняет обработку операции">
     Используя методы https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_reference_id или https://vima.mintlify.app/api-reference/endpoint/client_confirm_payment_by_client_operation_id
   </Step>
     <Step title="Оператор вызывает метод подтверждения операции">
- После успешной обработки операции, необходимо подтвердить её обработку, используя метод [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id)
+
+  После успешной обработки операции, необходимо подтвердить её обработку, используя методы [/collector/api/v3/client_confirm_payment_by_reference_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-reference_id) или 
+  [/collector/api/v3/client_confirm_payment_by_client_operation_id](/api-reference/фиатные-платежи/подтвердить-операцию-по-client_operation_id)
+
   </Step>
 </Steps>
 
-
-
-<Expandable>
-  
-</Expandable>
-
-<Expandable>
-  ```bash Response
-  {
-      "success": true,
-      "result": {
-          "url": "https://card.cheipho.com/transaction/6e89d40d-3fda-42a2-9c97-3564c8443c3a",
-          "reference_id": "6e89d40d-3fda-42a2-9c97-3564c8443c3a"
-      },
-      "trace_id": "8abfc59b1bd149b9a3e56e0226a4c796"
-  }
-  ```
-</Expandable>
-
+ 
 ...
