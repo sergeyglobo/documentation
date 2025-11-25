@@ -51,7 +51,6 @@
             ]
           },
           {
-            "group": "Finmar API",
             "openapi": "api-reference/openapi.json"
           }
         ]
