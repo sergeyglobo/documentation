@@ -13,10 +13,10 @@
         "tab": "Документация",
         "groups": [
           {
-            "group": "Инструкции",
+            "group": "Документация",
             "pages": [
               "index",
-              "go-live-checklist"
+              "api-reference/go-live-checklist"
             ]
           },
           {
@@ -42,20 +42,16 @@
         "tab": "Finmar API",
         "groups": [
           {
-            "group": "API документация",
+            "group": "Документация",
             "pages": [
               "api-reference/introduction",
               "api-reference/status",
-              "go-live-checklist"
+              "api-reference/go-live-checklist"
             ]
           },
           {
-            "group": "Платёжная страница",
-            "openapi": "api-reference/openapi.json",
-            "pages": [
-              "api-reference/endpoint/checkout", 
-              "api-reference/endpoint/webhook"
-            ]
+            "group": "Finmar API",
+            "openapi": "api-reference/openapi.json"
           }
         ]
       },
@@ -69,7 +65,7 @@
       ]
     },
               {
-      "tab": "Withdrawal API",
+      "tab": "Withdrawal Card API",
       "groups": [
         {
           "group": "Withdrawal API",
