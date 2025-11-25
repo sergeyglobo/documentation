@@ -5,24 +5,17 @@ sidebarTitle: "Введение"
 ---
 
 <Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
+  Перед началом интеграции запросите имя пользователя и пароль для тестового окружения в чате интеграции
 </Note>
 
 ## Приём платежей
 
-<Card title="Finmar API" icon="code" href="/api-reference">
-  Смотреть OpenAPI спецификацию
-</Card>
-
 ## Аутентификация
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Basic Стандартная Basic HTTP authentication scheme (RFC 7617), дополнительная проверка подлинности отправителя запроса не выполняется - учетные данные полностью передаются в запросе. Эта схема предназначена для ускорения процесса интеграции.
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+Для клиента создается пара key + password, которые он передает в заголовке `Authorization`:
+
+```
+Authorization: Basic base64(key:password)
 ```
