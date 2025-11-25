@@ -5,3 +5,172 @@ icon: 'money-bill-transfer'
 ---
 
 ## {{title}}
+
+
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Клиент
+    participant Проект
+    participant Finmar API
+    Клиент->>Проект: Выбор платежного виджета
+    Проект->>Finmar API: Передача данных для создания операции
+    Finmar API-->>Проект: Возврат URL виджета
+    Проект->>Клиент: Перенаправление на URL виджета
+    Клиент->>Finmar API: Покупка криптовалюты<br>и подтверждение оферты
+    Finmar API->>Проект: Уведомление<br>о завершении операции
+    Проект->>Проект: Обработка уведомления
+    Проект->>Finmar API: Подтверждение обработки операции
+```
+
+
+<Steps>
+  <Step title="Выбор платежного виджета">
+    Клиент выбирает иконку платежного виджета в интерфейсе сайта проекта
+  </Step>
+  <Step title="Передача данных для создания операции">
+    Сайт проекта отправляет в Finmar API реквизиты операции: данные клиента, сумму и валюту в фиате
+
+    <Accordion title="Пример запроса создания" icon="terminal">
+      ```bash Запрос создания операции
+      curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+      --header 'Content-Type: application/json' \
+      --header 'Authorization: Basic cHJldmlld190ZXN0OndkMzAxN2F6aW01aXNva3E=' \
+      --data-raw '{
+      "client_operation_id": "DSPn7pryR4QYBQpCGq",
+      "report_metadata": "DSPn7pryR4QYBQpCGq",
+      "payment_profile": "sandbox",
+      "method": "open_banking",
+      "project_id":"s002",
+      "amount": {
+          "amount": "100",
+          "currency": "EUR"
+      },
+      "user": {
+          "user_id": "u123",
+          "email": "globocheck@gmail.com",
+          "statistics": {
+              "registered_at": "2021-11-02",
+              "total_deposit_count": 485,
+              "total_withdrawal_count": 693
+          }
+      },
+      "url_callback": "https://finmar.requestcatcher.com/?callback",
+      "url_redirect_success": "https://finmar.requestcatcher.com?success",
+      "url_redirect_fail": "https://finmar.requestcatcher.com?fail"
+      }'
+      ```
+    </Accordion>
+  </Step>
+  <Step title="Получение URL виджета">
+    Finmar API создает уникальный URL виджета Open Banking и возвращает его сайту проекта
+
+    <Accordion title="Пример ответа" icon="server">
+      ```json
+      {
+      "success": true,
+      "result": {
+          "url": "https://card.cheipho.com/transaction/a32f658c-df98-4fc2-8bad-cbcf49aa8ee3",
+          "reference_id": "a32f658c-df98-4fc2-8bad-cbcf49aa8ee3"
+      },
+      "trace_id": "22c0f041f9b149f8b24ca9ce7df501fa"
+      }
+      ```
+    </Accordion>
+  </Step>
+  <Step title="Перенаправление клиента">
+    Сайт проекта автоматически перенаправляет клиента на сгенерированный платежный URL
+  </Step>
+  <Step title="Проведение операции">
+    Клиент проходит аутентификацию через Open Banking провайдера и подтверждает платеж в интерфейсе его банка.
+  </Step>
+  <Step title="Уведомление о завершении операции">
+    Finmar API отправляет сайту проекта уведомление о завершении транзакции. Пример:
+
+    <Accordion title="Пример уведомления" icon="sparkles">
+      ```json
+      {
+          "card": {
+            "charged": {
+              "amount": 12,
+              "currency": "EUR"
+            },
+            "initial": {
+              "amount": 12,
+              "currency": "EUR"
+            },
+            "oper_type": "deposit",
+            "requested": {
+              "amount": 12,
+              "currency": "EUR"
+            },
+            "payment_method": "open_banking",
+            "requested_changed": false,
+            "initial_chyment_anged": false
+          },
+          "meta": {
+            "user": {
+              "kyc": {
+                "result": "SUCCESS",
+                "verification_kind": "ID_DOCUMENT"
+              },
+              "email": "johndoe@example.com",
+              "login": "johndoe@example.com",
+              "user_id": "8c5f49e0-3e28-4f81-8b2b-0f04c7a52e1f",
+              "statistics": {
+                "registered_at": "2024-05-15T10:30:00.000Z",
+                "total_deposit_count": 28,
+                "most_recent_deposit_at": "2025-08-01 15:45:30",
+                "total_withdrawal_count": 5
+              },
+              "email_verified": true
+            },
+            "amount": {
+              "amount": "12.00",
+              "currency": "EUR"
+            },
+            "locale": "US",
+            "comment": {
+              "guid": "5678901",
+              "action": "deposit_v3",
+              "variant": "open_banking"
+            },
+            "project_id": "fake_project",
+            "url_callback": "https://api.fake-pay.services/pg/callback/a1b2c3d4-e5f6-7890-1234-567890abcdef/deposit",
+            "payment_profile": "test_integration_fake",
+            "url_redirect_fail": "https://api.fake-pay.services/redirect/result/a1b2c3d4-e5f6-7890-1234-567890abcdef/deposit/5678901/failure",
+            "client_operation_id": "5678901",
+            "operation_display_id": "5678901",
+            "url_redirect_success": "https://api.fake-pay.services/redirect/result/a1b2c3d4-e5f6-7890-1234-567890abcdef/deposit/5678901/success"
+          },
+          "crypto": [
+            {
+              "amount": 13.337059,
+              "status": "success",
+              "currency": "ETH__USDC__137",
+              "to_address": "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b"
+            }
+          ],
+          "result": "complete",
+          "deposit": {
+            "amount": 12,
+            "currency": "EUR"
+          },
+          "user_id": "8c5f49e0-3e28-4f81-8b2b-0f04c7a52e1f",
+          "reference_id": "f9e8d7c6-b5a4-3210-fedc-ba9876543210",
+          "current_status": "success",
+          "payment_product": "open_banking",
+          "client_operation_id": "4129259",
+          "payment_method_type": "fiat"
+      }
+      ```
+    </Accordion>
+  </Step>
+  <Step title="Обработка уведомления">
+    Сайт проекта обрабатывает полученное уведомление и зачисляет полученную сумму на счёт пользователя.
+  </Step>
+  <Step title="Подтверждение обработки">
+    Сайт проекта вызывает метод Finmar API для подтверждения обработки операции.
+  </Step>
+</Steps>
