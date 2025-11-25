@@ -16,7 +16,8 @@
             "group": "Документация",
             "pages": [
               "index",
-              "api-reference/go-live-checklist"
+                "api-reference/go-live-checklist",
+                "requirements"
             ]
           },
           {
@@ -26,7 +27,8 @@
               "products/widget",
               "products/openbanking",
               "products/googlepay",
-              "products/applepay"
+              "products/applepay",
+              "products/blik"
             ]
           },
                     {
