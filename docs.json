@@ -51,6 +51,7 @@
           },
           {
             "group": "Платёжная страница",
+            "openapi": "api-reference/openapi.json",
             "pages": [
               "api-reference/endpoint/checkout", 
               "api-reference/endpoint/webhook"
