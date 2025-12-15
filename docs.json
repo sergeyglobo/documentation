@@ -20,10 +20,19 @@
             ]
           },
           {
+            "group": "Finmar Checkout HPP",
+            "pages": [
+              "integration/finmar-guide",
+              "integration/checkout",
+              "integration/redirect_to_url",
+              "integration/callbacks",
+              "integration/client_confirm_payment"
+            ]
+          },
+          {
             "group": "Фиатные платежи",
             "pages": [
               "products/card",
-              "products/widget",
               "products/openbanking",
               "products/googlepay",
               "products/applepay",
@@ -44,27 +53,15 @@
         "groups": [
           {
             "group": "Документация",
+            "openapi": "api-reference/openapi.json",
             "pages": [
-              "api-reference/introduction",
-              "api-reference/status",
-              "api-reference/go-live-checklist"
+              "/api-reference/introduction",
+              "/api-reference/status",
+              "/api-reference/go-live-checklist"
             ]
-          },
-          {
-            "group": "Finmar API",
-            "openapi": "api-reference/openapi.json"
           }
         ]
       },
-        {
-      "tab": "Cardrouting API",
-      "groups": [
-        {
-          "group": "Cardrouting API",
-         "openapi": "api-reference/cardrouting_v1.json"
-        }
-      ]
-    },
               {
       "tab": "Withdrawal Card API",
       "groups": [
