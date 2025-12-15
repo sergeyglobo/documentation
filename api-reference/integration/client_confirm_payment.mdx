@@ -1,7 +1,7 @@
 ---
 title: "Подтверждение операции"
 description: " "
-sidebarTitle: "Подтверждение обработки операции"
+sidebarTitle: "4. Подтверждение обработки операции"
 ---
  
 
@@ -138,30 +138,5 @@ setInterval(processUnconfirmedOperations, 5 * 60 * 1000);
 3. **Периодический опрос**: Используйте периодический запрос неподтверждённых операций как резервный механизм
 4. **Логирование**: Логируйте все операции для отладки и аудита
 5. **Транзакции**: Используйте транзакции БД для атомарности операций
-
-## Схема работы
-
-```mermaid
-sequenceDiagram
-    participant API as Finmart API
-    participant Server as Ваш сервер
-    participant DB as База данных
-
-    API->>Server: Webhook уведомление
-    Server->>DB: Проверка дубликата
-    alt Операция не обработана
-        Server->>DB: Зачисление средств
-        Server->>DB: Сохранение операции
-        Server->>API: Подтверждение операции
-    end
-    
-    Note over Server: Периодический опрос (каждые 5 мин)
-    Server->>API: GET /client_unconfirmed_success_payments
-    API-->>Server: Массив операций
-    loop Для каждой операции
-        Server->>DB: Обработка операции
-        Server->>API: Подтверждение операции
-    end
-```
-
+ 
 
