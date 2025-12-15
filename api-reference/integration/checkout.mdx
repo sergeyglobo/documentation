@@ -18,18 +18,9 @@ import TestCards from '/snippets/test-cards.mdx';
 - `user.user_id` - идентификатор пользователя.
 
 
-## Важные моменты
-- Используйте уникальный `client_operation_id` для каждой операции
-- Сохраняйте `reference_id` для дальнейшей работы с операцией
-- Убедитесь, что URL для `url_callback` и `url_redirect_success`/ `url_redirect_fail` доступны и корректны.
-- Не выполняйте запрос к API прямо из браузера в продакшене — используйте ваш сервер как прокси
-
 
 ## Примеры запросов
- 
- <TestCards />
-
-
+  
  ### Банковская карта HPP
     ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
@@ -52,8 +43,8 @@ import TestCards from '/snippets/test-cards.mdx';
         "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
     }'
     ```
-
-
+ <TestCards />
+ 
 
 ### Банковская карта H2H
 
@@ -85,7 +76,7 @@ import TestCards from '/snippets/test-cards.mdx';
         "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
     }'
     ```
-
+ <TestCards />
 
 ### Openbanking
 
@@ -191,12 +182,13 @@ import TestCards from '/snippets/test-cards.mdx';
 - `user_stats` - опциональный параметр. Наличие статистических данных пользователя.
 
 
-## Пример ответа
+## Примеры ответов
 
 <Tabs>
   <Tab title="200">
 
-Успешно созданная операция:
+<Check>Успешно созданная операция.</Check>
+
 ```JSON
 {
     "success": true,
@@ -214,7 +206,8 @@ import TestCards from '/snippets/test-cards.mdx';
 
   </Tab>
   <Tab title="401">
- Используются неверные аутентификационные данные:
+  <Callout icon="key" color="#FFC107" iconType="regular"> Используются неверные аутентификационные данные.</Callout>
+
  ```JSON
  {
     "success": false,
@@ -229,7 +222,9 @@ import TestCards from '/snippets/test-cards.mdx';
 
  
 <Tab title="400">
-Передано неподдерживаемое значение параметра `method`:
+
+<Warning>Передано неподдерживаемое значение параметра `method`</Warning>
+
 ```JSON
 {
     "success": false,
@@ -244,7 +239,10 @@ import TestCards from '/snippets/test-cards.mdx';
 </Tab>
 
 <Tab title="404">
-Ресурс не найден: 
+ 
+<Warning>Подобная ошибка обычно возникает при попытке создать операцию GET-запросом.</Warning>
+
+
 ```JSON
 {
     "success": false,
@@ -256,9 +254,6 @@ import TestCards from '/snippets/test-cards.mdx';
 }
 ```
 
-<Warning>
-Подобная ошибка чаще всего возникает если отправить в эндпоинт создания GET-методом.
-</Warning>
 
 </Tab>
 </Tabs>
@@ -267,4 +262,9 @@ import TestCards from '/snippets/test-cards.mdx';
 
  
 
- 
+ ## Важные моменты
+- Используйте уникальный `client_operation_id` для каждой операции
+- Сохраняйте `reference_id` для дальнейшей работы с операцией
+- Убедитесь, что URL для `url_callback` и `url_redirect_success`/ `url_redirect_fail` доступны и корректны.
+- Не выполняйте запрос к API прямо из браузера в продакшене — используйте ваш сервер как прокси
+

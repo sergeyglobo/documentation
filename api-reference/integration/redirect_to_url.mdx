@@ -22,29 +22,29 @@ sidebarTitle: "Перенаправление пользователя на пл
 
 Особое внимание следует обратить на опциональный параметр `result.launch_type` - это рекомендуемый способ отображения платёжной страницы пользователю: `iframe`, `new_window` или `redirect`. 
 
+<Tip>
+Если в ответе на запрос создания параметр `result.launch_type` отсутствует, то можно перенаправлять пользователя на `result.url` любым удобным способом.
+</Tip>
+
+
+
+### Прямое перенаправление
+
+Для `result.launch_type=redirect`, рекомендуемый способ показа страницы - перенаправление пользователя в текущей вкладке браузера:
+
 ```JSON focus={6}
 {
     "success": true,
     "result": {
         "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
         "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
-        "launch_type": "new_window",
+        "launch_type": "redirect",
         "kyc_status": "none",
         "user_stats": "not_present"
     },
     "trace_id": "442556cc81dd4f53872c09c6b910ca28"
 }
 ```
- 
-<Warning>
-Если в ответе на запрос создания параметр `result.launch_type` отсутствует, то можно перенаправлять пользователя на `result.url` любым удобным способом.
-</Warning>
-
-
-
-### Прямое перенаправление
-
-При `result.launch_type=redirect`, рекомендуемый способ показа страницы - перенаправление пользователя в текущей вкладке браузера:
 
 ```javascript
 // После получения payment_url от API
@@ -55,6 +55,21 @@ window.location.href = result.url;
 
 При `result.launch_type=iframe`, следует отобразить платёжную страницу в iframe на вашем сайте:
 
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "iframe",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+
 ```html
 <iframe 
     src="result.url" 
@@ -64,11 +79,15 @@ window.location.href = result.url;
 </iframe>
 ```
 
-**Важно:** Некоторые платёжные провайдеры могут некорректно работать в iframe из-за политики безопасности. 
+<Note>
+Некоторые платёжные провайдеры могут некорректно работать в iframe из-за политики безопасности. 
 В этом случае используйте прямое перенаправление или открытие в новой вкладке/окне.
+</Note>
 
+ 
 ### Открытие в новой вкладке/окне
-При `result.launch_type=new_window`, следует **обязательно** открывать платёжную страницу в новой вкладке:
+
+<Warning>При `result.launch_type=new_window`, следует **обязательно** открывать платёжную страницу в новой вкладке.</Warning>
 
 ```JSON focus={6}
 {
@@ -83,7 +102,6 @@ window.location.href = result.url;
     "trace_id": "442556cc81dd4f53872c09c6b910ca28"
 }
 ```
- 
 
 ```javascript
 window.open(result.url, '_blank');
