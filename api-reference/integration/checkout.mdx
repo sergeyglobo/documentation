@@ -3,6 +3,8 @@ title: "Создание операции"
 description: " "
 sidebarTitle: "Создание операции"
 ---
+import TestCards from '/snippets/test-cards.mdx';
+
 
 Для создания платёжной операции необходимо отправить запрос к API Finmart. 
 В ответ вы получите ссылку на платёжную страницу и идентификатор операции.
@@ -25,12 +27,11 @@ sidebarTitle: "Создание операции"
 
 ## Примеры запросов
  
-<Tabs>
-  <Tab title="Банковская карта HPP">
+ <TestCards />
 
 
+ ### Банковская карта HPP
     ```bash
-    
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
@@ -51,10 +52,12 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
-  <Tab title="Банковская карта H2H">
- 
-    ```bash
+
+
+
+### Банковская карта H2H
+
+   ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
@@ -82,13 +85,11 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
-
-    <Tab title="Openbanking">
 
 
-    ```bash
-    
+### Openbanking
+
+   ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
@@ -109,13 +110,9 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
 
-  <Tab title="Apple Pay">
-
-
-    ```bash
-    
+### Apple Pay
+  ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
@@ -136,13 +133,10 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
-
-    <Tab title="Google Pay">
 
 
-    ```JSON
-    
+### Google Pay
+    ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
@@ -163,13 +157,10 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
-
-    <Tab title="Widget Intagration">
 
 
-    ```
-    
+### Widget Intagration
+   ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
@@ -190,13 +181,22 @@ sidebarTitle: "Создание операции"
         "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
     }'
     ```
-  </Tab>
-</Tabs>
 
+
+В ответе на запрос вы получите:
+- `success` - true/false. Обязательный параметр.
+- `result.url` - Сссылка на платёжную страницу. Обязательный параметр в случае успешного создания операции. 
+- `result.launch_type` - опциональный параметр. Рекомендуемый способ показа платёжной страницы пользователю.
+- `kyc_status` - опциональный параметр. Наличие данных KYC пользователя.
+- `user_stats` - опциональный параметр. Наличие статистических данных пользователя.
 
 
 ## Пример ответа
 
+<Tabs>
+  <Tab title="200">
+
+Успешно созданная операция:
 ```JSON
 {
     "success": true,
@@ -210,13 +210,61 @@ sidebarTitle: "Создание операции"
     "trace_id": "442556cc81dd4f53872c09c6b910ca28"
 }
 ```
-В ответе вы получите:
-- `success` - true/false. Обязательный параметр.
-- `result.url` - Сссылка на платёжную страницу. Обязательный параметр в случае успешного создания операции. 
-- `result.launch_type` - опциональный параметр. Рекомендуемый способ показа платёжной страницы пользователю.
-- `kyc_status` - опциональный параметр. Наличие данных KYC пользователя.
-- `user_stats` - опциональный параметр. Наличие статистических данных пользователя.
 
 
+  </Tab>
+  <Tab title="401">
+ Используются неверные аутентификационные данные:
+ ```JSON
+ {
+    "success": false,
+    "error": {
+        "details": "UNAUTHORIZED",
+        "code": "UNAUTHORIZED"
+    },
+    "trace_id": "e3d36331595b48309f0702b0fe038b2b"
+}
+```
+  </Tab>
+
+ 
+<Tab title="400">
+Передано неподдерживаемое значение параметра `method`:
+```JSON
+{
+    "success": false,
+    "error": {
+        "details": "Input validation failed: [{\"received\":\"widget_integrationn\",\"code\":\"invalid_enum_value\",\"options\":[\"apm\",\"crypto_protect\",\"widget_integration\",\"cashbox\",\"wallet_invoice\",\"card\",\"multi\",\"googlepay\",\"applepay\",\"blik\",\"openbanking\",\"volt\",\"papara\",\"payco\",\"havale\"],\"path\":[\"method\"],\"message\":\"Invalid enum value. Expected 'apm' | 'crypto_protect' | 'widget_integration' | 'cashbox' | 'wallet_invoice' | 'card' | 'multi' | 'googlepay' | 'applepay' | 'blik' | 'openbanking' | 'volt' | 'papara' | 'payco' | 'havale', received 'widget_integration2'\"}]",
+        "code": "BAD_REQUEST"
+    },
+    "trace_id": "aa46cac14a8748dc9596e14964a5bb6f"
+}
+```
+
+</Tab>
+
+<Tab title="404">
+Ресурс не найден: 
+```JSON
+{
+    "success": false,
+    "error": {
+        "details": "Not found",
+        "code": "NOT_FOUND"
+    },
+    "trace_id": "ca476b637ff4495395fa6d4b7d7c6420"
+}
+```
+
+<Warning>
+Подобная ошибка чаще всего возникает если отправить в эндпоинт создания GET-методом.
+</Warning>
+
+</Tab>
+</Tabs>
+
+
+
+ 
 
  
