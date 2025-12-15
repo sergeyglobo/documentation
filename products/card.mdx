@@ -89,69 +89,6 @@ autonumber
 
 ## Создание операции
 
-<Tabs>
-  <Tab title="Без передачи банковской карты">
-    ### Пример запроса
-
-    ```
-    
-    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
-    --data '{
-        "payment_profile": "sandbox",
-        "method": "card",
-        "report_metadata": "Fz022tCSaBuvvfQckp",
-        "client_operation_id": "Fz022tCSaBuvvfQckp",
-        "user": {
-            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
-        },
-        "amount": {
-            "amount": "9",
-            "currency": "EUR"
-        },
-        "url_callback": "https://gg.requestcatcher.com?callback",
-        "url_redirect_success": "https://gg.requestcatcher.com?success",
-        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-    }'
-    ```
-  </Tab>
-  <Tab title="С передачей банковской карты">
-    ### Пример запроса
-
-    ```
-    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
-    --header 'Content-Type: application/json' \
-    --header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
-    --data '{
-        "payment_profile": "sandbox",
-        "method": "card",
-        "report_metadata": "Fz022tCSaBuvvfQckp",
-        "client_operation_id": "Fz022tCSaBuvvfQckp",
-        "user": {
-            "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
-        },
-        "bank_card": {
-            "cardholder": "NAME FNAME",
-            "cvv": "190",
-            "pan": "4111111111111111",
-            "expiration_month": 11,
-            "expiration_year": 29
-        },
-        "amount": {
-            "amount": "9",
-            "currency": "EUR"
-        },
-        "url_callback": "https://gg.requestcatcher.com?callback",
-        "url_redirect_success": "https://gg.requestcatcher.com?success",
-        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
-        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
-    }'
-    ```
-  </Tab>
-</Tabs>
-
 ### 
 
 Оператор может как напрямую перенаправлять пользователя на страницу оплаты, так и открывать ее в iframe на сайте проекта, или открыть в новой вкладке.
@@ -199,7 +136,6 @@ autonumber
 
 ## Обратные уведомления
 
-<Callback />
 
 ## Подтверждение операции
 

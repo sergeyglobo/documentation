@@ -20,16 +20,6 @@
             ]
           },
           {
-            "group": "Finmar Checkout HPP",
-            "pages": [
-              "integration/finmar-guide",
-              "integration/checkout",
-              "integration/redirect_to_url",
-              "integration/callbacks",
-              "integration/client_confirm_payment"
-            ]
-          },
-          {
             "group": "Фиатные платежи",
             "pages": [
               "products/card",
@@ -52,13 +42,20 @@
         "tab": "Finmar API",
         "groups": [
           {
-            "group": "Документация",
-            "openapi": "api-reference/openapi.json",
+            "group": "Интеграция",
             "pages": [
               "/api-reference/introduction",
               "/api-reference/status",
+              "/api-reference/integration/checkout",
+              "/api-reference/integration/redirect_to_url",
+              "api-reference/integration/callbacks",
+              "/api-reference/integration/client_confirm_payment",
               "/api-reference/go-live-checklist"
             ]
+          },
+          {
+            "group": "API-методы",
+            "openapi": "api-reference/openapi.json"
           }
         ]
       },

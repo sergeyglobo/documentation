@@ -10,17 +10,13 @@ Click on `Use this template` to copy the Mintlify starter kit. The starter kit c
 
 ### Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
+Install dependencies and start the local preview server (with live reload) using the provided npm script:
 
 ```
-npm i -g mintlify
+npm run dev
 ```
 
-Run the following command at the root of your documentation (where docs.json is)
-
-```
-mintlify dev
-```
+The script uses `npx mintlify dev` under the hood, so you always get the latest Mintlify CLI without any global installation. The server runs in watch mode and automatically reloads when you edit any `.mdx` page or configuration file (such as `docs.json`).
 
 ### Publishing Changes
 

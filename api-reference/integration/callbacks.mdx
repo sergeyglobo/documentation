@@ -1,0 +1,544 @@
+---
+title: "Обратные уведомления"
+description: ""
+sidebarTitle: "Обратные уведомления"
+---
+
+ 
+
+Уведомления отправляются методом `POST Content-Type:"application/json"`
+
+<Warning>
+  Для того, чтобы Ваш проект мог принимать колбеки следует обеспечить в проекте свободный (нефильтруемый) прием HTTP POST запросов с пула IP адресов:
+
+  ```
+  134.122.55.160
+  141.95.16.27
+  163.172.116.59
+  ```
+</Warning>
+
+### Проверка подлинности уведомлений
+
+Для безопасности необходимо проверять подпись уведомлений.
+
+<Expandable title="RSA-SHA256​" defaultOpen="true">
+  Информация о RSA подписи находится в заголовках HTTP сообщения:
+
+  - `X-RSA-KEY-ID` - идентификатор используемого `RSA` ключа
+  - `X-RSA-NONCE` - случайная строка `nonce`, уникальная для каждого запроса
+  - `X-RSA-SHA256-SIGN` - подпись сообщения в кодировке `base64`
+
+  #### **Алгоритм вычисления подписи:**[**​**](https://finmar.tech/prepare/integrations-v2/vimapay/docs/api/payment/api/callback#%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC-%D0%B2%D1%8B%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%B8)
+
+  1. выбирается используемый `RSA` ключ и записывается заголовок `X-RSA-KEY-ID`
+  2. генерируется случайная строка и записывается в заголовок `X-RSA-NONCE`
+  3. формируется `body` - бинарное представление **сериализованного тела** HTTP сообщения в кодировке `UTF-8` - то что будет отправлено по сети, после сериализации
+  4. вычисляется подпись `sign` для сообщения `nonce`\+`body` с помощью `RSA` с алгоритмом хеширования `SHA256` и форматом подписи `PKCS#1 v1.5`
+  5. полученная подпись `sign` кодируется в `base64` и записывается в заголовок `X-RSA-SHA256-SIGN`
+
+  #### **Алгоритм проверки подписи:**[**​**](https://finmar.tech/prepare/integrations-v2/vimapay/docs/api/payment/api/callback#%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B8-%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%B8)
+
+  1. по значению заголовка `X-RSA-KEY-ID` выбирается публичный `RSA` ключ (может быть автоматически получен вызовом CardRouting API, ключи следует кешировать)
+  2. берется значение `nonce` из заголовка `X-RSA-NONCE`
+  3. берется `body` - бинарное представление **сериализованного тела** HTTP сообщения в кодировке `UTF-8` - то что получено по сети, до десериализации
+  4. значение `X-RSA-SHA256-SIGN` преобразуется из `base64` в бинарное представление `sign`
+  5. выполняется проверка подписи `sign` для сообщения `nonce`\+`body` с помощью `RSA` с алгоритмом хеширования `SHA256` и форматом подписи `PKCS#1 v1.5`
+  6. сообщение считается аутентифицированным если проверка подписи прошла успешно
+</Expandable>
+
+<Expandable title="ECDSA-SHA256">
+  Для ECDSA используется кривая `prime256v1` (также известна как `secp256r1` и `NIST P256` ).
+
+  Информация о ECDSA подписи находится в заголовках HTTP сообщения:
+
+  - `X-ECDSA-KEY-ID` - идентификатор используемого `ECDSA` ключа
+  - `X-ECDSA-SHA256-SIGN` - подпись сообщения в кодировке `base64`
+
+  #### **Алгоритм вычисления подписи:**[**​**](https://finmar.tech/prepare/integrations-v2/vimapay/docs/api/payment/api/callback#%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC-%D0%B2%D1%8B%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%B8-1)
+
+  1. выбирается используемый `ECDSA` ключ и записывается заголовок `X-ECDSA-KEY-ID`
+  2. формируется `body` - бинарное представление представление **сериализованного тела** HTTP сообщения в кодировке `UTF-8` - то что будет отправлено по сети, после сериализации
+  3. вычисляется подпись `sign` для сообщения `body` с помощью `ECDSA` с алгоритмом хеширования `SHA256` и форматом подписи `IETF RFC 3279`
+  4. полученная подпись `sign`кодируется в `base64` и записывается в заголовок `X-ECDSA-SHA256-SIGN`
+
+  #### **Алгоритм проверки подписи:**[**​**](https://finmar.tech/prepare/integrations-v2/vimapay/docs/api/payment/api/callback#%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B8-%D0%BF%D0%BE%D0%B4%D0%BF%D0%B8%D1%81%D0%B8-1)
+
+  1. по значению заголовка `X-ECDSA-KEY-ID` выбирается публичный `ECDSA` ключ (может быть автоматически получен вызовом CardRouting API, ключи следует кешировать)
+  2. берется `body` - бинарное представление **сериализованного тела** HTTP сообщения в кодировке `UTF-8` - то что получено по сети, до десериализации
+  3. значение `X-ECDSA-SHA256-SIGN` преобразуется из `base64` в бинарное представление `sign`
+  4. выполняется проверка подписи `sign` для сообщения `body` с помощью `ECDSA` с алгоритмом хеширования `SHA256` и форматом подписи `IETF RFC 3279`
+  5. сообщение считается аутентифицированным если проверка подписи прошла успешноПримеры обработчиков обратных уведомлений
+</Expandable>
+
+#### Примеры реализации обработчиков обратных уведомлений с проверкой подписи
+
+<CodeGroup>
+
+```php callback_handler.php expandable
+<?php
+/*
+    Callback arrives with following HTTP headers:
+        x-rsa-nonce	- contains nonce value
+        x-rsa-key-id - contains rsa public key id
+        x-rsa-sha256-sign - contains rsa-sha256 signature of request body
+        x-ecdsa-key-id - contains ecdsa public key id
+        x-ecdsa-sha256-sign - contains ecdsa-sha256 signature of request body
+
+    Callback signatures check:
+        - get body of the request as utf-8
+        - get rsa public key by x-rsa-key-id
+        - get ecdsa public key by x-ecdsa-key-id
+        - calculate rsa-sha256 signature of the body
+        - compare calculated rsa-sha256 signature with x-rsa-sha256-sign
+        - calculate ecdsa-sha256 signature of the body
+        - compare calculated ecdsa-sha256 signature with x-ecdsa-sha256-sign
+    
+    Common callback JSON format:
+        {
+            "reference_id": "2fe9bb11-6033-4d9e-94d0-ad829a993e6e",
+            "user_id": "1Go2gaAQ",
+            "created_at": "0001-01-01T00:00:00",
+            "result": "fail|complete",
+            "deposit": { 
+                "amount": 10.0, 
+                "currency": "EUR" 
+            }
+            .. metadata fields ...
+        }
+    
+    In case of "complete" callback  confirmation must be sent to provider as 
+    POST to {BASE_URL}/client_confirm_success_payment_by_reference_id:
+        {
+            "reference_id": "id from callback body"
+        }
+*/
+
+// finmar base URL
+$finmar_base_url = ' https://sandbox.finmar.tech/collector/api/v3';
+
+// used for Basic HTTP auth in request
+$finmar_login = 'sandbox';
+$finmar_password = 'HLF6!nJPY&7$';
+$finmar_auth_key = base64_encode($finmar_login . ':' . $finmar_password);
+
+// allowed IP addresses
+$ip_white_list = array('134.122.55.160', '141.95.16.27', '163.172.116.59');
+$use_whitelist = false;
+
+// known RSA public keys
+$rsa_public_keys = array(
+    "rsa_5a0a491aa67d4adcbbf4f056a6916c52" =>
+    "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA06A9dAL8C54nJbzb8BOl\nMtDl+osccv+5Ayqst5jSgbRMaBMDfTewzxq90SY8hcQnjvPWEvtLrojQ2827XRxv\njKDxiiWWHVeB7zgZKAVh7p6E1fC84+WRZoaAqSErRreDbAss1w5Ouj77IFWTlvU3\nuSq0KpjHAkJz01KSiQvfn2GQfMzzHdQHJR+0Sp6/GLtpWsJkAviiyL5M6TkUxv9W\naIDN1/8MFAbn04iDWGtvx7ngrF8rqsjChQznZ7MPRDbloNS5Lslp5qXY5G/lbliO\nEmZYjcRc6Bth/opSpqFcf1cuwCgfgPgVHlXn7h3ilSWG94idniKLD8iudpQhe9X5\nwCjmMrLYSz3I0oMWycyexcxRPb8RzaqYFmIBN5kyUsGi1CVvXAC93rBGMNpZHxCf\nvoD07tkXRRREqdKrpASUUnFpyGQhuYxWYNFNDM9VJj7A3V81+zSxUMQ3Yh7ASo2x\npBWHlnkAPZm9WXjx+kZLr7XsYdeXN5X+MFZsTAn5WWmWOTs6IjCbOvR/TaEh2cUq\n4dIDE/43JYSfBqilM8FTCFkcKRyHEmSxELEstUGcTIAk8bNiW9QIzIH9F+kI0+Cx\nAgnioYHmBn7cFXUrXbG8lnh8FQ9IarwGtm5NSZxEgNtdgw0NesEse6VrFwCa78nL\nOqKXbZ77tjdr9C/UeKTLzrcCAwEAAQ==\n-----END PUBLIC KEY-----\n"
+);
+
+// known ECDSA public keys
+$ecdsa_public_keys = array(
+    "ecdsa_0367cda2b64f4db3b29f9faac7fe6419" =>
+    "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBZXR4hpDPlG/jIBjeUKNpnyAIMVY\nUFc7X5/BHdnW3TmXyQht1DG05DmdCtwROD0orI1jGRQmP7PDWV2MB1xuRQ==\n-----END PUBLIC KEY-----\n"
+);
+
+// check callback source IP address
+function check_client_ip()
+{
+    global $ip_white_list;
+    global $use_whitelist;
+    if (!$use_whitelist) {
+        return;
+    }
+    if (!in_array($_SERVER['REMOTE_ADDR'], $ip_white_list)) {
+        http_response_code(403);
+        die('IP not allowed');
+    }
+}
+
+// get POST body
+function get_post_body()
+{
+    // check request method
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        die('Method Not Allowed');
+    }
+    $body = file_get_contents('php://input');
+    if ($body === false) {
+        http_response_code(400);
+        die('Bad request');
+    }
+    return $body;
+}
+
+// get RSA data from headers
+function get_rsa_data()
+{
+    global $rsa_public_keys;
+
+    // check key ID
+    $key_id = @$_SERVER['HTTP_X_RSA_KEY_ID'];
+    if ($key_id === null) {
+        http_response_code(400);
+        die('X-RSA-KEY-ID not set');
+    }
+    if (!array_key_exists($key_id, $rsa_public_keys)) {
+        http_response_code(400);
+        die('RSA key not found by X-RSA-KEY-ID');
+    }
+
+    // check nonce
+    $rsa_nonce = @$_SERVER['HTTP_X_RSA_NONCE'];
+    if ($rsa_nonce === null) {
+        http_response_code(400);
+        die('X-RSA-NONCE not set');
+    }
+
+    // check signature
+    $rsa_signature = @$_SERVER['HTTP_X_RSA_SHA256_SIGN'];
+    if ($rsa_signature === null) {
+        http_response_code(400);
+        die('X-RSA-SHA256-SIGN not set');
+    }
+    // return all data as associative array
+    return array(
+        'key_id' => $key_id,
+        'nonce' => $rsa_nonce,
+        'signature' => $rsa_signature,
+        'public_key' => $rsa_public_keys[$key_id]
+    );
+}
+
+// get ECDSA data from headers
+function get_ecdsa_data()
+{
+    global $ecdsa_public_keys;
+
+    // check key ID
+    $key_id = @$_SERVER['HTTP_X_ECDSA_KEY_ID'];
+    if ($key_id === null) {
+        http_response_code(400);
+        die('X-ECDSA-KEY-ID not set');
+    }
+    if (!array_key_exists($key_id, $ecdsa_public_keys)) {
+        http_response_code(400);
+        die('ECDSA key not found by X-ECDSA-KEY-ID');
+    }
+
+    // check signature
+    $ecdsa_signature = @$_SERVER['HTTP_X_ECDSA_SHA256_SIGN'];
+    if ($ecdsa_signature === null) {
+        http_response_code(400);
+        die('X-ECDSA-SHA256-SIGN not set');
+    }
+    // return all data as associative array
+    return array(
+        'key_id' => $key_id,
+        'signature' => $ecdsa_signature,
+        'public_key' => $ecdsa_public_keys[$key_id]
+    );
+}
+
+// check RSA by provided data
+function check_rsa_sign($body, $rsa)
+{
+    // Combine nonce and body
+    $data = $rsa['nonce'] . $body;
+
+    // Decode base64 signature
+    $signature = base64_decode($rsa['signature']);
+    if ($signature === false) {
+        return false;
+    }
+
+    // Create public key resource
+    $pubkey = openssl_pkey_get_public($rsa['public_key']);
+    if ($pubkey === false) {
+        return false;
+    }
+
+    // Verify signature
+    $result = openssl_verify(
+        $data,
+        $signature,
+        $pubkey,
+        OPENSSL_ALGO_SHA256
+    );
+
+    // Return true if signature is valid (result === 1)
+    return $result === 1;
+}
+
+// check ECDSA by provided data
+function check_ecdsa_sign($body, $ecdsa)
+{
+    // Decode base64 signature
+    $signature = base64_decode($ecdsa['signature']);
+    if ($signature === false) {
+        return false;
+    }
+
+    // Create public key resource
+    $pubkey = openssl_pkey_get_public($ecdsa['public_key']);
+    if ($pubkey === false) {
+        return false;
+    }
+
+    // Verify signature
+    $result = openssl_verify(
+        $body,
+        $signature,
+        $pubkey,
+        OPENSSL_ALGO_SHA256
+    );
+
+    // Return true if signature is valid (result === 1)
+    return $result === 1;
+}
+
+// get reference ID from JSON body
+function get_reference_id($body)
+{
+    $data = json_decode($body, true);
+    return $data['reference_id'];
+}
+
+// get callback result from JSON body
+function get_callback_result($body)
+{
+    $data = json_decode($body, true);
+    return $data['result'];
+}
+
+// send confirmation request to provider
+function confirm_operation($body)
+{
+    global $finmar_base_url, $finmar_auth_key;
+    // get reference ID
+    $reference_id = get_reference_id($body);
+    if ($reference_id === null) {
+        http_response_code(400);
+        die('Confirmation failed - reference ID not found in body');
+    }
+    $url = $finmar_base_url . '/client_confirm_success_payment_by_reference_id';
+    // encode data
+    $data = json_encode(array('reference_id' => $reference_id));
+    // make post with curl
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Content-Length: ' . strlen($data),
+        'Authorization: Basic ' . $finmar_auth_key
+    ));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    // check response status
+    if ($status !== 200) {
+        http_response_code(400);
+        die('Confirmation failed - ' . $response);
+    }
+}
+
+// send text/plain response
+header('Content-Type: application/json');
+// check client IP
+check_client_ip();
+
+// required data
+$body = get_post_body();
+$rsa = get_rsa_data();
+$ecdsa = get_ecdsa_data();
+
+// check RSA signature
+if (!check_rsa_sign($body, $rsa)) {
+    http_response_code(400);
+    die('RSA signature check failed');
+}
+
+// check ECDSA signature
+if (!check_ecdsa_sign($body, $ecdsa)) {
+    http_response_code(400);
+    die('ECDSA signature check failed');
+}
+
+// check if callback is complete
+if (get_callback_result($body) === 'complete') {
+    confirm_operation($body);
+}
+
+// return empty response on success
+http_response_code(200);
+echo "{}";
+```
+
+
+```javascript callback_handler.js expandable
+const http = require('http');
+const crypto = require('crypto');
+
+// Configuration
+const config = {
+    finmarBaseUrl: 'https://sandbox.finmar.tech/collector/api/v3',
+    finmarAuth: Buffer.from('sandbox:HLF6!nJPY&7$').toString('base64'),
+    ipWhitelist: ['134.122.55.160', '141.95.16.27', '163.172.116.59'],
+    useWhitelist: false,
+    port: 3000,
+
+    rsaPublicKeys: {
+        "rsa_5a0a491aa67d4adcbbf4f056a6916c52":
+            "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA06A9dAL8C54nJbzb8BOl\nMtDl+osccv+5Ayqst5jSgbRMaBMDfTewzxq90SY8hcQnjvPWEvtLrojQ2827XRxv\njKDxiiWWHVeB7zgZKAVh7p6E1fC84+WRZoaAqSErRreDbAss1w5Ouj77IFWTlvU3\nuSq0KpjHAkJz01KSiQvfn2GQfMzzHdQHJR+0Sp6/GLtpWsJkAviiyL5M6TkUxv9W\naIDN1/8MFAbn04iDWGtvx7ngrF8rqsjChQznZ7MPRDbloNS5Lslp5qXY5G/lbliO\nEmZYjcRc6Bth/opSpqFcf1cuwCgfgPgVHlXn7h3ilSWG94idniKLD8iudpQhe9X5\nwCjmMrLYSz3I0oMWycyexcxRPb8RzaqYFmIBN5kyUsGi1CVvXAC93rBGMNpZHxCf\nvoD07tkXRRREqdKrpASUUnFpyGQhuYxWYNFNDM9VJj7A3V81+zSxUMQ3Yh7ASo2x\npBWHlnkAPZm9WXjx+kZLr7XsYdeXN5X+MFZsTAn5WWmWOTs6IjCbOvR/TaEh2cUq\n4dIDE/43JYSfBqilM8FTCFkcKRyHEmSxELEstUGcTIAk8bNiW9QIzIH9F+kI0+Cx\nAgnioYHmBn7cFXUrXbG8lnh8FQ9IarwGtm5NSZxEgNtdgw0NesEse6VrFwCa78nL\nOqKXbZ77tjdr9C/UeKTLzrcCAwEAAQ==\n-----END PUBLIC KEY-----\n"
+    },
+
+    ecdsaPublicKeys: {
+        "ecdsa_0367cda2b64f4db3b29f9faac7fe6419":
+            "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBZXR4hpDPlG/jIBjeUKNpnyAIMVY\nUFc7X5/BHdnW3TmXyQht1DG05DmdCtwROD0orI1jGRQmP7PDWV2MB1xuRQ==\n-----END PUBLIC KEY-----\n"
+    }
+};
+
+// Utility functions
+const checkClientIp = (req) => {
+    if (!config.useWhitelist) return true;
+    return config.ipWhitelist.includes(req.socket.remoteAddress);
+};
+
+const verifyRsaSignature = (body, headers) => {
+    const keyId = headers['x-rsa-key-id'];
+    const nonce = headers['x-rsa-nonce'];
+    const signature = headers['x-rsa-sha256-sign'];
+
+    if (!keyId || !nonce || !signature || !config.rsaPublicKeys[keyId]) {
+        return false;
+    }
+
+    try {
+        const verify = crypto.createVerify('SHA256');
+        verify.update(nonce + body);
+        return verify.verify(
+            config.rsaPublicKeys[keyId],
+            Buffer.from(signature, 'base64')
+        );
+    } catch (err) {
+        console.error('RSA verification error:', err);
+        return false;
+    }
+};
+
+const verifyEcdsaSignature = (body, headers) => {
+    const keyId = headers['x-ecdsa-key-id'];
+    const signature = headers['x-ecdsa-sha256-sign'];
+
+    if (!keyId || !signature || !config.ecdsaPublicKeys[keyId]) {
+        return false;
+    }
+
+    try {
+        const verify = crypto.createVerify('SHA256');
+        verify.update(body);
+        return verify.verify(
+            config.ecdsaPublicKeys[keyId],
+            Buffer.from(signature, 'base64')
+        );
+    } catch (err) {
+        console.error('ECDSA verification error:', err);
+        return false;
+    }
+};
+
+const confirmOperation = async (referenceId) => {
+    const data = JSON.stringify({ reference_id: referenceId });
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${config.finmarAuth}`,
+            'Content-Length': Buffer.byteLength(data)
+        }
+    };
+
+    return new Promise((resolve, reject) => {
+        const req = http.request(
+            `${config.finmarBaseUrl}/client_confirm_success_payment_by_reference_id`,
+            options,
+            (res) => {
+                let responseData = '';
+                res.on('data', chunk => responseData += chunk);
+                res.on('end', () => {
+                    if (res.statusCode === 200) {
+                        resolve(responseData);
+                    } else {
+                        reject(new Error(`Confirmation failed: ${responseData}`));
+                    }
+                });
+            }
+        );
+
+        req.on('error', reject);
+        req.write(data);
+        req.end();
+    });
+};
+
+// Create HTTP server
+const server = http.createServer(async (req, res) => {
+    try {
+        // Check request method
+        if (req.method !== 'POST') {
+            res.writeHead(405);
+            return res.end('Method Not Allowed');
+        }
+
+        // Check IP whitelist
+        if (!checkClientIp(req)) {
+            res.writeHead(403);
+            return res.end('IP not allowed');
+        }
+
+        // Get request body
+        let body = '';
+        for await (const chunk of req) {
+            body += chunk;
+        }
+
+        // Verify signatures
+        if (!verifyRsaSignature(body, req.headers)) {
+            res.writeHead(400);
+            return res.end('RSA signature check failed');
+        }
+
+        if (!verifyEcdsaSignature(body, req.headers)) {
+            res.writeHead(400);
+            return res.end('ECDSA signature check failed');
+        }
+
+        // Process callback
+        const data = JSON.parse(body);
+        if (data.result === 'complete') {
+            try {
+                await confirmOperation(data.reference_id);
+            } catch (err) {
+                res.writeHead(400);
+                return res.end(err.message);
+            }
+        }
+
+        // Success response
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end('{}');
+
+    } catch (err) {
+        console.error('Server error:', err);
+        res.writeHead(500);
+        res.end('Internal Server Error');
+    }
+});
+
+// Start server
+server.listen(config.port, () => {
+    console.log(`Server running on port ${config.port}`);
+});
+```
+
+</CodeGroup>
+    

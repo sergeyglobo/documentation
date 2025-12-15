@@ -1,0 +1,222 @@
+---
+title: "Создание операции"
+description: " "
+sidebarTitle: "Создание операции"
+---
+
+Для создания платёжной операции необходимо отправить запрос к API Finmart. 
+В ответ вы получите ссылку на платёжную страницу и идентификатор операции.
+
+## Обязательные параметры создания
+
+- `method` - метод оплаты (`card`, `openbanking`, `applepay`, `googlepay`,`apm`, `widget_integration`, `cashbox` и др.)
+- `payment_profile` - платёжный профиль. Обычно это `production` или `sandbox`, однако в ряде случаев возможны индивидуальные профили.
+- `amount.amount` - сумма операции.
+- `amount.currency` - валюта операции.
+- `user.user_id` - идентификатор пользователя.
+
+
+## Важные моменты
+- Используйте уникальный `client_operation_id` для каждой операции
+- Сохраняйте `reference_id` для дальнейшей работы с операцией
+- Убедитесь, что URL для `url_callback` и `url_redirect_success`/ `url_redirect_fail` доступны и корректны.
+- Не выполняйте запрос к API прямо из браузера в продакшене — используйте ваш сервер как прокси
+
+
+## Примеры запросов
+ 
+<Tabs>
+  <Tab title="Банковская карта HPP">
+
+
+    ```bash
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "card",
+         "client_operation_id": "Fz022tCSaBuvvfQckp",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+  <Tab title="Банковская карта H2H">
+ 
+    ```bash
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cHJldmlld19wcmVwcm9kOnFuYTRibmZhc3FrMjl1cTE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "card",
+        "client_operation_id": "Fz022tCSaBuvvfQckp",
+        "user": {
+            "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
+        },
+        "bank_card": {
+            "cardholder": "NAME FNAME",
+            "cvv": "190",
+            "pan": "4111111111111111",
+            "expiration_month": 11,
+            "expiration_year": 29
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+
+    <Tab title="Openbanking">
+
+
+    ```bash
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "openbanking",
+        "client_operation_id": "324234213",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+
+  <Tab title="Apple Pay">
+
+
+    ```bash
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "applepay",
+        "client_operation_id": "324234213",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+
+    <Tab title="Google Pay">
+
+
+    ```JSON
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "googlepay",
+        "method": "applepay",
+        "client_operation_id": "324234213",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+
+    <Tab title="Widget Intagration">
+
+
+    ```
+    
+    curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
+    --data '{
+        "payment_profile": "sandbox",
+        "method": "widget_integration",
+        "client_operation_id": "324234213",
+        "user": {
+            "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+        },
+        "amount": {
+            "amount": "9",
+            "currency": "EUR"
+        },
+        "url_callback": "https://gg.requestcatcher.com?callback",
+        "url_redirect_success": "https://gg.requestcatcher.com?success",
+        "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+        "merchant_user_entry_point_url": "https://mechant.site/cashier/deposit"
+    }'
+    ```
+  </Tab>
+</Tabs>
+
+
+
+## Пример ответа
+
+```JSON
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+В ответе вы получите:
+- `success` - true/false. Обязательный параметр.
+- `result.url` - Сссылка на платёжную страницу. Обязательный параметр в случае успешного создания операции. 
+- `result.launch_type` - опциональный параметр. Рекомендуемый способ показа платёжной страницы пользователю.
+- `kyc_status` - опциональный параметр. Наличие данных KYC пользователя.
+- `user_stats` - опциональный параметр. Наличие статистических данных пользователя.
+
+
+
+ 

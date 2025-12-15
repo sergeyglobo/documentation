@@ -1,0 +1,167 @@
+---
+title: "Подтверждение операции"
+description: " "
+sidebarTitle: "Подтверждение обработки операции"
+---
+ 
+
+После обработки операции, необходимо сообщить сервису о том что обработка успешно выполнена.
+
+## Подтверждение обработки операции
+
+После успешной обработки операции необходимо подтвердить её обработку в Finmart API.
+
+### Методы подтверждения
+
+#### 1. По reference_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "reference_id": "op_123456789"
+}'
+```
+
+#### 2. По client_operation_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_client_operation_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "client_operation_id": "unique-operation-id"
+}'
+```
+
+#### 3. Подтверждение всех неподтверждённых операций
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_all' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{}'
+```
+
+## Запрос неподтверждённых операций
+
+Рекомендуется периодически запрашивать список неподтверждённых успешных операций для обработки тех, которые могли быть пропущены.
+
+### Запрос неподтверждённых операций
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments' \
+--header 'Authorization: Basic YOUR_CREDENTIALS'
+```
+
+### Ответ
+
+```json
+[
+    {
+        "reference_id": "op_123456789",
+        "client_operation_id": "unique-operation-id",
+        "user_id": "user-123",
+        "complete_amount": "100",
+        "complete_currency": "EUR",
+        "status": "success",
+        "payment_method_type": "card",
+        "payment_method_product": "widget_card"
+    }
+]
+```
+
+### Обработка массива операций
+
+```javascript
+async function processUnconfirmedOperations() {
+    // 1. Запрос неподтверждённых операций
+    const response = await fetch(
+        'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments',
+        {
+            headers: {
+                'Authorization': 'Basic YOUR_CREDENTIALS'
+            }
+        }
+    );
+    
+    const operations = await response.json();
+    
+    // 2. Обработка каждой операции
+    for (const operation of operations) {
+        try {
+            await processOperation(operation);
+        } catch (error) {
+            console.error(`Error processing operation ${operation.reference_id}:`, error);
+            // Продолжаем обработку остальных операций
+        }
+    }
+}
+
+// Запуск каждые 5 минут
+setInterval(processUnconfirmedOperations, 5 * 60 * 1000);
+```
+
+## Важные параметры операции
+
+При обработке операции обращайте внимание на следующие параметры:
+
+<ParamField path="reference_id" type="string">
+  Идентификатор операции на стороне сервиса. Используйте для подтверждения операции.
+</ParamField>
+
+<ParamField path="client_operation_id" type="string">
+  Ваш идентификатор операции. Сохраняется для связи с вашей системой.
+</ParamField>
+
+<ParamField path="user_id" type="string">
+  Идентификатор пользователя, которому нужно зачислить средства.
+</ParamField>
+
+<ParamField path="complete_amount" type="string">
+  Сумма для зачисления пользователю.
+</ParamField>
+
+<ParamField path="complete_currency" type="string">
+  Валюта зачисления.
+</ParamField>
+
+<ParamField path="status" type="string">
+  Статус операции. Обрабатывайте только операции со статусом "success".
+</ParamField>
+
+## Рекомендации
+
+1. **Идемпотентность**: Всегда проверяйте, не обработана ли операция ранее
+2. **Обработка ошибок**: Обрабатывайте ошибки при подтверждении операции
+3. **Периодический опрос**: Используйте периодический запрос неподтверждённых операций как резервный механизм
+4. **Логирование**: Логируйте все операции для отладки и аудита
+5. **Транзакции**: Используйте транзакции БД для атомарности операций
+
+## Схема работы
+
+```mermaid
+sequenceDiagram
+    participant API as Finmart API
+    participant Server as Ваш сервер
+    participant DB as База данных
+
+    API->>Server: Webhook уведомление
+    Server->>DB: Проверка дубликата
+    alt Операция не обработана
+        Server->>DB: Зачисление средств
+        Server->>DB: Сохранение операции
+        Server->>API: Подтверждение операции
+    end
+    
+    Note over Server: Периодический опрос (каждые 5 мин)
+    Server->>API: GET /client_unconfirmed_success_payments
+    API-->>Server: Массив операций
+    loop Для каждой операции
+        Server->>DB: Обработка операции
+        Server->>API: Подтверждение операции
+    end
+```
+
+

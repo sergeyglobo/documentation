@@ -1,0 +1,17 @@
+{
+  "name": "vimapay-docs",
+  "version": "1.0.0",
+  "description": "Документация Vimapay на базе Mintlify",
+  "private": true,
+  "scripts": {
+    "dev": "npx mintlify dev --port 3333",
+    "install:mintlify": "npx mintlify install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "mint": "^4.2.218",
+    "rxjs": "^7.8.2"
+  }
+}

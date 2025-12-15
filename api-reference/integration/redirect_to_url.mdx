@@ -1,0 +1,105 @@
+---
+title: "Перенаправление пользователя на платёжную страницу"
+description: " "
+sidebarTitle: "Перенаправление пользователя на платёжную страницу"
+---
+
+В ответ на запрос создания, вы получите ответ вида: 
+
+```JSON
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+Особое внимание следует обратить на опциональный параметр `result.launch_type` - это рекомендуемый способ отображения платёжной страницы пользователю: `iframe`, `new_window` или `redirect`. 
+
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+ 
+<Warning>
+Если в ответе на запрос создания параметр `result.launch_type` отсутствует, то можно перенаправлять пользователя на `result.url` любым удобным способом.
+</Warning>
+
+
+
+### Прямое перенаправление
+
+При `result.launch_type=redirect`, рекомендуемый способ показа страницы - перенаправление пользователя в текущей вкладке браузера:
+
+```javascript
+// После получения payment_url от API
+window.location.href = result.url;
+```
+
+### Открытие в iframe
+
+При `result.launch_type=iframe`, следует отобразить платёжную страницу в iframe на вашем сайте:
+
+```html
+<iframe 
+    src="result.url" 
+    width="100%" 
+    height="800px"
+    frameborder="0">
+</iframe>
+```
+
+**Важно:** Некоторые платёжные провайдеры могут некорректно работать в iframe из-за политики безопасности. 
+В этом случае используйте прямое перенаправление или открытие в новой вкладке/окне.
+
+### Открытие в новой вкладке/окне
+При `result.launch_type=new_window`, следует **обязательно** открывать платёжную страницу в новой вкладке:
+
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+ 
+
+```javascript
+window.open(result.url, '_blank');
+```
+
+
+## Обработка возврата пользователя
+
+После завершения платежа пользователь будет перенаправлен на один из указанных вами URL:
+
+- `url_redirect_success` - при успешной оплате
+- `url_redirect_fail` - при неуспешной оплате
+
+На этих страницах вы можете:
+
+1. Показать пользователю результат операции
+2. Обновить баланс пользователя
+3. Перенаправить на соответствующую страницу вашего сайта
+

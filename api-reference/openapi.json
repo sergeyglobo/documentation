@@ -186,7 +186,7 @@
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ]
             }
@@ -403,14 +403,11 @@
                                 }
                             }
                         }
-                    },
-                    "2XX": {
-                        "description": "Success"
                     }
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [
@@ -766,14 +763,11 @@
                                 }
                             }
                         }
-                    },
-                    "2XX": {
-                        "description": "Success"
                     }
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [
@@ -1116,14 +1110,11 @@
                                 }
                             }
                         }
-                    },
-                    "2XX": {
-                        "description": "Success"
                     }
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [
@@ -1278,7 +1269,7 @@
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [],
@@ -1347,7 +1338,7 @@
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [],
@@ -1419,7 +1410,7 @@
                 },
                 "security": [
                     {
-                        "Basic": []
+                        "basicAuth": []
                     }
                 ],
                 "parameters": [],
@@ -1737,6 +1728,33 @@
                 "properties": {
                     "url": {
                         "type": "string"
+                    },
+                    "launch_type": {
+                        "type": "string",
+                        "description": "тип запуска платёжной страницы",
+                        "enum": [
+                            "iframe",
+                            "new_window",
+                            "redirect"
+                        ]
+                    },
+                    "kyc_status": {
+                        "type": "string",
+                        "description": "статус KYC проверки",
+                        "enum": [
+                            "none",
+                            "pending",
+                            "success",
+                            "fail"
+                        ]
+                    },
+                    "user_stats": {
+                        "type": "string",
+                        "description": "статистика пользователя",
+                        "enum": [
+                            "not_present",
+                            "present"
+                        ]
                     }
                 },
                 "additionalProperties": true
@@ -2778,7 +2796,7 @@
             }
         },
         "securitySchemes": {
-            "Basic": {
+            "basicAuth": {
                 "type": "http",
                 "scheme": "basic"
             }
