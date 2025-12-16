@@ -1,6 +1,6 @@
 ---
 title: "Создание операции"
-description: " "
+description: "Создание платёжной операции через API Finmar"
 sidebarTitle: "1. Создание операции"
 ---
 import TestCards from '/snippets/test-cards.mdx';
@@ -132,8 +132,8 @@ import TestCards from '/snippets/test-cards.mdx';
     --header 'Content-Type: application/json' \
     --header 'Authorization: Basic cGxheWJybzptcTRWIWllNXFYaEE=' \
     --data '{
-        "payment_profile": "googlepay",
-        "method": "applepay",
+        "payment_profile": "sandbox",
+        "method": "googlepay",
         "client_operation_id": "324234213",
         "user": {
             "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
@@ -150,7 +150,7 @@ import TestCards from '/snippets/test-cards.mdx';
     ```
 
 
-### Widget Intagration
+### Widget Integration
    ```bash
     curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
     --header 'Content-Type: application/json' \

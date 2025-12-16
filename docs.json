@@ -48,7 +48,7 @@
               "/api-reference/status",
               "/api-reference/integration/checkout",
               "/api-reference/integration/redirect_to_url",
-              "api-reference/integration/callbacks",
+              "/api-reference/integration/callbacks",
               "/api-reference/integration/client_confirm_payment",
               "/api-reference/go-live-checklist"
             ]
@@ -71,6 +71,16 @@
     ],
     "global": {
       
+    }
+  },
+   "api": {
+    "playground": {
+      "display": "interactive"
+    },
+    "examples": {
+      "languages": ["curl", "javascript" , "python", "php"],
+           "defaults": "all",
+     "prefill": true
     }
   },
   "logo": {
