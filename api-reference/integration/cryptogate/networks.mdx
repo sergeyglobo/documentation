@@ -1,0 +1,52 @@
+---
+title: "Получение списка сетей и монет"
+description: "Как запросить поддерживаемые сети, активы и минимальные суммы для криптодепозита"
+sidebarTitle: "1. Сети и монеты"
+---
+
+Для старта интеграции запросите перечень доступных сетей и активов вместе с минимальными суммами депозита через `GET /gate/deposit/currencies/{payment_profile}`.
+
+<Steps>
+  <Step title="Отправьте запрос">
+    Укажите платёжный профиль и, при необходимости, `project_id`.
+
+    <RequestExample>
+    ```bash gate/deposit/currencies
+    curl --request GET \
+      --url "https://sandbox.finmar.tech/gate/deposit/currencies/sandbox?project_id=preview" \
+      --header "Authorization: Basic BASE64_LOGIN_PASSWORD"
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Разберите ответ">
+    Ответ содержит список сетей и активов с минимальными суммами.
+
+    <ResponseExample>
+    ```json Success
+    {
+      "success": true,
+      "trace_id": "99395c4231744dbd934a6342ecca878a",
+      "result": [
+        {
+          "crypto_network": "TRX",
+          "crypto_assets": [
+            { "asset_name": "TRX", "min_amount": "1.0" },
+            { "asset_name": "USDT", "min_amount": "5.0" }
+          ]
+        }
+      ]
+    }
+    ```
+    </ResponseExample>
+
+    <Tip>
+      Минимальные суммы обновляются — сверяйте значения перед показом пользователю.
+    </Tip>
+  </Step>
+</Steps>
+
+<Check>
+  Сохраните `trace_id` для трассировки и логируйте выбранную пару `crypto_network`/`asset_name`.
+</Check>
+

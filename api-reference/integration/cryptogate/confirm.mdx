@@ -1,0 +1,40 @@
+---
+title: "Подтверждение обработки операции"
+description: "Как подтвердить успешную обработку криптодепозита по reference_id"
+sidebarTitle: "5. Подтверждение"
+---
+
+После зачисления средств на баланс пользователя подтвердите операцию, используя `reference_id` из колбека.
+
+<Steps>
+  <Step title="Вызовите подтверждение">
+    Используйте `POST /collector/api/v3/client_confirm_payment_by_reference_id`.
+
+    <RequestExample>
+    ```bash client_confirm_payment_by_reference_id
+    curl --request POST \
+      --url https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id \
+      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
+      --header "Content-Type: application/json" \
+      --data '{ "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c" }'
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Ожидаемый ответ">
+    <ResponseExample>
+    ```json Success
+    { "result": "success" }
+    ```
+    </ResponseExample>
+
+    <Tip>
+      Повторяйте подтверждение при сетевых ошибках. Запрос идемпотентен для одного `reference_id`.
+    </Tip>
+  </Step>
+</Steps>
+
+<Warning>
+  Без подтверждения операция останется в статусе «успешно, но не подтверждено», и последует переотправка колбеков (до 10 попыток).
+</Warning>
+

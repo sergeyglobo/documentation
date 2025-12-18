@@ -42,7 +42,7 @@
         "tab": "Finmar API",
         "groups": [
           {
-            "group": "Интеграция",
+            "group": "Фиатные платежи",
             "pages": [
               "/api-reference/introduction",
               "/api-reference/status",
@@ -51,6 +51,19 @@
               "/api-reference/integration/callbacks",
               "/api-reference/integration/client_confirm_payment",
               "/api-reference/go-live-checklist"
+            ]
+          },
+                    {
+            "group": "Криптогейт",
+            "pages": [
+              "/api-reference/introduction",
+              "/api-reference/status",
+              "/api-reference/integration/cryptogate/networks",
+              "/api-reference/integration/cryptogate/get-address",
+              "/api-reference/integration/cryptogate/get-url",
+              "/api-reference/integration/cryptogate/callbacks",
+              "/api-reference/integration/cryptogate/confirm",
+              "/api-reference/integration/cryptogate/checklist"
             ]
           },
           {

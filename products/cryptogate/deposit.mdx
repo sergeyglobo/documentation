@@ -8,17 +8,19 @@ description: "Приём платежей в криптовалютах"
 
 <Steps>
   <Step title="Проект запрашивает список доступных сетей и ассетов">
-    Проект запрашивает список доступных сетей, криптоактивов и минимальных сумм депозита с помощью метода `GET /gate/deposit/currencies/{payment_profile}`.
 
-    <Expandable title="Пример запроса">
+###  Запрос доступных сетей и ассетов
+    Используйте метод [`GET /gate/deposit/currencies/{payment_profile}`](/api-reference/криптогейт/gatedepositcurrencies) для получения списка доступных сетей и монет.
+
+    Пример запроса:
       ```bash gate/deposit/currencies
       curl --request GET \
         --url 'https://sandbox.finmar.tech/gate/deposit/currencies/sandbox?project_id=preview' \
         --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
       ```
-    </Expandable>
-
-    <Expandable title="Пример ответа">
+    
+Пример ответа:
+  
       ```json gate/deposit/currencies
       {
         "success": true,
@@ -53,18 +55,182 @@ description: "Приём платежей в криптовалютах"
         ]
       }
       ```
-    </Expandable>
+  
+
+</Step>
+
+  <Step title="Запрос статичного криптоадреса пользователя">
+  ###  Запрос статичного криптоадреса пользователя
+
+    Используйте этот метод [`POST /gate/get-address`](/api-reference/криптогейт/gateget-address), чтобы получить уникальный депозитный адрес для пользователя.
+    
+   
+    #### Параметры запроса
+    <ParamField body="payment_profile" type="string" required>
+      Платёжный профиль, для которого запрашивается адрес.
+    </ParamField>
+    <ParamField body="project_id" type="string">
+      Идентификатор проекта (если используется).
+    </ParamField>
+    <ParamField body="user" type="object" required>
+      Данные пользователя. Обязательно `user_id`.
+    </ParamField>
+    <ParamField body="crypto_network" type="string" required>
+      Сеть криптовалюты (например, `TRX`, `MATIC`, `ETH`).
+    </ParamField>
+    <ParamField body="crypto_asset" type="string">
+      Опционально: криптоактив, если требуется зафиксировать конкретную монету.
+    </ParamField>
+    <ParamField body="url_callback" type="string">
+      URL для получения колбеков.
+    </ParamField>
+
+  
+ 
+ Пример запроса:
+
+    ```bash gate/get-address
+    curl --request POST \
+      --url https://sandbox.finmar.tech/gate/get-address \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "payment_profile": "sandbox",
+        "project_id": "preview",
+        "crypto_network": "TRX",
+        "crypto_asset": "USDT",
+        "user": { "user_id": "123" },
+        "url_callback": "https://merchant.example.com/cryptogate/callback"
+      }'
+    ```
+ 
+
+ Пример ответа:
+    ```json Success
+    {
+      "success": true,
+      "trace_id": "c0f5e1af2d404f4f9b3f4e3aa4e2481e",
+      "result": {
+        "address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
+      }
+    }
+    ```
+    <Tip>
+      Сохраняйте `reference_id` и связку `user_id`/`address`, чтобы однозначно обрабатывать входящие колбеки и предотвращать повторные зачисления.
+    </Tip>
+
   </Step>
+
+  <Step title="Запрос виджета с криптоадресом пользователя">
+   ###  Запрос виджета с криптоадресом пользователя
+    Если нужно открыть виджет криптоадреса в iframe или новом окне с предзаполненными параметрами, используйте [`POST gate/get-url`](/api-reference/криптогейт/gateget-url).
+#### Параметры запроса
+    <ParamField body="payment_profile" type="string" required>
+      Платёжный профиль.
+    </ParamField>
+    <ParamField body="project_id" type="string">
+      Идентификатор проекта (опционально).
+    </ParamField>
+    <ParamField body="user" type="object" required>
+      Обязательно `user_id`; можно передать контактные данные и KYC.
+    </ParamField>
+    <ParamField body="amount" type="object">
+      Сумма и валюта для старта сценария (например, `USD`).
+    </ParamField>
+    <ParamField body="amount_alternatives" type="array">
+      Альтернативные стартовые суммы в других валютах.
+    </ParamField>
+    <ParamField body="crypto_network" type="string">
+      Сеть для криптовалютного сценария.
+    </ParamField>
+    <ParamField body="crypto_asset" type="string">
+      Криптоактив, если нужно зафиксировать монету.
+    </ParamField>
+    <ParamField body="url_callback" type="string">
+      URL для колбеков (совпадает с адресом обработки депозитов).
+    </ParamField>
+ 
+ 
+     
+    Пример запроса:
+
+    ```bash gate/get-url
+    curl --request POST \
+      --url https://sandbox.finmar.tech/gate/get-url \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "payment_profile": "sandbox",
+        "project_id": "preview",
+        "user": { "user_id": "123" },
+        "amount": { "amount": "10.00", "currency": "USD" },
+        "crypto_network": "TRX",
+        "crypto_asset": "USDT",
+        "url_callback": "https://merchant.example.com/cryptogate/callback"
+      }'
+    ```
+ 
+
+ 
+Пример ответа:
+    ```json Success
+    {
+      "success": true,
+      "trace_id": "f7a3c9b34f33401e8fd990c9b65e8a93",
+      "result": {
+        "url": "https://crypto.cheipho.com/payment-front/d7145622-db72-4b7d-99a1-97236645f8f5",
+        "launch_type": "iframe",
+        "kyc_status": "approved",
+        "user_stats": "present"
+      }
+    }
+    ```
+ 
+
+
+     </Step>
+   
+
   <Step title="Пользователь осуществляет отправку криптоактивов на полученный адрес">
     
   </Step>
-  <Step title="Сервис осуществляет отправку уведомления в проект">
-    При получении достаточного числа подтверждений для используемой сети, сервис отправляет на заранее указанный адрес получения уведомлений `url_callback` колбек, о получении криптоактивов
 
-    <Expandable title="Примеры колбеков">
+ 
+  <Step title="Сервис осуществляет отправку уведомления в проект">
+
+  ### Обратные уведомления 
+
+    После получения достаточного числа подтверждений для используемой сети, сервис отправляет на заранее указанный адрес получения уведомлений `url_callback` колбек, о получении криптоактивов
+
  
 
-      ```json TRX
+ 
+
+#### Параметры тела уведомления
+
+    | **Параметр**              | **Тип**       | **Описание** |
+    | :------------------------ | :------------ | :----------- |
+    | `reference_id`           | string        | Глобально уникальный идентификатор операции, присвоенный сервисом. Вы должны сохранить его и использовать для подтверждения операции. |
+    | `user_id`                | string        | Идентификатор пользователя на стороне проекта. |
+    | `result`                 | string        | Итоговый результат обработки операции (`complete`, `fail` и т.д.). Для депозитов, которые нужно зачислить, значение равно `complete`. |
+    | `current_status`         | string        | Текущий статус операции. Для успешных депозитов — `success`. |
+    | `payment_product`        | string        | Код платёжного продукта, например `cryptogate` или `cryptogate_direct`. |
+    | `payment_method_type`    | string        | Тип платёжного метода. Для криптодепозитов — `crypto_deposit`. |
+    | `payment_custom_data`    | any \| null   | Дополнительные данные, переданные при создании операции. Может быть `null`. |
+    | `deposit.amount`         | number        | Сумма, которую необходимо зачислить на баланс пользователя. |
+    | `deposit.currency`       | string        | Валюта депозита (например, `TRX`, `USDC`). |
+    | `crypto[]`               | array         | Массив объектов с детальной информацией о криптотранзакции. |
+    | `crypto[].amount`        | number        | Фактически полученная сумма в сети. |
+    | `crypto[].currency`      | string        | Криптовалюта транзакции (например, `TRX`, `USDC`). |
+    | `crypto[].oper_type`     | string        | Тип операции, для депозитов — `deposit`. |
+    | `crypto[].status`        | string        | Статус криптотранзакции, как правило `success` при успешном зачислении. |
+    | `crypto[].to_address`    | string        | Криптоадрес, на который пользователь отправил средства. |
+    | `crypto[].crypto_txn_id` | string        | Идентификатор транзакции в блокчейне. |
+    | `rates`                  | object        | Курсы валютных пар на момент операции. Ключ — валютная пара (`TRX-EUR`, `TRX-USD` и т.п.), значение — числовой курс. |
+
+#### Примеры обратных уведомлений
+
+   ```json TRX
       {
         "crypto": [
           {
@@ -163,59 +329,20 @@ description: "Приём платежей в криптовалютах"
         "user_id": "21"
       }
       ```
+   #### Переотправка уведомлений
+<Info>
+  Если ваш сервис в ответ на колбек вернул код ответа 200 или 204, то уведомление считается успешно полученным
+</Info>
+При получении кода ответа отличного от 200 или 204 будет предпринято 10 повторных попыток отправки уведомления с нарастающим интервалом.
 
- 
-    </Expandable>
+    #### Обработка обратных уведомлений 
+    Проект выполняет зачисление полученной суммы на баланс пользователя.
 
-    #### Параметры тела колбека
+    
+  <Expandable title="Проверка подлинности уведомлений">
 
-    | **Параметр**              | **Тип**       | **Описание** |
-    | :------------------------ | :------------ | :----------- |
-    | `reference_id`           | string        | Глобально уникальный идентификатор операции, присвоенный сервисом. Вы должны сохранить его и использовать для подтверждения операции. |
-    | `user_id`                | string        | Идентификатор пользователя на стороне проекта. |
-    | `result`                 | string        | Итоговый результат обработки операции (`complete`, `fail` и т.д.). Для депозитов, которые нужно зачислить, значение равно `complete`. |
-    | `current_status`         | string        | Текущий статус операции. Для успешных депозитов — `success`. |
-    | `payment_product`        | string        | Код платёжного продукта, например `cryptogate` или `cryptogate_direct`. |
-    | `payment_method_type`    | string        | Тип платёжного метода. Для криптодепозитов — `crypto_deposit`. |
-    | `payment_custom_data`    | any \| null   | Дополнительные данные, переданные при создании операции. Может быть `null`. |
-    | `deposit.amount`         | number        | Сумма, которую необходимо зачислить на баланс пользователя. |
-    | `deposit.currency`       | string        | Валюта депозита (например, `TRX`, `USDC`). |
-    | `crypto[]`               | array         | Массив объектов с детальной информацией о криптотранзакции. |
-    | `crypto[].amount`        | number        | Фактически полученная сумма в сети. |
-    | `crypto[].currency`      | string        | Криптовалюта транзакции (например, `TRX`, `USDC`). |
-    | `crypto[].oper_type`     | string        | Тип операции, для депозитов — `deposit`. |
-    | `crypto[].status`        | string        | Статус криптотранзакции, как правило `success` при успешном зачислении. |
-    | `crypto[].to_address`    | string        | Криптоадрес, на который пользователь отправил средства. |
-    | `crypto[].crypto_txn_id` | string        | Идентификатор транзакции в блокчейне. |
-    | `rates`                  | object        | Курсы валютных пар на момент операции. Ключ — валютная пара (`TRX-EUR`, `TRX-USD` и т.п.), значение — числовой курс. |
-  </Step>
-  <Step title="Проект выполняет обработку операции">
-    Проект выполняет зачисление полученной суммы на баланс пользователя
-  </Step>
-  <Step title="Проект выполняет подтверждение обработки операции">
-    По факту успешной обработки операции (зачисления средств на баланс пользователя), проект вызывает [метод подтверждения обработки операции](/api-reference/endpoint/client_confirm_payment_by_reference_id) используя `reference_id` полученный в колбеке.
-  </Step>
-</Steps>
+#### Проверка подлинности уведомлений
 
-## Поддерживаемые сети и монеты
-
-| **Crypto Network** | **Crypto Assets** |
-| :----------------- | :---------------- |
-| TRX                | TRX, USDT         |
-| MATIC              | MATIC, USDC, USDT |
-| ETH                | ETH, USDC, USDT   |
-| SOL                | SOL, USDC, USDT   |
-| TON                | TON, USDT         |
-| BNB                | BNB, USDC, USDT   |
-| BTC                | BTC               |
-
-<Warning>
-  Минимальные суммы операций следует уточнить в чате интеграции
-</Warning>
-
-## Обратные уведомления
-
-### Проверка подлинности уведомлений
 
 Для аутентификации уведомлений используется подпись тел HTTP запросов с использованием ассиметричной криптографии. Подпись каждого сообщения выполняется с помощью двух алгоритмов (RSA-SHA256), принимающая сторона может проверять подпись по одному из алгоритмов исходя из своих технических возможностей. Каждое подписанный запрос содержит идентификаторы используемых для подписи ключей в заголовках HTTP сообщения.
 
@@ -246,7 +373,7 @@ description: "Приём платежей в криптовалютах"
   ```
 </Info>
 
-### Алгоритм проверки подписи RSA-SHA256
+##### Алгоритм проверки подписи RSA-SHA256
 
 Информация о RSA подписи находится в заголовках HTTP сообщения:
 
@@ -555,14 +682,16 @@ description: "Приём платежей в криптовалютах"
   ```
 </Expandable>
 
-### Переотправка уведомлений
 
-При получении кода ответа отличного от 200 или 204 будет предпринято 10 повторных попыток отправки уведомления с нарастающим интервалом.
 
-<Info>
-  Если ваш сервис в ответ на колбек вернул код ответа 200 или 204, то уведомление считается успешно полученным
-</Info>
+  </Expandable>
+  
 
-## Взаиморасчёты
 
-soon
+  </Step>
+ 
+  <Step title="Подтверждение обработки операции">
+    ### Подтверждение обработки операции
+    По факту успешной обработки операции (зачисления средств на баланс пользователя), проект вызывает [метод подтверждения обработки операции](/api-reference/endpoint/client_confirm_payment_by_reference_id) используя `reference_id` полученный в колбеке.
+  </Step>
+</Steps>

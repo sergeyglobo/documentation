@@ -1,0 +1,67 @@
+---
+title: "Обработка обратных уведомлений"
+description: "Как принять колбеки криптогейта, проверить подпись и сопоставить операции"
+sidebarTitle: "4. Колбеки"
+---
+
+Уведомления приходят `POST application/json` на `url_callback`, который вы указали в `get-address` или `get-url`.
+
+<Warning>
+  Разрешите приём POST-запросов с IP: `134.122.55.160`, `141.95.16.27`, `163.172.116.59`.
+</Warning>
+
+<Steps>
+  <Step title="Проверьте подпись">
+    Подпись передаётся двумя алгоритмами. Используйте любой доступный.
+
+    <Expandable title="RSA-SHA256" defaultOpen="true">
+      - `X-RSA-KEY-ID` — идентификатор RSA-ключа  
+      - `X-RSA-NONCE` — уникальный nonce  
+      - `X-RSA-SHA256-SIGN` — подпись `base64` для `nonce + body`
+    </Expandable>
+
+    <Expandable title="ECDSA-SHA256">
+      - `X-ECDSA-KEY-ID` — идентификатор ECDSA-ключа  
+      - `X-ECDSA-SHA256-SIGN` — подпись `base64` для `body`
+    </Expandable>
+  </Step>
+
+  <Step title="Разберите полезную нагрузку">
+    Пример успешного колбека криптодепозита:
+
+    ```json Callback
+    {
+      "deposit": { "amount": 2, "currency": "USDC" },
+      "crypto": [
+        {
+          "amount": 2,
+          "status": "success",
+          "currency": "USDC",
+          "oper_type": "deposit",
+          "to_address": "0xb971...1d4cc",
+          "crypto_txn_id": "0xc6443e...9d0a9f"
+        }
+      ],
+      "result": "complete",
+      "user_id": "21",
+      "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c",
+      "current_status": "success",
+      "payment_product": "cryptogate_direct",
+      "payment_method_type": "crypto_deposit",
+      "rates": { "USDC-USD": 1.0123 }
+    }
+    ```
+
+    Ключевые поля: `reference_id` (используйте для подтверждения), `deposit.amount/currency` (зачисление), `crypto[].to_address`, `crypto[].crypto_txn_id`.
+  </Step>
+
+  <Step title="Ответьте 200/204 и подтвердите">
+    - Если обработка прошла успешно, верните `200` или `204`.
+    - Для колбеков с `result = complete` вызовите подтверждение (см. следующий раздел).
+  </Step>
+</Steps>
+
+<Tip>
+  Логируйте `trace_id` из заголовков/тела колбека (если передан), `reference_id`, `user_id` и `address` для расследования дубликатов.
+</Tip>
+

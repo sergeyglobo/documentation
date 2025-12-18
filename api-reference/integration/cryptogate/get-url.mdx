@@ -1,0 +1,95 @@
+---
+title: "Получение виджета с адресом"
+description: "Как получить ссылку на виджет криптоадреса в iframe или новом окне"
+sidebarTitle: "3. Виджет адреса"
+---
+
+Используйте `POST /gate/get-url`, чтобы открыть криптогейт в iframe или новом окне с предустановленными параметрами пользователя, сети и редиректов.
+
+<Steps>
+  <Step title="Подготовьте параметры">
+    Передайте `payment_profile`, `user.user_id`, нужную сумму или сеть/актив, а также callback и редиректы.
+
+    <Expandable title="Параметры запроса">
+      <ParamField body="payment_profile" type="string" required>
+        Платёжный профиль.
+      </ParamField>
+      <ParamField body="project_id" type="string">
+        Идентификатор проекта.
+      </ParamField>
+      <ParamField body="user" type="object" required>
+        Объект пользователя с обязательным `user_id`.
+      </ParamField>
+ 
+      <ParamField body="crypto_network" type="string">
+        Сеть криптовалюты (например, `TRX`, `ETH`).
+      </ParamField>
+      <ParamField body="crypto_asset" type="string">
+        Криптоактив, если нужно зафиксировать монету.
+      </ParamField>
+      <ParamField body="url_callback" type="string">
+        URL для колбеков.
+      </ParamField>
+      <ParamField body="url_redirect_success" type="string">
+        Редирект при успехе.
+      </ParamField>
+      <ParamField body="url_redirect_fail" type="string">
+        Редирект при неуспехе.
+      </ParamField>
+      <ParamField body="description" type="string">
+        Описание операции.
+      </ParamField>
+      <ParamField body="report_metadata" type="string">
+        Идентификатор для отчётности (до 255 символов).
+      </ParamField>
+    </Expandable>
+  </Step>
+
+  <Step title="Выполните запрос">
+    <RequestExample>
+    ```bash gate/get-url
+    curl --request POST \
+      --url https://sandbox.finmar.tech/gate/get-url \
+      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
+      --header "Content-Type: application/json" \
+      --data '{
+        "payment_profile": "sandbox",
+        "project_id": "preview",
+        "user": { "user_id": "123" },
+        "amount": { "amount": "10.00", "currency": "USD" },
+        "crypto_network": "TRX",
+        "crypto_asset": "USDT",
+        "url_callback": "https://merchant.example.com/cryptogate/callback",
+        "url_redirect_success": "https://merchant.example.com/success",
+        "url_redirect_fail": "https://merchant.example.com/fail"
+      }'
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Отобразите виджет">
+    <ResponseExample>
+    ```json Success
+    {
+      "success": true,
+      "trace_id": "f7a3c9b34f33401e8fd990c9b65e8a93",
+      "result": {
+        "url": "https://crypto.cheipho.com/payment-front/d7145622-db72-4b7d-99a1-97236645f8f5",
+        "launch_type": "iframe",
+        "kyc_status": "approved",
+        "user_stats": "present"
+      }
+    }
+    ```
+    </ResponseExample>
+
+    <Tip>
+      Используйте `launch_type`, чтобы выбрать способ открытия: `iframe` или `new_window`. Для внутренних касс лучше `iframe`, для внешних — `new_window`.
+    </Tip>
+  </Step>
+</Steps>
+
+<Warning>
+  Передавайте `url_callback` и редиректы по HTTPS, иначе браузер может блокировать переходы.
+</Warning>
+
