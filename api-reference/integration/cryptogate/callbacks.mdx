@@ -65,3 +65,133 @@ sidebarTitle: "4. Колбеки"
   Логируйте `trace_id` из заголовков/тела колбека (если передан), `reference_id`, `user_id` и `address` для расследования дубликатов.
 </Tip>
 
+
+
+### Параметры тела уведомления
+
+    | **Параметр**              | **Тип**       | **Описание** |
+    | :------------------------ | :------------ | :----------- |
+    | `reference_id`           | string        | Глобально уникальный идентификатор операции, присвоенный сервисом. Вы должны сохранить его и использовать для подтверждения операции. |
+    | `user_id`                | string        | Идентификатор пользователя на стороне проекта. |
+    | `result`                 | string        | Итоговый результат обработки операции (`complete`, `fail` и т.д.). Для депозитов, которые нужно зачислить, значение равно `complete`. |
+    | `current_status`         | string        | Текущий статус операции. Для успешных депозитов — `success`. |
+    | `payment_product`        | string        | Код платёжного продукта, например `cryptogate` или `cryptogate_direct`. |
+    | `payment_method_type`    | string        | Тип платёжного метода. Для криптодепозитов — `crypto_deposit`. |
+    | `payment_custom_data`    | any \| null   | Дополнительные данные, переданные при создании операции. Может быть `null`. |
+    | `deposit.amount`         | number        | Сумма, которую необходимо зачислить на баланс пользователя. |
+    | `deposit.currency`       | string        | Валюта депозита (например, `TRX`, `USDC`). |
+    | `crypto[]`               | array         | Массив объектов с детальной информацией о криптотранзакции. |
+    | `crypto[].amount`        | number        | Фактически полученная сумма в сети. |
+    | `crypto[].currency`      | string        | Криптовалюта транзакции (например, `TRX`, `USDC`). |
+    | `crypto[].oper_type`     | string        | Тип операции, для депозитов — `deposit`. |
+    | `crypto[].status`        | string        | Статус криптотранзакции, как правило `success` при успешном зачислении. |
+    | `crypto[].to_address`    | string        | Криптоадрес, на который пользователь отправил средства. |
+    | `crypto[].crypto_txn_id` | string        | Идентификатор транзакции в блокчейне. |
+    | `rates`                  | object        | Курсы валютных пар на момент операции. Ключ — валютная пара (`TRX-EUR`, `TRX-USD` и т.п.), значение — числовой курс. |
+
+### Примеры обратных уведомлений
+
+   ```json TRX
+      {
+        "crypto": [
+          {
+            "amount": 1.11,
+            "currency": "TRX",
+            "status": "success",
+            "to_address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
+          }
+        ],
+        "deposit": {
+          // Полученная от пользователя сумма. Её необходимо зачислить на баланс пользователя.
+          "amount": 1.11,
+          "currency": "TRX"
+        },
+        "result": "complete",
+        // тип платёжного метода
+        "payment_method_type": "crypto_deposit",
+        // платёжный продукт
+        "payment_product": "cryptogate",
+        // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции.
+        "rates": {
+          "TRX-AUD": 0.25037386021435254,
+          "TRX-CAD": 0.22943992050960907,
+          "TRX-EUR": 0.15417145982562155,
+          "TRX-USD": 0.164771894913
+        },
+        // глобально уникальный идентификатор операции, назначенный сервисом. Следует сохранять его на стороне проекта.
+        "reference_id": "b5ba93ba-7eae-42f1-8955-5d13eec2f6cf",
+        // статус операции. success - успешна.
+        "current_status": "success",
+        // идентификатор пользователя на стороне проекта
+        "user_id": "d4177559-2a1d-40e3-a4f2-6e32e607b8b1"
+      }
+      ```
+
+
+      ```json USDC
+      {
+        "deposit": { 
+          "amount": 2, 
+          "currency": "USDC"
+        },
+        "crypto": [
+          {
+            "amount": 2,
+            "status": "success",
+            "currency": "USDC",
+            "oper_type": "deposit",
+            "to_address": "0xb971b4a175d8c2dc2b9a454da834244320e1d4cc",
+            "crypto_txn_id": "0xc6443ee59d106020f1a162f2d262e012d9a19baea2a8f154e3c472765a9d0a9f"
+          }
+        ],
+      // курсы валютных пары. Можно установить требуемые, через запрос чат интеграции. 
+        "rates": {
+          "USDC-EUR": 0.879283902353817,
+          "USDC-RUB": 82.2496786216588,
+          "USDC-USD": 1.012387556321
+        },
+        "result": "complete",
+        "user_id": "21",//идентификатор пользователя на стороне проекта
+        "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c", // идентификатор операции на стороне сервиса. Проекту следует сохранить его на своей стороне
+        "current_status": "success",
+        "payment_product": "cryptogate_direct",
+        "payment_method_type": "crypto_deposit",
+        "payment_custom_data": null
+      }
+      ```
+
+      ```json TRX cryptogate_direct
+      {
+        "crypto": [
+          {
+            "amount": 10,
+            "crypto_txn_id": "ccbeed5801facb8b3b39f4380530b88c5717029b02aad2ee6fa19ea7a3e48880",
+            "currency": "TRX",
+            "oper_type": "deposit",
+            "status": "success",
+            "to_address": "TVvQpwbU7JyMsR7sDCSdu7nMDV4SW6SRN3"
+          }
+        ],
+        "current_status": "success",
+        "deposit": {
+          "amount": 10,
+          "currency": "TRX"
+        },
+        "payment_custom_data": null,
+        "payment_method_type": "crypto_deposit",
+        "payment_product": "cryptogate_direct",
+        "rates": {
+          "TRX-EUR": 0.24899425782404047,
+          "TRX-RUB": 23.30615188069637,
+          "TRX-USD": 0.287108814241
+        },
+        "reference_id": "f2faa219-0261-4e30-97ce-38c167a70055",
+        "result": "complete",
+        "user_id": "21"
+      }
+      ```
+   #### Переотправка уведомлений
+<Info>
+  Если ваш сервис в ответ на колбек вернул код ответа 200 или 204, то уведомление считается успешно полученным
+</Info>
+При получении кода ответа отличного от 200 или 204 будет предпринято 10 повторных попыток отправки уведомления с нарастающим интервалом.

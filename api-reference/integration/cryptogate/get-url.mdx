@@ -12,57 +12,39 @@ sidebarTitle: "3. Виджет адреса"
 
     <Expandable title="Параметры запроса">
       <ParamField body="payment_profile" type="string" required>
-        Платёжный профиль.
+        Платёжный профиль. Используйте `production`.
       </ParamField>
       <ParamField body="project_id" type="string">
-        Идентификатор проекта.
+        Идентификатор проекта. Опциональный параметр.
       </ParamField>
       <ParamField body="user" type="object" required>
         Объект пользователя с обязательным `user_id`.
       </ParamField>
  
       <ParamField body="crypto_network" type="string">
-        Сеть криптовалюты (например, `TRX`, `ETH`).
+        Сеть криптовалюты (например, `TRX`, `ETH`), из ответа метода 
       </ParamField>
       <ParamField body="crypto_asset" type="string">
-        Криптоактив, если нужно зафиксировать монету.
+        Криптоактив (например, `TRX`, `USDT`)
       </ParamField>
-      <ParamField body="url_callback" type="string">
-        URL для колбеков.
-      </ParamField>
-      <ParamField body="url_redirect_success" type="string">
-        Редирект при успехе.
-      </ParamField>
-      <ParamField body="url_redirect_fail" type="string">
-        Редирект при неуспехе.
-      </ParamField>
-      <ParamField body="description" type="string">
-        Описание операции.
-      </ParamField>
-      <ParamField body="report_metadata" type="string">
-        Идентификатор для отчётности (до 255 символов).
-      </ParamField>
+
     </Expandable>
   </Step>
 
   <Step title="Выполните запрос">
     <RequestExample>
     ```bash gate/get-url
-    curl --request POST \
-      --url https://sandbox.finmar.tech/gate/get-url \
-      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
-      --header "Content-Type: application/json" \
-      --data '{
-        "payment_profile": "sandbox",
-        "project_id": "preview",
-        "user": { "user_id": "123" },
-        "amount": { "amount": "10.00", "currency": "USD" },
-        "crypto_network": "TRX",
-        "crypto_asset": "USDT",
-        "url_callback": "https://merchant.example.com/cryptogate/callback",
-        "url_redirect_success": "https://merchant.example.com/success",
-        "url_redirect_fail": "https://merchant.example.com/fail"
-      }'
+ curl --location --request POST 'https://finmar.tech/prepare2/api/v3/gate/get-url' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic b3BlcmF0b3JfZGVtbzojdShQcVJAeEQ1N0c=' \
+--data '{
+  "user": {
+    "user_id": "123"
+  },
+  "payment_profile": "production",
+  "crypto_network": "TRX",
+  "crypto_asset":"TRX"
+}'
     ```
     </RequestExample>
   </Step>
@@ -70,26 +52,38 @@ sidebarTitle: "3. Виджет адреса"
   <Step title="Отобразите виджет">
     <ResponseExample>
     ```json Success
-    {
-      "success": true,
-      "trace_id": "f7a3c9b34f33401e8fd990c9b65e8a93",
-      "result": {
-        "url": "https://crypto.cheipho.com/payment-front/d7145622-db72-4b7d-99a1-97236645f8f5",
-        "launch_type": "iframe",
-        "kyc_status": "approved",
-        "user_stats": "present"
-      }
-    }
+ {
+    "success": true,
+    "result": {
+        "url": "https://crypto.makelod.com/gate/pobeda.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXF1ZXN0X2lkIjoiZTNhYjA5MGQtYTY1ZS00YmE2LWJiNTEtNTZkNTI0MDJiNWNiIiwicHJvamVjdCI6Im9wZXJhdG9yX2RlbW8iLCJjb250YWN0IjoiIiwidXNlcl9pZCI6IjEyMyIsImxvY2FsZSI6ImVuIiwiYWxpYXMiOiIiLCJzb3VyY2VzIjpbeyJ0b2tlbiI6IlRSWCIsInR5cGUiOiJUUlgiLCJjaGFpbl9pZCI6Ik1haW5uZXQiLCJsaW1pdHMiOnsibWluIjoiMCIsIm1heCI6IjEifX1dLCJ0YXJnZXQiOnsiY29kZSI6IlVTRCJ9LCJpYXQiOjE3Njk1MTc2MDB9.y7B5fc125NY3hD8MMml3xmix4CA7zJCPq-WWQ8KReHE"
+    },
+    "trace_id": "d22a255307834309bd96e95be3a25690"
+}
     ```
     </ResponseExample>
 
     <Tip>
-      Используйте `launch_type`, чтобы выбрать способ открытия: `iframe` или `new_window`. Для внутренних касс лучше `iframe`, для внешних — `new_window`.
+      Направьте пользователя на возвращённый `result.url` удобным способом.
+    </Tip>
+  </Step>
+
+    <Step title="Обработайте обратное уведомление">
+    <ResponseExample>
+    ```json Success
+ {
+    "success": true,
+    "result": {
+        "url": "https://crypto.makelod.com/gate/pobeda.html?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXF1ZXN0X2lkIjoiZTNhYjA5MGQtYTY1ZS00YmE2LWJiNTEtNTZkNTI0MDJiNWNiIiwicHJvamVjdCI6Im9wZXJhdG9yX2RlbW8iLCJjb250YWN0IjoiIiwidXNlcl9pZCI6IjEyMyIsImxvY2FsZSI6ImVuIiwiYWxpYXMiOiIiLCJzb3VyY2VzIjpbeyJ0b2tlbiI6IlRSWCIsInR5cGUiOiJUUlgiLCJjaGFpbl9pZCI6Ik1haW5uZXQiLCJsaW1pdHMiOnsibWluIjoiMCIsIm1heCI6IjEifX1dLCJ0YXJnZXQiOnsiY29kZSI6IlVTRCJ9LCJpYXQiOjE3Njk1MTc2MDB9.y7B5fc125NY3hD8MMml3xmix4CA7zJCPq-WWQ8KReHE"
+    },
+    "trace_id": "d22a255307834309bd96e95be3a25690"
+}
+    ```
+    </ResponseExample>
+
+    <Tip>
+      Направьте пользователя на возвращённый `result.url` удобным способом.
     </Tip>
   </Step>
 </Steps>
 
-<Warning>
-  Передавайте `url_callback` и редиректы по HTTPS, иначе браузер может блокировать переходы.
-</Warning>
-
+ 
