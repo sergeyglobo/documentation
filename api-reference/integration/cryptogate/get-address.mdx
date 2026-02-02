@@ -41,19 +41,18 @@ sidebarTitle: "2. Адрес пользователя"
   <Step title="Отправьте запрос">
     <RequestExample>
     ```bash gate/get-address
-    curl --request POST \
-      --url https://sandbox.finmar.tech/gate/get-address \
-      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
-      --header "Content-Type: application/json" \
-      --data '{
-        "payment_profile": "sandbox",
-        "project_id": "preview",
-        "crypto_network": "TRX",
-        "crypto_asset": "USDT",
-        "user": { "user_id": "123" },
-        "url_callback": "https://merchant.example.com/cryptogate/callback",
-        "description": "Deposit address for TRX/USDT"
-      }'
+curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --data '{
+    "payment_profile": "sandbox",
+    "project_id": "preview",
+    "crypto_network": "TRX",
+    "crypto_asset": "USDT",
+    "user": { "user_id": "123" },
+    "url_callback": "https://merchant.example.com/cryptogate/callback",
+    "description": "Deposit address for TRX/USDT"
+  }'
     ```
     </RequestExample>
   </Step>
@@ -61,11 +60,13 @@ sidebarTitle: "2. Адрес пользователя"
   <Step title="Получите адрес">
     <ResponseExample>
     ```json Success
-    {
-      "success": true,
-      "trace_id": "c0f5e1af2d404f4f9b3f4e3aa4e2481e",
-      "result": { "address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG" }
-    }
+ {
+    "success": true,
+    "result": {
+        "address": "TPQ65AX8rm4RwiyJUVPEYtYdZUdVZ6jZA1"
+    },
+    "trace_id": "bd8c668590664e8d90318627e5de8055"
+}
     ```
     </ResponseExample>
 
@@ -73,9 +74,14 @@ sidebarTitle: "2. Адрес пользователя"
       Сохраните `trace_id`, `user_id` и `address` — они понадобятся для сопоставления колбеков и исключения двойного зачисления.
     </Check>
   </Step>
+
+  <Step title="Обработайте обратное уведомление">
+    Примите колбек на `url_callback` и подтвердите обработку операции.
+
+    <Tip>
+      Подробнее см. раздел [«Колбеки»](./callbacks).
+    </Tip>
+  </Step>
 </Steps>
 
-<Warning>
-  Передавайте `url_callback` по HTTPS и держите его доступным для публичных POST-запросов.
-</Warning>
-
+ 

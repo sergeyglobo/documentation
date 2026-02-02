@@ -12,57 +12,50 @@ sidebarTitle: "3. Виджет адреса"
 
     <Expandable title="Параметры запроса">
       <ParamField body="payment_profile" type="string" required>
-        Платёжный профиль.
+        Платёжный профиль (`sandbox` или `production`).
       </ParamField>
       <ParamField body="project_id" type="string">
-        Идентификатор проекта.
+        Идентификатор проекта (опционально).
       </ParamField>
       <ParamField body="user" type="object" required>
         Объект пользователя с обязательным `user_id`.
       </ParamField>
  
       <ParamField body="crypto_network" type="string">
-        Сеть криптовалюты (например, `TRX`, `ETH`).
+        Сеть криптовалюты (например, `TRX`, `ETH`). Возьмите значение из ответа метода [«Сети и монеты»](./networks).
       </ParamField>
       <ParamField body="crypto_asset" type="string">
-        Криптоактив, если нужно зафиксировать монету.
+        Криптоактив (например, `TRX`, `USDT`).
       </ParamField>
       <ParamField body="url_callback" type="string">
-        URL для колбеков.
+        Адрес приёма колбеков.
       </ParamField>
       <ParamField body="url_redirect_success" type="string">
-        Редирект при успехе.
+        URL для редиректа при успешном завершении.
       </ParamField>
       <ParamField body="url_redirect_fail" type="string">
-        Редирект при неуспехе.
+        URL для редиректа при ошибке/отмене.
       </ParamField>
-      <ParamField body="description" type="string">
-        Описание операции.
-      </ParamField>
-      <ParamField body="report_metadata" type="string">
-        Идентификатор для отчётности (до 255 символов).
-      </ParamField>
+
     </Expandable>
   </Step>
 
   <Step title="Выполните запрос">
     <RequestExample>
     ```bash gate/get-url
-    curl --request POST \
-      --url https://sandbox.finmar.tech/gate/get-url \
-      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
-      --header "Content-Type: application/json" \
-      --data '{
-        "payment_profile": "sandbox",
-        "project_id": "preview",
-        "user": { "user_id": "123" },
-        "amount": { "amount": "10.00", "currency": "USD" },
-        "crypto_network": "TRX",
-        "crypto_asset": "USDT",
-        "url_callback": "https://merchant.example.com/cryptogate/callback",
-        "url_redirect_success": "https://merchant.example.com/success",
-        "url_redirect_fail": "https://merchant.example.com/fail"
-      }'
+curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --data '{
+    "payment_profile": "sandbox",
+    "project_id": "preview",
+    "user": { "user_id": "123" },
+    "crypto_network": "TRX",
+    "crypto_asset": "USDT",
+    "url_callback": "https://merchant.example.com/cryptogate/callback",
+    "url_redirect_success": "https://merchant.example.com/success",
+    "url_redirect_fail": "https://merchant.example.com/fail"
+  }'
     ```
     </RequestExample>
   </Step>
@@ -70,26 +63,28 @@ sidebarTitle: "3. Виджет адреса"
   <Step title="Отобразите виджет">
     <ResponseExample>
     ```json Success
-    {
-      "success": true,
-      "trace_id": "f7a3c9b34f33401e8fd990c9b65e8a93",
-      "result": {
-        "url": "https://crypto.cheipho.com/payment-front/d7145622-db72-4b7d-99a1-97236645f8f5",
-        "launch_type": "iframe",
-        "kyc_status": "approved",
-        "user_stats": "present"
-      }
-    }
+ {
+    "success": true,
+    "result": {
+        "url": "https://crypto.example.com/gate?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXF1ZXN0X2lkIjoiZTNhYjA5MGQtYTY1ZS00YmE2LWJiNTEtNTZkNTI0MDJiNWNiIiwidXNlcl9pZCI6IjEyMyIsImlhdCI6MTc2OTUxNzYwMH0.abc123"
+    },
+    "trace_id": "d22a255307834309bd96e95be3a25690"
+}
     ```
     </ResponseExample>
 
     <Tip>
-      Используйте `launch_type`, чтобы выбрать способ открытия: `iframe` или `new_window`. Для внутренних касс лучше `iframe`, для внешних — `new_window`.
+      Направьте пользователя на возвращённый `result.url` удобным способом.
+    </Tip>
+  </Step>
+
+  <Step title="Обработайте обратное уведомление">
+    Примите колбек на `url_callback` и подтвердите обработку операции.
+
+    <Tip>
+      Подробнее см. раздел [«Колбеки»](./callbacks).
     </Tip>
   </Step>
 </Steps>
 
-<Warning>
-  Передавайте `url_callback` и редиректы по HTTPS, иначе браузер может блокировать переходы.
-</Warning>
-
+ 

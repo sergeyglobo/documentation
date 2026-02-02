@@ -13,47 +13,126 @@ description: "Приём платежей в криптовалютах"
     Используйте метод [`GET /gate/deposit/currencies/{payment_profile}`](/api-reference/криптогейт/gatedepositcurrencies) для получения списка доступных сетей и монет.
 
     Пример запроса:
-      ```bash gate/deposit/currencies
-      curl --request GET \
-        --url 'https://sandbox.finmar.tech/gate/deposit/currencies/sandbox?project_id=preview' \
-        --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
-      ```
+    
+    ```bash gate/deposit/currencies
+    curl --location --request GET 'https://sandbox.finmar.tech/prepare2/api/v3/gate/deposit/currencies/sandbox?project_id=preview' \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
+    ```
+
+   
     
 Пример ответа:
   
       ```json gate/deposit/currencies
-      {
-        "success": true,
-        "trace_id": "99395c4231744dbd934a6342ecca878a",
-        "result": [
-          {
-            "crypto_network": "TRX",
+ {
+    "success": true,
+    "result": [
+        {
+            "crypto_network": "TON",
             "crypto_assets": [
-              {
-                "asset_name": "TRX",
-                "min_amount": "1.0"
-              },
-              {
-                "asset_name": "USDT",
-                "min_amount": "5.0"
-              }
+                {
+                    "asset_name": "TON",
+                    "min_amount": "0.000000002"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
             ]
-          },
-          {
+        },
+        {
             "crypto_network": "MATIC",
             "crypto_assets": [
-              {
-                "asset_name": "MATIC",
-                "min_amount": "0.5"
-              },
-              {
-                "asset_name": "USDC",
-                "min_amount": "5.0"
-              }
+                {
+                    "asset_name": "MATIC",
+                    "min_amount": "1.000000000000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "1.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "1.000000"
+                }
             ]
-          }
-        ]
-      }
+        },
+        {
+            "crypto_network": "TRX",
+            "crypto_assets": [
+                {
+                    "asset_name": "TRX",
+                    "min_amount": "10.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "1.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "BTC",
+            "crypto_assets": [
+                {
+                    "asset_name": "BTC",
+                    "min_amount": "0.00000600"
+                }
+            ]
+        },
+        {
+            "crypto_network": "BNB",
+            "crypto_assets": [
+                {
+                    "asset_name": "BNB",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000001000000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "ETH",
+            "crypto_assets": [
+                {
+                    "asset_name": "ETH",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "10000.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "SOL",
+            "crypto_assets": [
+                {
+                    "asset_name": "SOL",
+                    "min_amount": "0.000000001"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "0.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
+        }
+    ],
+    "trace_id": "ef26e8037db54488901bc6507755d375"
+}
       ```
   
 
@@ -78,22 +157,16 @@ description: "Приём платежей в криптовалютах"
     <ParamField body="crypto_network" type="string" required>
       Сеть криптовалюты (например, `TRX`, `MATIC`, `ETH`).
     </ParamField>
-    <ParamField body="crypto_asset" type="string">
-      Опционально: криптоактив, если требуется зафиксировать конкретную монету.
-    </ParamField>
-    <ParamField body="url_callback" type="string">
-      URL для получения колбеков.
-    </ParamField>
+   
 
   
  
  Пример запроса:
 
     ```bash gate/get-address
-    curl --request POST \
-      --url https://sandbox.finmar.tech/gate/get-address \
-      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+    curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address' \
       --header 'Content-Type: application/json' \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
       --data '{
         "payment_profile": "sandbox",
         "project_id": "preview",
@@ -107,13 +180,13 @@ description: "Приём платежей в криптовалютах"
 
  Пример ответа:
     ```json Success
-    {
-      "success": true,
-      "trace_id": "c0f5e1af2d404f4f9b3f4e3aa4e2481e",
-      "result": {
-        "address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
-      }
-    }
+ {
+    "success": true,
+    "result": {
+        "address": "TPQ65AX8rm4RwiyJUVPEYtYdZUdVZ6jZA1"
+    },
+    "trace_id": "e07b2c9dfae44ee59d4723d15ac1dcd7"
+}
     ```
     <Tip>
       Сохраняйте `reference_id` и связку `user_id`/`address`, чтобы однозначно обрабатывать входящие колбеки и предотвращать повторные зачисления.

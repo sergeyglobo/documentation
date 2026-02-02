@@ -12,9 +12,8 @@ sidebarTitle: "1. Сети и монеты"
 
     <RequestExample>
     ```bash gate/deposit/currencies
-    curl --request GET \
-      --url "https://sandbox.finmar.tech/gate/deposit/currencies/sandbox?project_id=preview" \
-      --header "Authorization: Basic BASE64_LOGIN_PASSWORD"
+curl --location --request GET 'https://sandbox.finmar.tech/prepare2/api/v3/gate/deposit/currencies/sandbox?project_id=preview' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
     ```
     </RequestExample>
   </Step>
@@ -24,24 +23,120 @@ sidebarTitle: "1. Сети и монеты"
 
     <ResponseExample>
     ```json Success
-    {
-      "success": true,
-      "trace_id": "99395c4231744dbd934a6342ecca878a",
-      "result": [
+  {
+    "success": true,
+    "result": [
         {
-          "crypto_network": "TRX",
-          "crypto_assets": [
-            { "asset_name": "TRX", "min_amount": "1.0" },
-            { "asset_name": "USDT", "min_amount": "5.0" }
-          ]
+            "crypto_network": "TON",
+            "crypto_assets": [
+                {
+                    "asset_name": "TON",
+                    "min_amount": "0.000000002"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "MATIC",
+            "crypto_assets": [
+                {
+                    "asset_name": "MATIC",
+                    "min_amount": "1.000000000000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "1.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "1.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "TRX",
+            "crypto_assets": [
+                {
+                    "asset_name": "TRX",
+                    "min_amount": "10.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "1.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "BTC",
+            "crypto_assets": [
+                {
+                    "asset_name": "BTC",
+                    "min_amount": "0.00000600"
+                }
+            ]
+        },
+        {
+            "crypto_network": "BNB",
+            "crypto_assets": [
+                {
+                    "asset_name": "BNB",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000001000000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "ETH",
+            "crypto_assets": [
+                {
+                    "asset_name": "ETH",
+                    "min_amount": "0.000000001000000000"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "10000.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
+        },
+        {
+            "crypto_network": "SOL",
+            "crypto_assets": [
+                {
+                    "asset_name": "SOL",
+                    "min_amount": "0.000000001"
+                },
+                {
+                    "asset_name": "USDC",
+                    "min_amount": "0.000000"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
         }
-      ]
-    }
+    ],
+    "trace_id": "ef26e8037db54488901bc6507755d375"
+}
     ```
     </ResponseExample>
 
     <Tip>
-      Минимальные суммы обновляются — сверяйте значения перед показом пользователю.
+      Минимальные суммы могут меняться динамически — сверяйте значения перед показом пользователю.
     </Tip>
   </Step>
 </Steps>
