@@ -5,7 +5,7 @@
         "version": "1"
     },
     "externalDocs": {
-        "url": "https://finmar.tech/prepare2/docsV3/json"
+        "url": "https://vima.mintlify.app/api-reference/openapi.json"
     },
     "servers": [
         {
@@ -189,6 +189,696 @@
                         "basicAuth": []
                     }
                 ]
+            }
+        },
+        "/gate/deposit/currencies/{payment_profile}": {
+            "get": {
+                "operationId": "mutation.gate.getDepositCurrencies",
+                "summary": "gate/deposit/currencies",
+                "description": "Get available currencies for deposit",
+                "tags": [
+                    "Криптогейт"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "payment_profile",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Платёжный профиль"
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Идентификатор проекта"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "trace_id": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "crypto_network": {
+                                                        "type": "string"
+                                                    },
+                                                    "crypto_assets": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "asset_name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "min_amount": {
+                                                                    "type": "string",
+                                                                    "description": "Минимальная сумма депозита"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "asset_name",
+                                                                "min_amount"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "crypto_network",
+                                                    "crypto_assets"
+                                                ]
+                                            }
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gate/get-address": {
+            "post": {
+                "operationId": "mutation.gate.getAddress",
+                "summary": "gate/get-address",
+                "description": "Get address for provided currency",
+                "tags": [
+                    "Криптогейт"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "project_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор проекта"
+                                    },
+                                    "user": {
+                                        "$ref": "#/components/schemas/user"
+                                    },
+                                    "payment_profile": {
+                                        "type": "string",
+                                        "description": "Платёжный профиль. Используйте `production`."
+                                    },
+                                    "locale": {
+                                        "type": "string",
+                                        "description": "Локаль интерфейса (например, \"en-US\")"
+                                    },
+                                    "crypto_network": {
+                                        "type": "string",
+                                        "description": "Сеть криптовалюты (например, `TRX`, `MATIC`)"
+                                    },
+                                    "crypto_asset": {
+                                        "type": "string",
+                                        "description": "Криптоактив (например, `USDT`, `USDC`)"
+                                    },
+                                    "address_seed": {
+                                        "type": "string",
+                                        "description": "Дополнительный сид для генерации адреса"
+                                    }
+                                },
+                                "required": [
+                                    "user",
+                                    "payment_profile",
+                                    "crypto_network"
+                                ],
+                                "additionalProperties": true,
+                                "example": {
+                                    "user": {
+                                        "user_id": "123"
+                                    },
+                                    "payment_profile": "production",
+                                    "project_id": "preview",
+                                    "crypto_network": "TRX"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "trace_id": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "address": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "address"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gate/get-url": {
+            "post": {
+                "operationId": "mutation.gate.getUrl",
+                "summary": "gate/get-url",
+                "description": "Get url for gate with selected crypto currency",
+                "tags": [
+                    "Криптогейт"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "project_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор проекта"
+                                    },
+                                    "user": {
+                                        "$ref": "#/components/schemas/user"
+                                    },
+                                    "payment_profile": {
+                                        "type": "string",
+                                        "description": "Платёжный профиль"
+                                    },
+                                    "locale": {
+                                        "type": "string",
+                                        "description": "Локаль интерфейса (например, \"en-US\")"
+                                    },
+                                    "amount": {
+                                        "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
+                                    },
+                                    "crypto_network": {
+                                        "type": "string",
+                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
+                                    },
+                                    "crypto_asset": {
+                                        "type": "string",
+                                        "description": "Криптоактив (например, USDT, USDC)"
+                                    }
+                                },
+                                "required": [
+                                    "user",
+                                    "payment_profile"
+                                ],
+                                "additionalProperties": true,
+                                "example": {
+                                    "user": {
+                                        "user_id": "123"
+                                    },
+                                    "payment_profile": "production",
+                                    "project_id": "preview"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "trace_id": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "launch_type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "iframe",
+                                                        "new_window"
+                                                    ]
+                                                },
+                                                "kyc_status": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "approved",
+                                                        "rejected",
+                                                        "none"
+                                                    ]
+                                                },
+                                                "user_stats": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "present",
+                                                        "not_present",
+                                                        "unknown"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "url"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gate/withdraw/currencies/{payment_profile}": {
+            "get": {
+                "operationId": "mutation.gate.getWithdrawCurrencies",
+                "summary": "gate/withdraw/currencies",
+                "description": "Get available currencies with balances for withdraw",
+                "tags": [
+                    "Криптогейт"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "payment_profile",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Платёжный профиль"
+                    },
+                    {
+                        "name": "project_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Идентификатор проекта"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "trace_id": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "crypto_network": {
+                                                        "type": "string"
+                                                    },
+                                                    "crypto_assets": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "asset_name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "balance": {
+                                                                    "type": "string",
+                                                                    "description": "Доступный баланс для вывода"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "asset_name",
+                                                                "balance"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "crypto_network",
+                                                    "crypto_assets"
+                                                ]
+                                            }
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gate/pay-out": {
+            "post": {
+                "operationId": "mutation.gate.payOut",
+                "summary": "gate/pay-out",
+                "description": "Pay out crypto",
+                "tags": [
+                    "Криптогейт"
+                ],
+                "security": [
+                    {
+                        "basicAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "project_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор проекта"
+                                    },
+                                    "client_operation_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор операции вызывающей стороны"
+                                    },
+                                    "user": {
+                                        "$ref": "#/components/schemas/user"
+                                    },
+                                    "payment_profile": {
+                                        "type": "string",
+                                        "description": "Платёжный профиль"
+                                    },
+                                    "crypto_network": {
+                                        "type": "string",
+                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
+                                    },
+                                    "crypto_asset": {
+                                        "type": "string",
+                                        "description": "Криптоактив (например, USDT, USDC)"
+                                    },
+                                    "crypto_address": {
+                                        "type": "string",
+                                        "description": "Адрес криптокошелька получателя"
+                                    },
+                                    "crypto_amount": {
+                                        "type": "string",
+                                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                                        "example": "10.00",
+                                        "description": "Сумма к выплате в криптовалюте"
+                                    }
+                                },
+                                "required": [
+                                    "user",
+                                    "payment_profile",
+                                    "crypto_network",
+                                    "crypto_asset",
+                                    "crypto_address",
+                                    "crypto_amount"
+                                ],
+                                "additionalProperties": true,
+                                "example": {
+                                    "user": {
+                                        "user_id": "123"
+                                    },
+                                    "payment_profile": "production",
+                                    "project_id": "preview",
+                                    "crypto_address": "0xf725f4A182B2747c50B6d5EB127F274051b0fB36",
+                                    "crypto_network": "MATIC",
+                                    "crypto_asset": "USDC",
+                                    "crypto_amount": "11.00"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "trace_id": {
+                                            "type": "string"
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "reference_id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "reference_id"
+                                            ]
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/collector/api/v3/operation": {
@@ -1630,812 +2320,6 @@
                     }
                 },
                 "operationId": "set_operation_ack_id_by_reference_id"
-            }
-        },
-        "/gate/get-url": {
-            "post": {
-                "operationId": "mutation.gate.getUrl",
-                "summary": "gate/get-url",
-                "description": "Get url for gate with selected crypto currency",
-                "tags": [
-                    "Криптогейт"
-                ],
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "merchant_user_entry_point_url": {
-                                        "type": "string",
-                                        "description": "Точка-входа пользователя при создании операции"
-                                    },
-                                    "report_metadata": {
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "description": "Идентификатор операции для финансовых отчётов. Максимальная длина 255 символов."
-                                    },
-                                    "project_id": {
-                                        "type": "string",
-                                        "description": "Идентификатор проекта"
-                                    },
-                                    "user": {
-                                        "$ref": "#/components/schemas/user"
-                                    },
-                                    "url_redirect_success": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае успеха"
-                                    },
-                                    "url_redirect_fail": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае неуспеха"
-                                    },
-                                    "url_callback": {
-                                        "type": "string",
-                                        "description": "URL для получения обратных вызовов"
-                                    },
-                                    "payment_profile": {
-                                        "type": "string",
-                                        "description": "Платёжный профиль"
-                                    },
-                                    "locale": {
-                                        "type": "string",
-                                        "description": "Локаль интерфейса (например, \"en-US\")"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Описание операции"
-                                    },
-                                    "metadata": {
-                                        "type": "string",
-                                        "description": "Произвольные данные, которые будут возвращаться в уведомлениях и запросах состояния"
-                                    },
-                                    "amount_alternatives": {
-                                        "type": "array",
-                                        "description": "Альтернативные начальные суммы в других валютах",
-                                        "items": {
-                                            "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
-                                        }
-                                    },
-                                    "amount": {
-                                        "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
-                                    },
-                                    "crypto_network": {
-                                        "type": "string",
-                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
-                                    },
-                                    "crypto_asset": {
-                                        "type": "string",
-                                        "description": "Криптоактив (например, USDT, USDC)"
-                                    },
-                                    "launch_token": {
-                                        "type": "string",
-                                        "description": "Токен запуска платёжной страницы"
-                                    }
-                                },
-                                "required": [
-                                    "user",
-                                    "payment_profile"
-                                ],
-                                "additionalProperties": true,
-                                "example": {
-                                    "user": {
-                                        "user_id": "123"
-                                    },
-                                    "payment_profile": "example",
-                                    "project_id": "test_project"
-                                }
-                            }
-                        }
-                    }
-                },
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "trace_id": {
-                                            "type": "string"
-                                        },
-                                        "result": {
-                                            "type": "object",
-                                            "properties": {
-                                                "url": {
-                                                    "type": "string"
-                                                },
-                                                "launch_type": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "iframe",
-                                                        "new_window"
-                                                    ]
-                                                },
-                                                "kyc_status": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "approved",
-                                                        "rejected",
-                                                        "none"
-                                                    ]
-                                                },
-                                                "user_stats": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "present",
-                                                        "not_present",
-                                                        "unknown"
-                                                    ]
-                                                }
-                                            },
-                                            "required": [
-                                                "url"
-                                            ]
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "properties": {
-                                                "code": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "PARSE_ERROR",
-                                                        "BAD_REQUEST",
-                                                        "INTERNAL_SERVER_ERROR",
-                                                        "NOT_IMPLEMENTED",
-                                                        "UNAUTHORIZED",
-                                                        "FORBIDDEN",
-                                                        "NOT_FOUND",
-                                                        "METHOD_NOT_SUPPORTED",
-                                                        "TIMEOUT",
-                                                        "CONFLICT",
-                                                        "PRECONDITION_FAILED",
-                                                        "PAYLOAD_TOO_LARGE",
-                                                        "UNPROCESSABLE_CONTENT",
-                                                        "TOO_MANY_REQUESTS",
-                                                        "CLIENT_CLOSED_REQUEST"
-                                                    ]
-                                                },
-                                                "details": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "code",
-                                                "details"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "trace_id"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/gate/get-address": {
-            "post": {
-                "operationId": "mutation.gate.getAddress",
-                "summary": "gate/get-address",
-                "description": "Get address for provided currency",
-                "tags": [
-                    "Криптогейт"
-                ],
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "merchant_user_entry_point_url": {
-                                        "type": "string",
-                                        "description": "Точка-входа пользователя при создании операции"
-                                    },
-                                    "report_metadata": {
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "description": "Идентификатор операции для финансовых отчётов. Максимальная длина 255 символов."
-                                    },
-                                    "project_id": {
-                                        "type": "string",
-                                        "description": "Идентификатор проекта"
-                                    },
-                                    "user": {
-                                        "$ref": "#/components/schemas/user"
-                                    },
-                                    "url_redirect_success": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае успеха"
-                                    },
-                                    "url_redirect_fail": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае неуспеха"
-                                    },
-                                    "url_callback": {
-                                        "type": "string",
-                                        "description": "URL для получения обратных вызовов"
-                                    },
-                                    "payment_profile": {
-                                        "type": "string",
-                                        "description": "Платёжный профиль"
-                                    },
-                                    "locale": {
-                                        "type": "string",
-                                        "description": "Локаль интерфейса (например, \"en-US\")"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Описание операции"
-                                    },
-                                    "metadata": {
-                                        "type": "string",
-                                        "description": "Произвольные данные, которые будут возвращаться в уведомлениях и запросах состояния"
-                                    },
-                                    "amount_alternatives": {
-                                        "type": "array",
-                                        "description": "Альтернативные начальные суммы в других валютах",
-                                        "items": {
-                                            "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
-                                        }
-                                    },
-                                    "amount": {
-                                        "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
-                                    },
-                                    "crypto_network": {
-                                        "type": "string",
-                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
-                                    },
-                                    "crypto_asset": {
-                                        "type": "string",
-                                        "description": "Криптоактив (например, USDT, USDC)"
-                                    },
-                                    "address_seed": {
-                                        "type": "string",
-                                        "description": "Дополнительный сид для генерации адреса"
-                                    },
-                                    "launch_token": {
-                                        "type": "string",
-                                        "description": "Токен запуска платёжной страницы"
-                                    }
-                                },
-                                "required": [
-                                    "user",
-                                    "payment_profile",
-                                    "crypto_network"
-                                ],
-                                "additionalProperties": true,
-                                "example": {
-                                    "user": {
-                                        "user_id": "123"
-                                    },
-                                    "payment_profile": "example",
-                                    "project_id": "test_project",
-                                    "crypto_network": "TRX"
-                                }
-                            }
-                        }
-                    }
-                },
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "trace_id": {
-                                            "type": "string"
-                                        },
-                                        "result": {
-                                            "type": "object",
-                                            "properties": {
-                                                "address": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "address"
-                                            ]
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "properties": {
-                                                "code": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "PARSE_ERROR",
-                                                        "BAD_REQUEST",
-                                                        "INTERNAL_SERVER_ERROR",
-                                                        "NOT_IMPLEMENTED",
-                                                        "UNAUTHORIZED",
-                                                        "FORBIDDEN",
-                                                        "NOT_FOUND",
-                                                        "METHOD_NOT_SUPPORTED",
-                                                        "TIMEOUT",
-                                                        "CONFLICT",
-                                                        "PRECONDITION_FAILED",
-                                                        "PAYLOAD_TOO_LARGE",
-                                                        "UNPROCESSABLE_CONTENT",
-                                                        "TOO_MANY_REQUESTS",
-                                                        "CLIENT_CLOSED_REQUEST"
-                                                    ]
-                                                },
-                                                "details": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "code",
-                                                "details"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "trace_id"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/gate/deposit/currencies/{payment_profile}": {
-            "get": {
-                "operationId": "mutation.gate.getDepositCurrencies",
-                "summary": "gate/deposit/currencies",
-                "description": "Get available currencies for deposit",
-                "tags": [
-                    "Криптогейт"
-                ],
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "payment_profile",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "Платёжный профиль"
-                    },
-                    {
-                        "name": "project_id",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "Идентификатор проекта"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "trace_id": {
-                                            "type": "string"
-                                        },
-                                        "result": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "crypto_network": {
-                                                        "type": "string"
-                                                    },
-                                                    "crypto_assets": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "asset_name": {
-                                                                    "type": "string"
-                                                                },
-                                                                "min_amount": {
-                                                                    "type": "string",
-                                                                    "description": "Минимальная сумма депозита"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "asset_name",
-                                                                "min_amount"
-                                                            ]
-                                                        }
-                                                    }
-                                                },
-                                                "required": [
-                                                    "crypto_network",
-                                                    "crypto_assets"
-                                                ]
-                                            }
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "properties": {
-                                                "code": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "PARSE_ERROR",
-                                                        "BAD_REQUEST",
-                                                        "INTERNAL_SERVER_ERROR",
-                                                        "NOT_IMPLEMENTED",
-                                                        "UNAUTHORIZED",
-                                                        "FORBIDDEN",
-                                                        "NOT_FOUND",
-                                                        "METHOD_NOT_SUPPORTED",
-                                                        "TIMEOUT",
-                                                        "CONFLICT",
-                                                        "PRECONDITION_FAILED",
-                                                        "PAYLOAD_TOO_LARGE",
-                                                        "UNPROCESSABLE_CONTENT",
-                                                        "TOO_MANY_REQUESTS",
-                                                        "CLIENT_CLOSED_REQUEST"
-                                                    ]
-                                                },
-                                                "details": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "code",
-                                                "details"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "trace_id"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/gate/withdraw/currencies/{payment_profile}": {
-            "get": {
-                "operationId": "mutation.gate.getWithdrawCurrencies",
-                "summary": "gate/withdraw/currencies",
-                "description": "Get available currencies with balances for withdraw",
-                "tags": [
-                    "Криптогейт"
-                ],
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "payment_profile",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "Платёжный профиль"
-                    },
-                    {
-                        "name": "project_id",
-                        "in": "query",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "Идентификатор проекта"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "trace_id": {
-                                            "type": "string"
-                                        },
-                                        "result": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "crypto_network": {
-                                                        "type": "string"
-                                                    },
-                                                    "crypto_assets": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "asset_name": {
-                                                                    "type": "string"
-                                                                },
-                                                                "balance": {
-                                                                    "type": "string",
-                                                                    "description": "Доступный баланс для вывода"
-                                                                }
-                                                            },
-                                                            "required": [
-                                                                "asset_name",
-                                                                "balance"
-                                                            ]
-                                                        }
-                                                    }
-                                                },
-                                                "required": [
-                                                    "crypto_network",
-                                                    "crypto_assets"
-                                                ]
-                                            }
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "properties": {
-                                                "code": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "PARSE_ERROR",
-                                                        "BAD_REQUEST",
-                                                        "INTERNAL_SERVER_ERROR",
-                                                        "NOT_IMPLEMENTED",
-                                                        "UNAUTHORIZED",
-                                                        "FORBIDDEN",
-                                                        "NOT_FOUND",
-                                                        "METHOD_NOT_SUPPORTED",
-                                                        "TIMEOUT",
-                                                        "CONFLICT",
-                                                        "PRECONDITION_FAILED",
-                                                        "PAYLOAD_TOO_LARGE",
-                                                        "UNPROCESSABLE_CONTENT",
-                                                        "TOO_MANY_REQUESTS",
-                                                        "CLIENT_CLOSED_REQUEST"
-                                                    ]
-                                                },
-                                                "details": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "code",
-                                                "details"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "trace_id"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/gate/pay-out": {
-            "post": {
-                "operationId": "mutation.gate.payOut",
-                "summary": "gate/pay-out",
-                "description": "Pay out crypto",
-                "tags": [
-                    "Криптогейт"
-                ],
-                "security": [
-                    {
-                        "basicAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "merchant_user_entry_point_url": {
-                                        "type": "string",
-                                        "description": "Точка-входа пользователя при создании операции"
-                                    },
-                                    "report_metadata": {
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "description": "Идентификатор операции для финансовых отчётов. Максимальная длина 255 символов."
-                                    },
-                                    "project_id": {
-                                        "type": "string",
-                                        "description": "Идентификатор проекта"
-                                    },
-                                    "client_operation_id": {
-                                        "type": "string",
-                                        "description": "Идентификатор операции вызывающей стороны"
-                                    },
-                                    "user": {
-                                        "$ref": "#/components/schemas/user"
-                                    },
-                                    "url_redirect_success": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае успеха"
-                                    },
-                                    "url_redirect_fail": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае неуспеха"
-                                    },
-                                    "url_callback": {
-                                        "type": "string",
-                                        "description": "URL для получения обратных вызовов"
-                                    },
-                                    "payment_profile": {
-                                        "type": "string",
-                                        "description": "Платёжный профиль"
-                                    },
-                                    "locale": {
-                                        "type": "string",
-                                        "description": "Локаль интерфейса (например, \"en-US\")"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Описание операции"
-                                    },
-                                    "metadata": {
-                                        "type": "string",
-                                        "description": "Произвольные данные, которые будут возвращаться в уведомлениях и запросах состояния"
-                                    },
-                                    "crypto_network": {
-                                        "type": "string",
-                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
-                                    },
-                                    "crypto_asset": {
-                                        "type": "string",
-                                        "description": "Криптоактив (например, USDT, USDC)"
-                                    },
-                                    "crypto_address": {
-                                        "type": "string",
-                                        "description": "Адрес криптокошелька получателя"
-                                    },
-                                    "crypto_amount": {
-                                        "type": "string",
-                                        "pattern": "^[0-9]*[.]?[0-9]*$",
-                                        "example": "10.00",
-                                        "description": "Сумма к выплате в криптовалюте"
-                                    }
-                                },
-                                "required": [
-                                    "user",
-                                    "payment_profile",
-                                    "crypto_network",
-                                    "crypto_asset",
-                                    "crypto_address",
-                                    "crypto_amount"
-                                ],
-                                "additionalProperties": true,
-                                "example": {
-                                    "user": {
-                                        "user_id": "123"
-                                    },
-                                    "payment_profile": "example",
-                                    "project_id": "test_project",
-                                    "crypto_address": "ADDRESS",
-                                    "crypto_network": "TRX",
-                                    "crypto_asset": "USDT",
-                                    "crypto_amount": "10.00"
-                                }
-                            }
-                        }
-                    }
-                },
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean"
-                                        },
-                                        "trace_id": {
-                                            "type": "string"
-                                        },
-                                        "result": {
-                                            "type": "object",
-                                            "properties": {
-                                                "reference_id": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "reference_id"
-                                            ]
-                                        },
-                                        "error": {
-                                            "type": "object",
-                                            "properties": {
-                                                "code": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "PARSE_ERROR",
-                                                        "BAD_REQUEST",
-                                                        "INTERNAL_SERVER_ERROR",
-                                                        "NOT_IMPLEMENTED",
-                                                        "UNAUTHORIZED",
-                                                        "FORBIDDEN",
-                                                        "NOT_FOUND",
-                                                        "METHOD_NOT_SUPPORTED",
-                                                        "TIMEOUT",
-                                                        "CONFLICT",
-                                                        "PRECONDITION_FAILED",
-                                                        "PAYLOAD_TOO_LARGE",
-                                                        "UNPROCESSABLE_CONTENT",
-                                                        "TOO_MANY_REQUESTS",
-                                                        "CLIENT_CLOSED_REQUEST"
-                                                    ]
-                                                },
-                                                "details": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "code",
-                                                "details"
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "success",
-                                        "trace_id"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     },
