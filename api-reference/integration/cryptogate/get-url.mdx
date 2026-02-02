@@ -27,16 +27,6 @@ sidebarTitle: "3. Виджет адреса"
       <ParamField body="crypto_asset" type="string">
         Криптоактив (например, `TRX`, `USDT`).
       </ParamField>
-      <ParamField body="url_callback" type="string">
-        Адрес приёма колбеков.
-      </ParamField>
-      <ParamField body="url_redirect_success" type="string">
-        URL для редиректа при успешном завершении.
-      </ParamField>
-      <ParamField body="url_redirect_fail" type="string">
-        URL для редиректа при ошибке/отмене.
-      </ParamField>
-
     </Expandable>
   </Step>
 
@@ -51,10 +41,7 @@ curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate
     "project_id": "preview",
     "user": { "user_id": "123" },
     "crypto_network": "TRX",
-    "crypto_asset": "USDT",
-    "url_callback": "https://merchant.example.com/cryptogate/callback",
-    "url_redirect_success": "https://merchant.example.com/success",
-    "url_redirect_fail": "https://merchant.example.com/fail"
+    "crypto_asset": "USDT"
   }'
     ```
     </RequestExample>

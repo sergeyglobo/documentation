@@ -1848,15 +1848,6 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "merchant_user_entry_point_url": {
-                                        "type": "string",
-                                        "description": "Точка-входа пользователя при создании операции"
-                                    },
-                                    "report_metadata": {
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "description": "Идентификатор операции для финансовых отчётов. Максимальная длина 255 символов."
-                                    },
                                     "project_id": {
                                         "type": "string",
                                         "description": "Идентификатор проекта"
@@ -1864,59 +1855,21 @@
                                     "user": {
                                         "$ref": "#/components/schemas/user"
                                     },
-                                    "url_redirect_success": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае успеха"
-                                    },
-                                    "url_redirect_fail": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае неуспеха"
-                                    },
-                                    "url_callback": {
-                                        "type": "string",
-                                        "description": "URL для получения обратных вызовов"
-                                    },
                                     "payment_profile": {
                                         "type": "string",
-                                        "description": "Платёжный профиль"
-                                    },
-                                    "locale": {
-                                        "type": "string",
-                                        "description": "Локаль интерфейса (например, \"en-US\")"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Описание операции"
-                                    },
-                                    "metadata": {
-                                        "type": "string",
-                                        "description": "Произвольные данные, которые будут возвращаться в уведомлениях и запросах состояния"
-                                    },
-                                    "amount_alternatives": {
-                                        "type": "array",
-                                        "description": "Альтернативные начальные суммы в других валютах",
-                                        "items": {
-                                            "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
-                                        }
-                                    },
-                                    "amount": {
-                                        "$ref": "#/components/schemas/prepare2apiv3checkout_amount"
+                                        "description": "Платёжный профиль. Используйте `production`."
                                     },
                                     "crypto_network": {
                                         "type": "string",
-                                        "description": "Сеть криптовалюты (например, TRX, MATIC)"
+                                        "description": "Сеть криптовалюты (например, `ETH`, `MATIC`)"
                                     },
                                     "crypto_asset": {
                                         "type": "string",
-                                        "description": "Криптоактив (например, USDT, USDC)"
+                                        "description": "Криптоактив (например, `USDT`, `USDC`)"
                                     },
                                     "address_seed": {
                                         "type": "string",
-                                        "description": "Дополнительный сид для генерации адреса"
-                                    },
-                                    "launch_token": {
-                                        "type": "string",
-                                        "description": "Токен запуска платёжной страницы"
+                                        "description": "Дополнительный сид для генерации дополнительного адреса пользователя. "
                                     }
                                 },
                                 "required": [
@@ -2277,15 +2230,6 @@
                             "schema": {
                                 "type": "object",
                                 "properties": {
-                                    "merchant_user_entry_point_url": {
-                                        "type": "string",
-                                        "description": "Точка-входа пользователя при создании операции"
-                                    },
-                                    "report_metadata": {
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "description": "Идентификатор операции для финансовых отчётов. Максимальная длина 255 символов."
-                                    },
                                     "project_id": {
                                         "type": "string",
                                         "description": "Идентификатор проекта"
@@ -2296,14 +2240,6 @@
                                     },
                                     "user": {
                                         "$ref": "#/components/schemas/user"
-                                    },
-                                    "url_redirect_success": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае успеха"
-                                    },
-                                    "url_redirect_fail": {
-                                        "type": "string",
-                                        "description": "URL перенаправления в случае неуспеха"
                                     },
                                     "url_callback": {
                                         "type": "string",
@@ -2331,7 +2267,7 @@
                                     },
                                     "crypto_asset": {
                                         "type": "string",
-                                        "description": "Криптоактив (например, USDT, USDC)"
+                                        "description": "Криптоактив (например, `USDT`, `USDC`)"
                                     },
                                     "crypto_address": {
                                         "type": "string",
@@ -2357,11 +2293,11 @@
                                     "user": {
                                         "user_id": "123"
                                     },
-                                    "payment_profile": "example",
-                                    "project_id": "test_project",
-                                    "crypto_address": "ADDRESS",
-                                    "crypto_network": "TRX",
-                                    "crypto_asset": "USDT",
+                                    "payment_profile": "sandbox",
+                                    "project_id": "preview",
+                                    "crypto_address": "0xf725f4A182B2747c50B6d5EB127F274051b0fB36",
+                                    "crypto_network": "MATIC",
+                                    "crypto_asset": "USDC",
                                     "crypto_amount": "10.00"
                                 }
                             }

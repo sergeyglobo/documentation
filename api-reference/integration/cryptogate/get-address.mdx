@@ -26,15 +26,7 @@ sidebarTitle: "2. Адрес пользователя"
       <ParamField body="crypto_asset" type="string">
         Опционально: конкретный актив (`USDT`, `USDC`, `TRX`).
       </ParamField>
-      <ParamField body="url_callback" type="string">
-        Адрес приёма колбеков.
-      </ParamField>
-      <ParamField body="description" type="string">
-        Описание операции (отобразится в колбеках).
-      </ParamField>
-      <ParamField body="report_metadata" type="string">
-        Идентификатор для финансовых отчётов (до 255 символов).
-      </ParamField>
+
     </Expandable>
   </Step>
 
@@ -49,9 +41,7 @@ curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate
     "project_id": "preview",
     "crypto_network": "TRX",
     "crypto_asset": "USDT",
-    "user": { "user_id": "123" },
-    "url_callback": "https://merchant.example.com/cryptogate/callback",
-    "description": "Deposit address for TRX/USDT"
+    "user": { "user_id": "123" }
   }'
     ```
     </RequestExample>
