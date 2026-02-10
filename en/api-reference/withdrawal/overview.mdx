@@ -1,0 +1,135 @@
+---
+title: "Withdrawal Card API v2 overview"
+description: "How to use the Vimapay card withdrawal API v2 for payouts to bank cards."
+---
+
+The **Withdrawal Card API v2** lets you automate payouts to bank cards through Vimapay.  
+This section is generated from the `withdrawal_api_v2.1.json` OpenAPI specification and provides an interactive reference for all endpoints.
+
+<Note>
+All endpoint details (parameters, responses, and error models) are taken directly from the `withdrawal_api_v2.1.json` schema and stay in sync with the actual API.
+</Note>
+
+## When to use the Withdrawal Card API
+
+Use this API when you need to:
+
+- Create and control **card withdrawal operations**
+- Check **service health** and **merchant balance**
+- Manage the **operation lifecycle**: create → start → user input → confirm / abort → final status
+
+The base URL for all requests in this API:
+
+```bash
+https://crypto.sopogai.com
+```
+
+## Basic flow
+
+Typical card payout integration follows this pattern:
+
+<Steps>
+<Step title="Check service health and balance">
+Use `/public/api/withdraw/card/v2/check_health` to ensure the service is available,  
+and `/public/api/withdraw/card/v2/get_balance` to check that you have sufficient available balance.
+</Step>
+
+<Step title="Create a withdrawal operation">
+Create a withdrawal operation with card data, amount, and user info using  
+`/public/api/withdraw/card/v2/create_operation` or  
+`/public/api/withdraw/card/v2/create_operation_using_explicit_source`.
+</Step>
+
+<Step title="Start the operation">
+Call `/public/api/withdraw/card/v2/start_operation` to actually start processing.
+</Step>
+
+<Step title="Handle user interaction (optional)">
+If user interaction is required (3‑DS, additional checks, etc.), use  
+`/public/api/withdraw/card/v2/open_operation_user_input` to obtain a URL and redirect the user.
+</Step>
+
+<Step title="Track and finalize the operation">
+Poll `/public/api/withdraw/card/v2/get_operation_state` to track status,  
+optionally abort via `/public/api/withdraw/card/v2/abort_operation`,  
+and confirm completion with `/public/api/withdraw/card/v2/confirm_operation`.
+</Step>
+</Steps>
+
+## Request example
+
+Below is a simplified example of a request to **create a withdrawal operation**.  
+Use the exact field names and structures from the `WithdrawCardCreateRequest` schema.
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://crypto.sopogai.com/public/api/withdraw/card/v2/create_operation" \
+  -u "PROJECT_ID:PROJECT_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_operation_id": "your-unique-operation-id",
+    "user": {
+      "user_id": "internal-user-id-123"
+    },
+    "bank_card": {
+      "pan": "4111111111111111",
+      "cardholder": "JOHN DOE",
+      "expiration_month": 12,
+      "expiration_year": 2030
+    },
+    "order_amount": {
+      "currency": "USD",
+      "amount": "10.00"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "success": true,
+  "trace_id": "example-trace-id",
+  "result": {
+    "operation_state": {
+      "operation_id": "operation-id-123",
+      "client_operation_id": "your-unique-operation-id",
+      "operation_status": "PREPARING",
+      "order_amount": {
+        "currency": "USD",
+        "amount": "10.00"
+      }
+      // other fields omitted for brevity
+    }
+  }
+}
+```
+</ResponseExample>
+
+<Info>
+The exact request and response structures are defined in schemas like  
+`WithdrawCardCreateRequest`, `WithdrawCardCreateResponse`, and `CardWithdrawalOperationStateApiView`  
+in `withdrawal_api_v2.1.json`. Use the interactive API reference in the sidebar to explore all fields.
+</Info>
+
+## Error handling
+
+All error models (for example, validation errors or internal errors) are described by schemas like  
+`WithdrawCardCreateErrorCodeApiError`, `WithdrawCardGetBalanceErrorCodeApiError`, and others.  
+Each endpoint page in the **Withdrawal API v2.1** section shows:
+
+- HTTP status codes (such as `400`, `500`)
+- Error body schema
+- Example payloads (where provided in the OpenAPI spec)
+
+<Tip>
+Log both the HTTP status code and the full error response body from the API.  
+This will significantly simplify debugging with the Vimapay support team.
+</Tip>
+
+## Next steps
+
+- Use the **Withdrawal API v2.1** sidebar section to open individual endpoint pages.
+- Start with listing instances and tasks to validate connectivity.
+- Then integrate task creation and status tracking into your payout workflows.
+
