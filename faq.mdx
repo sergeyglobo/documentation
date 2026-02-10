@@ -1,0 +1,131 @@
+---
+title: "FAQ"
+description: "Часто задаваемые вопросы по интеграции с Finmar API"
+sidebarTitle: "FAQ"
+icon: "circle-question"
+---
+
+## Общие вопросы
+
+<AccordionGroup>
+  <Accordion title="В чём разница между sandbox и production окружениями?">
+    **Sandbox** — тестовое окружение для разработки и отладки интеграции. Реальные деньги не списываются. Base URL: `https://sandbox.finmar.tech`
+
+    **Production** — боевое окружение для реальных платежей. Base URL предоставляется менеджером по интеграции после прохождения [чеклиста проверки интеграции](/api-reference/go-live-checklist).
+
+    <Warning>
+      Учётные данные sandbox и production **различаются**. Не используйте sandbox-учётные данные в production.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Какие платёжные методы доступны?">
+    Finmar API поддерживает следующие методы:
+
+    | Метод | Идентификатор | Описание |
+    |-------|---------------|----------|
+    | Банковские карты | `card` | Visa, MasterCard |
+    | Open Banking | `openbanking` | Прямой перевод из банка |
+    | Apple Pay | `applepay` | Оплата для устройств Apple |
+    | Google Pay | `googlepay` | Оплата через Google Pay |
+    | BLIK | `blik` | Мгновенные платежи (Польша) |
+    | Widget Integration | `widget_integration` | Платёжное решение с криптозеркалированием |
+  </Accordion>
+
+  <Accordion title="Как получить учётные данные для интеграции?">
+    Обратитесь к менеджеру по интеграции в Telegram: [https://t.me/integrationVimapay](https://t.me/integrationVimapay). Вам будут предоставлены:
+    - Логин и пароль для тестового окружения
+    - Доступ к sandbox API
+    - Инструкции по началу интеграции
+  </Accordion>
+</AccordionGroup>
+
+## Интеграция
+
+<AccordionGroup>
+  <Accordion title="Как создать тестовый платёж?">
+    1. Используйте sandbox-окружение: `https://sandbox.finmar.tech/prepare2/api/v3/checkout`
+    2. Авторизуйтесь через Basic Auth с вашими sandbox-учётными данными
+    3. Отправьте POST-запрос с нужными параметрами
+    4. Для карточных платежей используйте тестовую карту `4111111111111111`
+
+    Подробные примеры — на странице [Создание операции](/api-reference/integration/checkout).
+  </Accordion>
+
+  <Accordion title="Какой формат amount.amount?">
+    Поле `amount.amount` передаётся как **строка**. Используйте точку в качестве разделителя дробной части:
+    ```json
+    {
+      "amount": {
+        "amount": "10.50",
+        "currency": "EUR"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Что такое client_operation_id и зачем он нужен?">
+    `client_operation_id` — это ваш уникальный идентификатор операции. Он используется для:
+    - Предотвращения дублирования операций
+    - Связывания платежа с записью в вашей системе
+    - Подтверждения операций через [/client_confirm_payment_by_client_operation_id](/api-reference/endpoint/client_confirm_payment_by_client_operation_id)
+
+    <Warning>
+      Каждый `client_operation_id` должен быть уникальным. Повторное использование может привести к ошибкам.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Что такое launch_type и как его обрабатывать?">
+    Поле `launch_type` в ответе на создание операции определяет рекомендуемый способ отображения платёжной страницы:
+
+    | Значение | Действие |
+    |----------|----------|
+    | `redirect` | Перенаправить пользователя в текущей вкладке |
+    | `iframe` | Показать в iframe на вашем сайте |
+    | `new_window` | **Обязательно** открыть в новой вкладке |
+
+    Подробнее — на странице [Перенаправление пользователя](/api-reference/integration/redirect_to_url).
+  </Accordion>
+</AccordionGroup>
+
+## Callbacks
+
+<AccordionGroup>
+  <Accordion title="Как проверить, что callback пришёл от Finmar?">
+    Каждое уведомление подписывается двумя алгоритмами: **RSA-SHA256** и **ECDSA-SHA256**. Вы можете проверять подпись по одному из них. Подробные инструкции и примеры на PHP/Node.js — на странице [Обратные уведомления](/api-reference/integration/callbacks).
+  </Accordion>
+
+  <Accordion title="С каких IP-адресов приходят callback-уведомления?">
+    Уведомления отправляются с пула IP-адресов:
+    ```
+    134.122.55.160
+    141.95.16.27
+    163.172.116.59
+    ```
+    Убедитесь, что ваш сервер принимает HTTP POST-запросы с этих адресов.
+  </Accordion>
+
+  <Accordion title="Зачем нужно подтверждать операцию после callback?">
+    После получения успешного callback необходимо подтвердить обработку операции через [/client_confirm_payment_by_reference_id](/api-reference/endpoint/client_confirm_payment_by_reference_id). Это гарантирует, что:
+    - Вы обработали платёж на своей стороне
+    - Операция не попадёт в список неподтверждённых (`/client_unconfirmed_success_payments`)
+    - Средства будут корректно зачислены
+  </Accordion>
+
+  <Accordion title="Что делать, если callback не пришёл?">
+    Используйте метод `GET /collector/api/v3/client_unconfirmed_success_payments` как резервный механизм. Реализуйте интервальный запрос (каждые 30–60 секунд) для получения успешных неподтверждённых операций. Подробнее — в [Проверке интеграции](/api-reference/go-live-checklist).
+  </Accordion>
+</AccordionGroup>
+
+## Безопасность
+
+<AccordionGroup>
+  <Accordion title="Нужно ли использовать HTTPS?">
+    **Да, обязательно.** Все URL (`url_callback`, `url_redirect_success`, `url_redirect_fail`) должны использовать протокол HTTPS. Это требование для production-окружения.
+  </Accordion>
+
+  <Accordion title="Как безопасно хранить учётные данные?">
+    - Никогда не храните учётные данные в исходном коде
+    - Используйте переменные окружения
+    - Не передавайте учётные данные на фронтенд — все запросы к API должны идти с вашего сервера
+  </Accordion>
+</AccordionGroup>

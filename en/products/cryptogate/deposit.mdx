@@ -1,0 +1,274 @@
+---
+title: "Cryptogate. Deposits"
+icon: "link"
+description: "Accepting payments in cryptocurrencies"
+---
+
+## General Workflow
+
+<Steps>
+  <Step title="Project requests available networks and assets">
+
+###  Request available networks and assets
+    Use method [`GET /gate/deposit/currencies/{payment_profile}`](/api-reference/криптогейт/gatedepositcurrencies) to get a list of available networks and coins.
+
+    Request Example:
+    
+    ```bash gate/deposit/currencies
+    curl --location --request GET 'https://sandbox.finmar.tech/prepare2/api/v3/gate/deposit/currencies/sandbox?project_id=preview' \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
+    ```
+
+   
+    
+Response Example:
+  
+      ```json gate/deposit/currencies
+ {
+    "success": true,
+    "result": [
+        {
+            "crypto_network": "TON",
+            "crypto_assets": [
+                {
+                    "asset_name": "TON",
+                    "min_amount": "0.000000002"
+                },
+                {
+                    "asset_name": "USDT",
+                    "min_amount": "0.000000"
+                }
+            ]
+        }
+        // ... (other networks omitted for brevity)
+    ],
+    "trace_id": "ef26e8037db54488901bc6507755d375"
+}
+      ```
+  
+
+</Step>
+
+  <Step title="Request user's static crypto address">
+  ###  Request user's static crypto address
+
+    Use this method [`POST /gate/get-address`](/en/api-reference/integration/cryptogate/get-address) to get a unique deposit address for a user.
+    
+   
+    #### Request Parameters
+    <ParamField body="payment_profile" type="string" required>
+      Payment profile for which the address is requested.
+    </ParamField>
+    <ParamField body="project_id" type="string">
+      Project ID (if used).
+    </ParamField>
+    <ParamField body="user" type="object" required>
+      User data. `user_id` is mandatory.
+    </ParamField>
+    <ParamField body="crypto_network" type="string" required>
+      Cryptocurrency network (e.g., `TRX`, `MATIC`, `ETH`).
+    </ParamField>
+   
+
+  
+ 
+ Request Example:
+
+    ```bash gate/get-address
+    curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address' \
+      --header 'Content-Type: application/json' \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+      --data '{
+        "payment_profile": "sandbox",
+        "project_id": "preview",
+        "crypto_network": "TRX",
+        "crypto_asset": "USDT",
+        "user": { "user_id": "123" }
+      }'
+    ```
+ 
+ 
+ Response Example:
+    ```json Success
+ {
+    "success": true,
+    "result": {
+        "address": "TPQ65AX8rm4RwiyJUVPEYtYdZUdVZ6jZA1"
+    },
+    "trace_id": "e07b2c9dfae44ee59d4723d15ac1dcd7"
+}
+    ```
+    <Tip>
+      Save the `reference_id` and the `user_id`/`address` pair to uniquely handle incoming callbacks and prevent duplicate credits.
+    </Tip>
+
+  </Step>
+
+  <Step title="Request widget with user's crypto address">
+   ###  Request widget with user's crypto address
+    If you need to open the crypto address widget in an iframe or new window with pre-filled parameters, use [`POST gate/get-url`](/en/api-reference/integration/cryptogate/get-url).
+#### Request Parameters
+    <ParamField body="payment_profile" type="string" required>
+      Payment profile.
+    </ParamField>
+    <ParamField body="project_id" type="string">
+      Project ID (optional).
+    </ParamField>
+    <ParamField body="user" type="object" required>
+      `user_id` is mandatory; contact details and KYC can be passed.
+    </ParamField>
+    <ParamField body="amount" type="object">
+      Amount and currency to start the scenario (e.g., `USD`).
+    </ParamField>
+    <ParamField body="amount_alternatives" type="array">
+      Alternative starting amounts in other currencies.
+    </ParamField>
+    <ParamField body="crypto_network" type="string">
+      Network for cryptocurrency scenario.
+    </ParamField>
+    <ParamField body="crypto_asset" type="string">
+      Crypto asset, if you need to fix the coin.
+    </ParamField>
+    <ParamField body="url_callback" type="string">
+      URL for callbacks (matches the deposit processing address).
+    </ParamField>
+ 
+ 
+     
+    Request Example:
+
+    ```bash gate/get-url
+    curl --request POST \
+      --url https://sandbox.finmar.tech/gate/get-url \
+      --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "payment_profile": "sandbox",
+        "project_id": "preview",
+        "user": { "user_id": "123" },
+        "amount": { "amount": "10.00", "currency": "USD" },
+        "crypto_network": "TRX",
+        "crypto_asset": "USDT"
+      }'
+    ```
+ 
+ 
+ 
+Response Example:
+    ```json Success
+    {
+      "success": true,
+      "trace_id": "f7a3c9b34f33401e8fd990c9b65e8a93",
+      "result": {
+        "url": "https://crypto.cheipho.com/payment-front/d7145622-db72-4b7d-99a1-97236645f8f5",
+        "launch_type": "iframe",
+        "kyc_status": "approved",
+        "user_stats": "present"
+      }
+    }
+    ```
+ 
+
+
+     </Step>
+   
+
+  <Step title="User sends crypto assets to the received address">
+    
+  </Step>
+
+ 
+  <Step title="Service sends notification to the project">
+
+  ### Callback Notifications 
+
+    After receiving a sufficient number of confirmations for the used network, the service sends a callback about receiving crypto assets to the pre-specified `url_callback`.
+
+ 
+
+ 
+
+#### Notification Body Parameters
+
+    | **Parameter**              | **Type**       | **Description** |
+    | :------------------------ | :------------ | :----------- |
+    | `reference_id`           | string        | Globally unique operation identifier assigned by the service. You should save it and use it to confirm the operation. |
+    | `user_id`                | string        | User identifier on the project side. |
+    | `result`                 | string        | Final result of operation processing (`complete`, `fail`, etc.). For deposits to be credited, the value is `complete`. |
+    | `current_status`         | string        | Current status of the operation. For successful deposits — `success`. |
+    | `payment_product`        | string        | Payment product code, e.g., `cryptogate` or `cryptogate_direct`. |
+    | `payment_method_type`    | string        | Type of payment method. For crypto deposits — `crypto_deposit`. |
+    | `payment_custom_data`    | any \| null   | Additional data passed when creating the operation. Can be `null`. |
+    | `deposit.amount`         | number        | Amount to be credited to the user's balance. |
+    | `deposit.currency`       | string        | Deposit currency (e.g., `TRX`, `USDC`). |
+    | `crypto[]`               | array         | Array of objects with detailed information about the crypto transaction. |
+    | `crypto[].amount`        | number        | Actually received amount in the network. |
+    | `crypto[].currency`      | string        | Transaction cryptocurrency (e.g., `TRX`, `USDC`). |
+    | `crypto[].oper_type`     | string        | Operation type, for deposits — `deposit`. |
+    | `crypto[].status`        | string        | Crypto transaction status, usually `success` upon successful crediting. |
+    | `crypto[].to_address`    | string        | Crypto address to which the user sent funds. |
+    | `crypto[].crypto_txn_id` | string        | Transaction identifier in the blockchain. |
+    | `rates`                  | object        | Currency pair rates at the time of the operation. Key — currency pair (`TRX-EUR`, `TRX-USD`, etc.), value — numeric rate. |
+
+#### Examples of Callback Notifications
+
+   ```json TRX
+      {
+        "crypto": [
+          {
+            "amount": 1.11,
+            "currency": "TRX",
+            "status": "success",
+            "to_address": "TFQsv4umwyrBwgzM6adZdpTHvpYZrZLUYG"
+          }
+        ],
+        "deposit": {
+          // Amount received from the user. It must be credited to the user's balance.
+          "amount": 1.11,
+          "currency": "TRX"
+        },
+        "result": "complete",
+        // payment method type
+        "payment_method_type": "crypto_deposit",
+        // payment product
+        "payment_product": "cryptogate",
+        // currency pair rates. Required ones can be set via integration chat request.
+        "rates": {
+          "TRX-AUD": 0.25037386021435254,
+          "TRX-CAD": 0.22943992050960907,
+          "TRX-EUR": 0.15417145982562155,
+          "TRX-USD": 0.164771894913
+        },
+        // globally unique operation identifier assigned by the service. Should be saved on the project side.
+        "reference_id": "b5ba93ba-7eae-42f1-8955-5d13eec2f6cf",
+        // operation status. success - successful.
+        "current_status": "success",
+        // user identifier on the project side
+        "user_id": "d4177559-2a1d-40e3-a4f2-6e32e607b8b1"
+      }
+      ```
+
+   #### Notification Resending
+<Info>
+  If your service returns response code 200 or 204 in response to the callback, the notification is considered successfully received.
+</Info>
+If a response code other than 200 or 204 is received, 10 retry attempts will be made with increasing intervals.
+
+    #### Processing Callback Notifications
+    The project credits the received amount to the user's balance.
+
+
+  <Expandable title="Notification Authentication">
+
+  Detailed information on notification signature verification (RSA-SHA256, ECDSA-SHA256) and examples of handler implementation are available in the [Callbacks](/en/api-reference/integration/callbacks) section.
+
+  </Expandable>
+  
+
+  </Step>
+ 
+  <Step title="Confirm operation processing">
+    ### Confirm operation processing
+    Upon successful processing of the operation (crediting funds to the user's balance), the project calls the [operation processing confirmation method](/en/api-reference/endpoint/client_confirm_payment_by_reference_id) using the `reference_id` received in the callback.
+  </Step>
+</Steps>

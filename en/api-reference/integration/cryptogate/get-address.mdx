@@ -1,0 +1,73 @@
+---
+title: "Getting User Address"
+description: "How to generate a deposit crypto address for a selected network and user"
+sidebarTitle: "2. User Address"
+---
+
+Immediately after selecting a network and asset, request a unique user address via `POST /gate/get-address`.
+
+<Steps>
+  <Step title="Form request body">
+    Minimum composition: `payment_profile`, `user.user_id`, `crypto_network`. Add `crypto_asset` if you need to fix the coin.
+    <Expandable title="Request Parameters">
+      <ParamField body="payment_profile" type="string" required>
+        Payment profile.
+      </ParamField>
+      <ParamField body="project_id" type="string">
+        Project ID.
+      </ParamField>
+      <ParamField body="user" type="object" required>
+        User object with mandatory `user_id`.
+      </ParamField>
+      <ParamField body="crypto_network" type="string" required>
+        Cryptocurrency network (e.g., `TRX`, `MATIC`, `ETH`).
+      </ParamField>
+      <ParamField body="crypto_asset" type="string">
+        Optional: specific asset (`USDT`, `USDC`, `TRX`).
+      </ParamField>
+    </Expandable>
+  </Step>
+
+  <Step title="Send request">
+    <RequestExample>
+    ```bash gate/get-address
+curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-address' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --data '{
+    "payment_profile": "sandbox",
+    "project_id": "preview",
+    "crypto_network": "TRX",
+    "crypto_asset": "USDT",
+    "user": { "user_id": "123" }
+  }'
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Receive address">
+    <ResponseExample>
+    ```json Success
+ {
+    "success": true,
+    "result": {
+        "address": "TPQ65AX8rm4RwiyJUVPEYtYdZUdVZ6jZA1"
+    },
+    "trace_id": "bd8c668590664e8d90318627e5de8055"
+}
+    ```
+    </ResponseExample>
+
+    <Check>
+      Save `trace_id`, `user_id` and `address` — they will be needed to match callbacks and prevent double crediting.
+    </Check>
+  </Step>
+
+  <Step title="Process callback">
+    Accept callback at `url_callback` and confirm operation processing.
+
+    <Tip>
+      See more in [Callbacks](/en/api-reference/integration/cryptogate/callbacks) section.
+    </Tip>
+  </Step>
+</Steps>

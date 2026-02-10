@@ -1,0 +1,59 @@
+---
+title: "Google Pay"
+description: "Accepting payments via Google Pay"
+icon: "google-pay"
+mode: "frame"
+---
+
+ 
+ 
+Google Pay is a fast and secure way to pay for Android users and web apps. Integration allows you to accept payments via Google Pay with minimal effort.
+
+## General Workflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client
+    participant Project
+    participant Finmar API
+    Client->>Project: Select Google Pay payment method
+    Project->>Finmar API: Transfer data to create operation
+    Finmar API-->>Project: Return payment page URL
+    Project->>Client: Redirect to payment page URL
+    Client->>Finmar API: Confirm payment via Google Pay
+    Finmar API->>Project: Notification<br>about operation completion
+    Project->>Project: Process notification
+    Project->>Finmar API: Confirm operation processing
+```
+
+<Steps>
+  <Step title="Create operation">
+    Your server sends a request to Finmar API to create an operation with payment method `googlepay`.
+  </Step>
+  <Step title="Receive payment page URL">
+    Finmar API returns a unique payment page URL with Google Pay support.
+  </Step>
+  <Step title="Redirect user">
+    The user is redirected to the payment page where they can select Google Pay as the payment method.
+  </Step>
+  <Step title="Process payment">
+    The user confirms payment via Google Pay using saved card details.
+  </Step>
+  <Step title="Receive notification">
+    Finmar API sends a notification to your server about the operation status.
+  </Step>
+  <Step title="Confirm processing">
+    After successfully processing the operation, your server confirms receipt of the notification.
+  </Step>
+</Steps>
+
+<Note>
+  Before starting integration, request a username and password for the test environment in the integration chat.
+</Note>
+
+<CardGroup cols={1}>
+  <Card title="Integration Documentation" icon="book" horizontal href="/en/api-reference/integration/checkout">
+    Detailed information on creating operations and request parameters
+  </Card>  
+</CardGroup>

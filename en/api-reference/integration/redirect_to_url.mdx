@@ -1,0 +1,122 @@
+---
+title: "Redirecting User"
+description: "Ways to redirect the user to the payment page"
+sidebarTitle: "2. Redirecting User"
+---
+
+In response to the creation request, you will receive a response like:
+
+```JSON
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+Particular attention should be paid to the optional parameter `result.launch_type` - this is the recommended way to display the payment page to the user: `iframe`, `new_window` or `redirect`.
+
+<Tip>
+If the `result.launch_type` parameter is missing in the create request response, you can redirect the user to `result.url` in any convenient way.
+</Tip>
+
+
+
+### Direct Redirect
+
+For `result.launch_type=redirect`, the recommended way to show the page is to redirect the user in the current browser tab:
+
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "redirect",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+```javascript
+// After receiving payment_url from API
+window.location.href = result.url;
+```
+
+### Opening in iframe
+
+For `result.launch_type=iframe`, the payment page should be displayed in an iframe on your site:
+
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "iframe",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+
+```html
+<iframe 
+    src="result.url" 
+    width="100%" 
+    height="800px"
+    frameborder="0">
+</iframe>
+```
+
+<Note>
+Some payment providers may not work correctly in an iframe due to security policies.
+In this case, use direct redirect or open in a new tab/window.
+</Note>
+
+ 
+### Opening in a New Tab/Window
+
+<Warning>For `result.launch_type=new_window`, you **must** open the payment page in a new tab.</Warning>
+
+```JSON focus={6}
+{
+    "success": true,
+    "result": {
+        "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+        "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+        "launch_type": "new_window",
+        "kyc_status": "none",
+        "user_stats": "not_present"
+    },
+    "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+}
+```
+
+```javascript
+window.open(result.url, '_blank');
+```
+
+
+## Handling User Return
+
+After completing the payment, the user will be redirected to one of the URLs you specified:
+
+- `url_redirect_success` - upon successful payment
+- `url_redirect_fail` - upon unsuccessful payment
+
+On these pages, you can:
+
+1. Show the user the operation result
+2. Update the user's balance
+3. Redirect to the appropriate page of your site

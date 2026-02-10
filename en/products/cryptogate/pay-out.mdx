@@ -1,0 +1,103 @@
+---
+title: "Cryptogate. Payouts"
+icon: "link"
+description: "Payouts in cryptocurrencies"
+---
+
+## General Workflow
+
+<Steps>
+  <Step title="Create payout operation">
+    The project requests a list of available networks and crypto assets for payouts using `GET /gate/withdraw/currencies/{payment_profile}`, and then sends a request to create a payout operation using `POST /gate/pay-out`.
+  </Step>
+  <Step title="Receive payout address">
+    The user provides a crypto wallet address to receive the payout.
+  </Step>
+  <Step title="Process payout">
+    Finmar API processes the payout request and sends cryptocurrency to the specified address.
+  </Step>
+  <Step title="Status notification">
+    Finmar API sends a notification to your server about the payout operation status.
+  </Step>
+  <Step title="Confirm processing">
+    After successfully processing the operation, the project confirms receipt of the notification.
+  </Step>
+</Steps>
+
+## API Methods
+
+### Get available currencies for payouts
+
+The method `GET /gate/withdraw/currencies/{payment_profile}` returns a list of networks and crypto assets with available balance for payouts.
+
+<RequestExample>
+```bash gate/withdraw/currencies
+curl --request GET \
+  --url 'https://sandbox.finmar.tech/gate/withdraw/currencies/sandbox?project_id=preview' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "success": true,
+  "trace_id": "99395c4231744dbd934a6342ecca878a",
+  "result": [
+    {
+      "crypto_network": "TRX",
+      "crypto_assets": [
+        {
+          "asset_name": "TRX",
+          "balance": "100.0"
+        },
+        {
+          "asset_name": "USDT",
+          "balance": "250.5"
+        }
+      ]
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Create payout operation
+
+The method `POST /gate/pay-out` creates a payout operation to the specified crypto address.
+
+<RequestExample>
+```bash gate/pay-out
+curl --request POST \
+  --url https://sandbox.finmar.tech/gate/pay-out \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "project_id": "preview",
+    "payment_profile": "sandbox",
+    "client_operation_id": "123007887858",
+    "user": {
+      "user_id": "123"
+    },
+    "crypto_network": "TRX",
+    "crypto_asset": "USDT",
+    "crypto_address": "TABC...XYZ",
+    "crypto_amount": "10.00",
+    "url_callback": "https://merchant.example.com/callback",
+    "url_redirect_success": "https://merchant.example.com/success",
+    "url_redirect_fail": "https://merchant.example.com/fail"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "success": true,
+  "trace_id": "9e57f9dd838a411891c1ace140d210f3",
+  "result": {
+    "reference_id": "60531ee8-08aa-459c-80c5-a93e633a7c8b"
+  }
+}
+```
+</ResponseExample>

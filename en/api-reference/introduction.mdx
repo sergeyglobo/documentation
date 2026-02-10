@@ -1,0 +1,62 @@
+---
+title: "Introduction"
+description: "Introduction to Finmar API integration for payment acceptance"
+sidebarTitle: "Introduction"
+---
+
+Finmar provides a set of APIs for processing and managing payments. The API accepts and returns data in JSON format in the HTTP request body and uses standard HTTP response codes. You can interact with the API directly using any preferred HTTP/REST library.
+
+<Note>
+  Before starting integration, request a username and password for the test environment in the integration chat: https://t.me/integrationVimapay
+</Note>
+
+## Payment Acceptance
+
+Finmar API supports various payment methods:
+
+- **Bank Cards** (HPP and H2H)
+- **Open Banking** — direct bank account transfers
+- **Apple Pay** — payments via Apple devices
+- **Google Pay** — payments via Google services
+- **BLIK** — mobile payments
+- **Widget Integration** — crypto mirroring
+- **Crypto Gate** — crypto deposits and payouts
+
+## Authentication
+
+Standard Basic HTTP Authentication (RFC 7617) is used for authentication. Credentials are passed in the `Authorization` header in Base64 format.
+
+### Header Format
+
+```
+Authorization: Basic base64(key:password)
+```
+
+### Example
+
+```bash
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD'
+```
+
+<Info>
+  A unique key + password pair is created for each project. Credentials for test and production environments are different.
+</Info>
+
+## Base URL
+
+### Test Environment (Sandbox)
+
+```
+https://sandbox.finmar.tech
+```
+
+### Production Environment
+
+```
+https://finmar.tech
+```
+
+<Warning>
+  Do not use production credentials in the test environment and vice versa.
+</Warning>

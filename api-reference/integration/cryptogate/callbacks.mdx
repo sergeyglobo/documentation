@@ -125,8 +125,8 @@ sidebarTitle: "4. Колбеки"
 $finmar_base_url = ' https://sandbox.finmar.tech/collector/api/v3';
 
 // used for Basic HTTP auth in request
-$finmar_login = 'sandbox';
-$finmar_password = 'HLF6!nJPY&7$';
+$finmar_login = 'YOUR_LOGIN';
+$finmar_password = 'YOUR_PASSWORD';
 $finmar_auth_key = base64_encode($finmar_login . ':' . $finmar_password);
 
 // allowed IP addresses
@@ -387,7 +387,7 @@ const crypto = require('crypto');
 // Configuration
 const config = {
     finmarBaseUrl: 'https://sandbox.finmar.tech/collector/api/v3',
-    finmarAuth: Buffer.from('sandbox:HLF6!nJPY&7$').toString('base64'),
+    finmarAuth: Buffer.from('YOUR_LOGIN:YOUR_PASSWORD').toString('base64'),
     ipWhitelist: ['134.122.55.160', '141.95.16.27', '163.172.116.59'],
     useWhitelist: false,
     port: 3000,

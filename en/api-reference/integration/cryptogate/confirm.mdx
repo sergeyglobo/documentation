@@ -1,0 +1,39 @@
+---
+title: "Confirming Operation Processing"
+description: "How to confirm successful crypto deposit processing by reference_id"
+sidebarTitle: "5. Confirmation"
+---
+
+After crediting funds to the user's balance, confirm the operation using `reference_id` from the callback.
+
+<Steps>
+  <Step title="Call confirmation">
+    Use `POST /collector/api/v3/client_confirm_payment_by_reference_id`.
+
+    <RequestExample>
+    ```bash client_confirm_payment_by_reference_id
+    curl --request POST \
+      --url https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id \
+      --header "Authorization: Basic BASE64_LOGIN_PASSWORD" \
+      --header "Content-Type: application/json" \
+      --data '{ "reference_id": "d0d8c391-5bea-4c9f-962f-f131f1ae9d4c" }'
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Expected response">
+    <ResponseExample>
+    ```json Success
+    { "result": "success" }
+    ```
+    </ResponseExample>
+
+    <Tip>
+      Retry confirmation on network errors. The request is idempotent for a single `reference_id`.
+    </Tip>
+  </Step>
+</Steps>
+
+<Warning>
+  Without confirmation, the operation will remain in "success, but not confirmed" status, and callback resending will follow (up to 10 attempts).
+</Warning>

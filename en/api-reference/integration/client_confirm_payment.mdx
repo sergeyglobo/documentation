@@ -1,0 +1,138 @@
+---
+title: "Confirming Operation"
+description: "Confirming successful processing of payment operation"
+sidebarTitle: "4. Confirming Operation"
+---
+ 
+
+After processing the operation, it is necessary to inform the service that the processing has been successfully completed.
+
+## Confirming Operation Processing
+
+### Confirmation Methods
+
+#### 1. By reference_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "reference_id": "op_123456789"
+}'
+```
+
+#### 2. By client_operation_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_client_operation_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "client_operation_id": "unique-operation-id"
+}'
+```
+
+#### 3. Confirm all unconfirmed operations
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_all' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{}'
+```
+
+## Requesting Unconfirmed Operations
+
+It is recommended to periodically request a list of unconfirmed successful operations to process those that might have been missed.
+
+### Request Unconfirmed Operations
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments' \
+--header 'Authorization: Basic YOUR_CREDENTIALS'
+```
+
+### Response
+
+```json
+[
+    {
+        "reference_id": "op_123456789",
+        "client_operation_id": "unique-operation-id",
+        "user_id": "user-123",
+        "complete_amount": "100",
+        "complete_currency": "EUR",
+        "status": "success",
+        "payment_method_type": "card",
+        "payment_method_product": "widget_card"
+    }
+]
+```
+
+### Processing Operations Array
+
+```javascript
+async function processUnconfirmedOperations() {
+    // 1. Request unconfirmed operations
+    const response = await fetch(
+        'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments',
+        {
+            headers: {
+                'Authorization': 'Basic YOUR_CREDENTIALS'
+            }
+        }
+    );
+    
+    const operations = await response.json();
+    
+    // 2. Process each operation
+    for (const operation of operations) {
+        try {
+            await processOperation(operation);
+        } catch (error) {
+            console.error(`Error processing operation ${operation.reference_id}:`, error);
+            // Continue processing other operations
+        }
+    }
+}
+
+// Run every 5 minutes
+setInterval(processUnconfirmedOperations, 5 * 60 * 1000);
+```
+
+## Important Operation Parameters
+
+When processing an operation, pay attention to the following parameters:
+
+<ParamField path="reference_id" type="string">
+  Operation identifier on the service side. Use to confirm the operation.
+</ParamField>
+
+<ParamField path="client_operation_id" type="string">
+  Your operation identifier. Saved to link with your system.
+</ParamField>
+
+<ParamField path="user_id" type="string">
+  Identifier of the user to whom funds should be credited.
+</ParamField>
+
+<ParamField path="complete_amount" type="string">
+  Amount to be credited to the user.
+</ParamField>
+
+<ParamField path="complete_currency" type="string">
+  Credit currency.
+</ParamField>
+
+<ParamField path="status" type="string">
+  Operation status. Process only operations with "success" status.
+</ParamField>
+
+## Recommendations
+
+1. **Idempotency**: Always check if the operation has been processed before
+2. **Error Handling**: Handle errors when confirming the operation
+3. **Periodic Polling**: Use periodic requests for unconfirmed operations as a fallback mechanism
+4. **Logging**: Log all operations for debugging and audit
+5. **Transactions**: Use DB transactions for operation atomicity

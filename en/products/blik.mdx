@@ -1,0 +1,33 @@
+---
+title: "BLIK"
+description: "Accepting payments via BLIK"
+icon: "mobile-button"
+mode: "frame"
+---
+ 
+ 
+## General Workflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client
+    participant Project
+    participant Finmar API
+    Client->>Project: Select payment method
+    Project->>Finmar API: Transfer data to create operation
+    Finmar API-->>Project: Return payment page URL
+    Project->>Client: Redirect to payment page URL
+    Finmar API->>Project: Notification<br>about operation completion
+    Project->>Project: Process notification
+    Project->>Finmar API: Confirm operation processing
+```
+
+ <Note>
+  Before starting integration, request a username and password for the test environment in the integration chat.
+</Note>
+
+<CardGroup cols={1}>
+  <Card title="Integration Documentation" icon="book" horizontal href="/en/api-reference/introduction">
+  </Card>  
+</CardGroup>

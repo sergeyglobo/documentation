@@ -1,0 +1,67 @@
+---
+title: "Project Requirements"
+description: "Data required to get started and website requirements"
+---
+
+## Required Data for Integration
+
+To get started with the Finmar API, you will need the following data:
+
+<Steps>
+  <Step title="Test Environment Credentials">
+    Contact the [integration manager](https://t.me/integrationVimapay) to obtain:
+    - Login and password for the test environment
+
+    <Info>
+      Test environment base URL: `https://sandbox.finmar.tech`
+    </Info>
+  </Step>
+
+  <Step title="Authentication Configuration">
+    Finmar API uses **HTTP Basic Authentication**. Encode your credentials in the format `login:password` using Base64.
+
+    ```bash
+    # Example of encoding credentials
+    echo -n 'your_login:your_password' | base64
+    ```
+
+    Add the resulting string to the `Authorization` header:
+
+    ```
+    Authorization: Basic <base64_encoded_credentials>
+    ```
+  </Step>
+
+  <Step title="Configure Callback URL">
+    For receiving notifications about operation results, you need to:
+    - Prepare a URL for receiving callbacks (must be accessible from the internet)
+    - The URL must support HTTPS protocol
+    - Ensure your server can accept HTTP POST requests from the following IP addresses:
+
+    ```
+    134.122.55.160
+    141.95.16.27
+    163.172.116.59
+    ```
+  </Step>
+
+  <Step title="Configure Redirect URLs">
+    Prepare two URLs for redirecting users after payment:
+    - `url_redirect_success` — page for successful payment
+    - `url_redirect_fail` — page for failed payment
+  </Step>
+</Steps>
+
+## Website Requirements
+
+<Warning>
+  The following requirements are mandatory for production deployment.
+</Warning>
+
+Your website must meet the following criteria:
+
+1. **HTTPS Protocol** — the website must be accessible via HTTPS
+2. **Privacy Policy** — the website must have a privacy policy page
+3. **Terms of Service** — the website must have terms of service
+4. **Contact Information** — the website must have visible contact information
+5. **Refund Policy** — the website must have a refund policy page

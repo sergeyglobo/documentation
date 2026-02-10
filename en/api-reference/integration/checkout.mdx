@@ -1,0 +1,303 @@
+---
+title: "Creating an Operation"
+description: "Creating a payment operation via Finmar API"
+sidebarTitle: "1. Creating an Operation"
+---
+
+import TestCards from '/en/snippets/test-cards.mdx';
+
+To create a payment operation, send a request to the Finmar API. In response, you will receive a link to the payment page and an operation identifier.
+
+#### Request Parameters
+
+<ParamField body="method" type="string" required="true" placeholder>
+  Payment method (`card`, `openbanking`, `applepay`, `googlepay`,`apm`, `widget_integration`, `cashbox`, etc.)
+</ParamField>
+
+<ParamField body="payment_profile" type="string" required>
+  Payment profile. Usually `production` or `sandbox`, but individual profiles are possible in some cases
+</ParamField>
+
+<ParamField body="amount.amount" type="string" required>
+  Operation amount
+</ParamField> 
+
+<ParamField body="amount.currency" type="string" required>
+  Operation currency
+</ParamField>
+
+<ParamField body="user.user_id" type="string" required>
+  Identifier of the user on the calling side
+</ParamField>
+
+<ParamField body="user.kyc" type="object">
+  KYC verification information
+</ParamField>
+
+<ParamField body="user.kyc.result" type="string">
+  KYC verification result `SUCCESS` or `FAIL`
+</ParamField>
+
+<ParamField body="user.kyc.sumsub_share_token" type="string">
+  Presence of user statistical data on the service side
+</ParamField>
+
+## Request Examples
+
+### Bank Card HPP
+
+```bash
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "card",
+     "client_operation_id": "Fz022tCSaBuvvfQckp",
+    "user": {
+        "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+    },
+    "amount": {
+        "amount": "9",
+        "currency": "EUR"
+    },
+    "url_callback": "https://gg.requestcatcher.com?callback",
+    "url_redirect_success": "https://gg.requestcatcher.com?success",
+    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+    "merchant_user_entry_point_url": "merchant.site/cashier/deposit"
+}'
+```
+
+<TestCards />
+
+### Bank Card H2H
+
+```bash
+ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+ --data '{
+     "payment_profile": "sandbox",
+     "method": "card",
+     "client_operation_id": "Fz022tCSaBuvvfQckp",
+     "user": {
+         "user_id": "b41648b0-4c25-458f-9485-d07508f4879f"
+     },
+     "bank_card": {
+         "cardholder": "NAME FNAME",
+         "cvv": "190",
+         "pan": "4111111111111111",
+         "expiration_month": 11,
+         "expiration_year": 29
+     },
+     "amount": {
+         "amount": "9",
+         "currency": "EUR"
+     },
+     "url_callback": "https://gg.requestcatcher.com?callback",
+     "url_redirect_success": "https://gg.requestcatcher.com?success",
+     "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+     "merchant_user_entry_point_url": "merchant.site/cashier/deposit"
+ }'
+```
+
+<TestCards />
+
+### Openbanking
+
+```bash
+ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+ --data '{
+     "payment_profile": "sandbox",
+     "method": "openbanking",
+     "client_operation_id": "324234213",
+     "user": {
+         "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+     },
+     "amount": {
+         "amount": "9",
+         "currency": "EUR"
+     },
+     "url_callback": "https://gg.requestcatcher.com?callback",
+     "url_redirect_success": "https://gg.requestcatcher.com?success",
+     "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+     "merchant_user_entry_point_url": "https://merchant.site/cashier/deposit"
+ }'
+```
+
+### Apple Pay
+
+```bash
+  curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --data '{
+      "payment_profile": "sandbox",
+      "method": "applepay",
+      "client_operation_id": "324234213",
+      "user": {
+          "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+      },
+      "amount": {
+          "amount": "9",
+          "currency": "EUR"
+      },
+      "url_callback": "https://gg.requestcatcher.com?callback",
+      "url_redirect_success": "https://gg.requestcatcher.com?success",
+      "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+      "merchant_user_entry_point_url": "https://merchant.site/cashier/deposit"
+  }'
+```
+
+### Google Pay
+
+```bash
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "googlepay",
+    "client_operation_id": "324234213",
+    "user": {
+        "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+    },
+    "amount": {
+        "amount": "9",
+        "currency": "EUR"
+    },
+    "url_callback": "https://gg.requestcatcher.com?callback",
+    "url_redirect_success": "https://gg.requestcatcher.com?success",
+    "url_redirect_fail": "https://gg.requestcatcher.com?fail",
+    "merchant_user_entry_point_url": "https://merchant.site/cashier/deposit"
+}'
+```
+
+### Widget Integration
+
+<Info>
+  Passing user KYC information is mandatory for this method
+</Info>
+
+```bash
+ curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+ --header 'Content-Type: application/json' \
+ --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+ --data '{
+"payment_profile": "sandbox",
+"method": "widget_integration",
+"client_operation_id": "324234213",
+"user": {
+ "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0",
+ "kyc": {
+   "result": "SUCCESS",
+   "sumsub_share_token": "_act-jwt-eyJhbGciOiJub25lIn0.eyJqdGkiOiJfYWN0LTEzZmU4ZmFlLTlkYjItNDNiMy04ZDEwLWEzYWY4Yjc5Mzc3MiIsInVybCI6Imh0dHBzOi8vYXBpLnN1bXN1Yi5jb20if2."
+ }
+},
+"amount": {
+ "amount": "9",
+ "currency": "EUR"
+},
+"url_callback": "https://gg.requestcatcher.com?callback",
+"url_redirect_success": "https://gg.requestcatcher.com?success",
+"url_redirect_fail": "https://gg.requestcatcher.com?fail",
+"merchant_user_entry_point_url": "https://merchant.site/cashier/deposit"
+}'
+```
+
+### Response Parameters
+
+<ParamField body="success" type="boolean" required>
+  Successful operation creation
+</ParamField>
+
+<ParamField body="result.url" type="string" required>
+  Link to the payment page. Mandatory in case of successful creation.
+</ParamField>
+
+<ParamField body="result.launch_type" type="string">
+  Recommended way to show the payment page to the user.
+</ParamField>
+
+<ParamField body="kyc_status" type="string">
+  Presence of user KYC data on the service side.
+</ParamField>
+
+<ParamField body="user_stats" type="string">
+  Presence of user statistical data on the service side.
+</ParamField>
+
+## Response Examples
+
+<Tabs>
+  <Tab title="200">
+    <Check>
+      Successfully created operation.
+    </Check>
+    ```JSON
+    {
+        "success": true,
+        "result": {
+            "url": "https://crypto.cheipho.com/payment-front/2c2b55bb-fc23-4b13-9f51-2b6f7a28016b",
+            "reference_id": "72a92c72-1baf-4854-a7c2-b35a404d6ff1",
+            "launch_type": "new_window",
+            "kyc_status": "none",
+            "user_stats": "not_present"
+        },
+        "trace_id": "442556cc81dd4f53872c09c6b910ca28"
+    }
+    ```
+  </Tab>
+  <Tab title="401">
+    <Callout icon="key" color="#FFC107" iconType="regular"> Incorrect authentication data used.</Callout>
+    ```JSON
+    {
+       "success": false,
+       "error": {
+           "details": "UNAUTHORIZED",
+           "code": "UNAUTHORIZED"
+       },
+       "trace_id": "e3d36331595b48309f0702b0fe038b2b"
+    }
+    ```
+  </Tab>
+  <Tab title="400">
+    <Warning>
+      Unsupported value passed for `method` parameter
+    </Warning>
+    ```JSON
+    {
+        "success": false,
+        "error": {
+            "details": "Input validation failed: [{\"received\":\"widget_integrationn\",\"code\":\"invalid_enum_value\",\"options\":[\"apm\",\"crypto_protect\",\"widget_integration\",\"cashbox\",\"wallet_invoice\",\"card\",\"multi\",\"googlepay\",\"applepay\",\"blik\",\"openbanking\",\"volt\",\"papara\",\"payco\",\"havale\"],\"path\":[\"method\"],\"message\":\"Invalid enum value. Expected 'apm' | 'crypto_protect' | 'widget_integration' | 'cashbox' | 'wallet_invoice' | 'card' | 'multi' | 'googlepay' | 'applepay' | 'blik' | 'openbanking' | 'volt' | 'papara' | 'payco' | 'havale', received 'widget_integration2'\"}]",
+            "code": "BAD_REQUEST"
+        },
+        "trace_id": "aa46cac14a8748dc9596e14964a5bb6f"
+    }
+    ```
+  </Tab>
+  <Tab title="404">
+    <Warning>
+      Such error usually occurs when attempting to create an operation with a GET request.
+    </Warning>
+    ```JSON
+    {
+        "success": false,
+        "error": {
+            "details": "Not found",
+            "code": "NOT_FOUND"
+        },
+        "trace_id": "ca476b637ff4495395fa6d4b7d7c6420"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Important Points
+
+- Use a unique `client_operation_id` for each operation
+- Save `reference_id` for further work with the operation
+- Ensure that URLs for `url_callback` and `url_redirect_success`/ `url_redirect_fail` are accessible and correct.
+- Do not make requests to the API directly from the browser in production — use your server as a proxy

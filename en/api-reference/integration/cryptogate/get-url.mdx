@@ -1,0 +1,75 @@
+---
+title: "Getting Widget with Address"
+description: "How to get a link to the crypto address widget in iframe or new window"
+sidebarTitle: "3. Address Widget"
+---
+
+Use `POST /gate/get-url` to open CryptoGate in an iframe or new window with pre-set user, network, and redirect parameters.
+
+<Steps>
+  <Step title="Prepare parameters">
+    Pass `payment_profile`, `user.user_id`, required amount or network/asset, as well as callback and redirects.
+
+    <Expandable title="Request Parameters">
+      <ParamField body="payment_profile" type="string" required>
+        Payment profile (`sandbox` or `production`).
+      </ParamField>
+      <ParamField body="project_id" type="string">
+        Project ID (optional).
+      </ParamField>
+      <ParamField body="user" type="object" required>
+        User object with mandatory `user_id`.
+      </ParamField>
+ 
+      <ParamField body="crypto_network" type="string">
+        Cryptocurrency network (e.g., `TRX`, `ETH`). Take the value from the response of the [Networks and Coins](/en/api-reference/integration/cryptogate/networks) method.
+      </ParamField>
+      <ParamField body="crypto_asset" type="string">
+        Crypto asset (e.g., `TRX`, `USDT`).
+      </ParamField>
+    </Expandable>
+  </Step>
+
+  <Step title="Execute request">
+    <RequestExample>
+    ```bash gate/get-url
+curl --location --request POST 'https://sandbox.finmar.tech/prepare2/api/v3/gate/get-url' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+  --data '{
+    "payment_profile": "sandbox",
+    "project_id": "preview",
+    "user": { "user_id": "123" },
+    "crypto_network": "TRX",
+    "crypto_asset": "USDT"
+  }'
+    ```
+    </RequestExample>
+  </Step>
+
+  <Step title="Display widget">
+    <ResponseExample>
+    ```json Success
+ {
+    "success": true,
+    "result": {
+        "url": "https://crypto.example.com/gate?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXF1ZXN0X2lkIjoiZTNhYjA5MGQtYTY1ZS00YmE2LWJiNTEtNTZkNTI0MDJiNWNiIiwidXNlcl9pZCI6IjEyMyIsImlhdCI6MTc2OTUxNzYwMH0.abc123"
+    },
+    "trace_id": "d22a255307834309bd96e95be3a25690"
+}
+    ```
+    </ResponseExample>
+ 
+    <Tip>
+      Direct the user to the returned `result.url` in a convenient way.
+    </Tip>
+  </Step>
+
+  <Step title="Process callback">
+    Accept callback at `url_callback` and confirm operation processing.
+
+    <Tip>
+      See more in [Callbacks](/en/api-reference/integration/cryptogate/callbacks) section.
+    </Tip>
+  </Step>
+</Steps>

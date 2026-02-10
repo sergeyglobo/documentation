@@ -1,0 +1,102 @@
+---
+title: "Integration Checklist"
+description: "Checklist for verifying integration readiness for production"
+sidebarTitle: "5. Integration Checklist"
+---
+
+Before launching the integration in production, ensure that all items in this checklist are completed.
+
+## Mandatory Checks
+
+<Steps>
+  <Step title="Parameter Transmission">
+    Ensure all necessary parameters are passed:
+    - User statistics (if required)
+    - KYC information (if required)
+    - Alternative payment amounts (if supported)
+  </Step>
+  
+  <Step title="Error Handling">
+    Correct handling of all error types is implemented:
+    - `MAINTENANCE` — maintenance
+    - `FAST_DECLINE` — fast decline
+    - `INSUFFICIENT_FUNDS` — insufficient funds (not considered an error, this is a normal status)
+  </Step>
+  
+  <Step title="Operation Idempotency">
+    Protection against double charges is implemented:
+    - Uniqueness check of `client_operation_id`
+    - Operation status check before crediting funds
+    - Using DB transactions for operation atomicity
+  </Step>
+  
+  <Step title="Callback Handling">
+    Correct handling of callback notifications is implemented:
+    - RSA-SHA256 and/or ECDSA-SHA256 signature verification
+    - Sender IP address check
+    - Return of correct HTTP statuses (200 or 204)
+    - Idempotent notification processing
+  </Step>
+  
+  <Step title="Identifier Mapping">
+    Correct working with identifiers is ensured:
+    - `client_operation_id` corresponds to identifiers in your system
+    - `reference_id` is saved on the project side to link with operations
+    - Ability to search operations by both identifiers is implemented
+  </Step>
+  
+  <Step title="Operation Processing Confirmation">
+    Confirmation of successful operation processing is implemented:
+    - Calling the confirmation method after crediting funds
+    - Error handling during confirmation
+    - Logging of all confirmation attempts
+  </Step>
+  
+  <Step title="Interval Request of Unconfirmed Operations">
+    Periodic request of unconfirmed successful operations is configured:
+    - Regular polling (recommended every 5-10 minutes)
+    - Array of operations processing
+    - Confirmation of each processed operation
+  </Step>
+  
+  <Step title="Handling Refunds">
+    Refund support is implemented:
+    - Processing refund requests
+    - Updating operation statuses
+    - Notifying users about refunds
+  </Step>
+  
+  <Step title="Status Correction">
+    Ability to correct operation statuses is implemented:
+    - Processing status changes from Finmar API
+    - Synchronizing statuses in your system
+  </Step>
+  
+  <Step title="Operation Reconciliation">
+    Operation reconciliation system is configured:
+    - Periodic reconciliation with Finmar API
+    - Discrepancy detection
+    - Automatic or manual discrepancy resolution
+  </Step>
+</Steps>
+
+## Additional Recommendations
+
+<CardGroup cols={2}>
+  <Card title="Logging" icon="file-lines">
+    Configure detailed logging of all operations for debugging and audit
+  </Card>
+  <Card title="Monitoring" icon="chart-line">
+    Configure monitoring of operation success and callback processing
+  </Card>
+  <Card title="Testing" icon="flask">
+    Perform full testing of all scenarios in the sandbox environment
+  </Card>
+  <Card title="Documentation" icon="book">
+    Prepare internal integration documentation for your team
+  </Card>
+</CardGroup>
+
+<Warning>
+  Do not launch integration in production until all mandatory checks are completed.
+</Warning>

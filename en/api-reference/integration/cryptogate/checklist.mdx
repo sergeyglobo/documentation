@@ -1,0 +1,29 @@
+---
+title: "Integration Checklist"
+description: "Scenarios for testing CryptoGate in sandbox"
+sidebarTitle: "6. Verification"
+---
+
+Pass this quick checklist to ensure that the CryptoGate integration is complete.
+
+<Steps>
+  <Step title="Get networks directory">
+    Execute `GET /gate/deposit/currencies/{payment_profile}` and ensure that the UI shows current networks/minimums.
+  </Step>
+  <Step title="Generate address">
+    Send `POST /gate/get-address` for the selected network/asset pair and save `address`, `trace_id`, `user_id`.
+  </Step>
+  <Step title="Open widget">
+    Request `POST /gate/get-url`, render by `launch_type` and ensure that the address in the widget matches the step above.
+  </Step>
+  <Step title="Check callback">
+    Send a test deposit to the sandbox network, receive a callback, verify RSA/ECDSA signature and correctness of amounts/currency.
+  </Step>
+  <Step title="Confirm operation">
+    Call `client_confirm_payment_by_reference_id` and ensure that callback resending stops.
+  </Step>
+</Steps>
+
+<Check>
+  All steps passed successfully, statuses in logs match, callbacks are signed, retries stopped — the integration is ready for production.
+</Check>

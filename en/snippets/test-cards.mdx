@@ -1,0 +1,15 @@
+The result of a test operation depends on the entered CVV code.
+  
+  <Note>
+    Card data can only be used for testing in the sandbox environment.
+  
+    They will not work in the production environment.
+  </Note>
+  
+  | Card               | Expiry Date   | CVV    | Expected Result                                                             |                           |
+  | ------------------ | ------------- | ------ | --------------------------------------------------------------------------- | ------------------------- |
+  | `4111111111111111` | `11/36`       | `190`  | `SUCCESS`                                                                   | Success                   |
+  | `4111111111111111` | `11/36`       | `360 ` | `PROCESSING_INSUFFICIENT_FUNDS`                                             | Insufficient funds        |
+  | `4111111111111111` | `11/36`       | `320`  | `PROCESSING_3D_SECURE_FAILED `                                              | 3DS confirmation error    |
+  | `4444444444444414` | `11/36`       | `111`  | `SUCCESS`  `PROCESSING_3D_SECURE_FAILED`  `PROCESSING_3D_SECURE_CANCELLED ` | Result selection in frame |
+  |                    |               |        |                                                                             |                           |

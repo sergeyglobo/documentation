@@ -1,0 +1,131 @@
+---
+title: "FAQ"
+description: "Frequently Asked Questions about Finmar API Integration"
+sidebarTitle: "FAQ"
+icon: "circle-question"
+---
+
+## General Questions
+
+<AccordionGroup>
+  <Accordion title="What is the difference between sandbox and production environments?">
+    **Sandbox** — a test environment for integration development and debugging. Real money is not charged. Base URL: `https://sandbox.finmar.tech`
+
+    **Production** — live environment for real payments. Base URL is provided by the integration manager after completing the [integration verification checklist](/en/api-reference/go-live-checklist).
+
+    <Warning>
+      Credentials for sandbox and production are **different**. Do not use sandbox credentials in production.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="What payment methods are available?">
+    Finmar API supports the following methods:
+
+    | Method | Identifier | Description |
+    |-------|---------------|----------|
+    | Bank Cards | `card` | Visa, MasterCard |
+    | Open Banking | `openbanking` | Direct transfer from bank |
+    | Apple Pay | `applepay` | Payment for Apple devices |
+    | Google Pay | `googlepay` | Payment via Google Pay |
+    | BLIK | `blik` | Instant payments (Poland) |
+    | Widget Integration | `widget_integration` | Payment solution with crypto mirroring |
+  </Accordion>
+
+  <Accordion title="How to get integration credentials?">
+    Contact the integration manager on Telegram: [https://t.me/integrationVimapay](https://t.me/integrationVimapay). You will be provided with:
+    - Login and password for the test environment
+    - Access to sandbox API
+    - Instructions to start integration
+  </Accordion>
+</AccordionGroup>
+
+## Integration
+
+<AccordionGroup>
+  <Accordion title="How to create a test payment?">
+    1. Use the sandbox environment: `https://sandbox.finmar.tech/prepare2/api/v3/checkout`
+    2. Authorize via Basic Auth with your sandbox credentials
+    3. Send a POST request with the necessary parameters
+    4. For card payments, use the test card `4111111111111111`
+
+    Detailed examples — on the [Create Operation](/en/api-reference/integration/checkout) page.
+  </Accordion>
+
+  <Accordion title="What is the format of amount.amount?">
+    The `amount.amount` field is passed as a **string**. Use a dot as a decimal separator:
+    ```json
+    {
+      "amount": {
+        "amount": "10.50",
+        "currency": "EUR"
+      }
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="What is client_operation_id and why is it needed?">
+    `client_operation_id` — is your unique operation identifier. It is used for:
+    - Preventing duplicate operations
+    - Linking the payment to a record in your system
+    - Confirming operations via [/client_confirm_payment_by_client_operation_id](/en/api-reference/endpoint/client_confirm_payment_by_client_operation_id)
+
+    <Warning>
+      Each `client_operation_id` must be unique. Reuse can lead to errors.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="What is launch_type and how to handle it?">
+    The `launch_type` field in the operation creation response determines the recommended way to display the payment page:
+
+    | Value | Action |
+    |----------|----------|
+    | `redirect` | Redirect the user in the current tab |
+    | `iframe` | Show in an iframe on your site |
+    | `new_window` | **Must** open in a new tab |
+
+    More details — on the [User Redirection](/en/api-reference/integration/redirect_to_url) page.
+  </Accordion>
+</AccordionGroup>
+
+## Callbacks
+
+<AccordionGroup>
+  <Accordion title="How to verify that the callback came from Finmar?">
+    Each notification is signed with two algorithms: **RSA-SHA256** and **ECDSA-SHA256**. You can verify the signature using one of them. Detailed instructions and examples in PHP/Node.js — on the [Callbacks](/en/api-reference/integration/callbacks) page.
+  </Accordion>
+
+  <Accordion title="From which IP addresses do callback notifications come?">
+    Notifications are sent from a pool of IP addresses:
+    ```
+    134.122.55.160
+    141.95.16.27
+    163.172.116.59
+    ```
+    Ensure your server accepts HTTP POST requests from these addresses.
+  </Accordion>
+
+  <Accordion title="Why confirm the operation after a callback?">
+    After receiving a successful callback, it is necessary to confirm the operation processing via [/client_confirm_payment_by_reference_id](/en/api-reference/endpoint/client_confirm_payment_by_reference_id). This ensures that:
+    - You have processed the payment on your side
+    - The operation will not appear in the list of unconfirmed unconfirmed (`/client_unconfirmed_success_payments`)
+    - Funds will be correctly credited
+  </Accordion>
+
+  <Accordion title="What to do if the callback did not arrive?">
+    Use the `GET /collector/api/v3/client_unconfirmed_success_payments` method as a backup mechanism. Implement an interval request (every 30–60 seconds) to receive successful unconfirmed operations. More details — in [Integration Verification](/en/api-reference/go-live-checklist).
+  </Accordion>
+</AccordionGroup>
+
+## Security
+
+<AccordionGroup>
+  <Accordion title="Is HTTPS required?">
+    **Yes, mandatory.** All URLs (`url_callback`, `url_redirect_success`, `url_redirect_fail`) must use the HTTPS protocol. This is a requirement for the production environment.
+  </Accordion>
+
+  <Accordion title="How to store credentials safely?">
+    - Never store credentials in the source code
+    - Use environment variables
+    - Do not pass credentials to the frontend — all API requests must go from your server
+  </Accordion>
+</AccordionGroup>
