@@ -1,6 +1,6 @@
 {
   "theme": "maple",
-  "name": "Vimapay Starter",
+  "name": "Vimapay",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -8,92 +8,194 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Документация",
-        "groups": [
+        "language": "en",
+        "href": "/en",
+        "tabs": [
           {
-            "group": "Документация",
-            "pages": [
-              "index",
-              "requirements"
-            ]
-          },
-          {
-            "group": "Фиатные платежи",
-            "pages": [
-              "products/card",
-              "products/openbanking",
-              "products/googlepay",
-              "products/applepay",
-              "products/widget"
-            ]
-          },
-          {
-            "group": "Криптогейт",
-            "pages": [
-              "products/cryptogate/deposit",
-              "products/cryptogate/pay-out"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Finmar API",
-        "groups": [
-          {
-            "group": "Фиатные платежи",
-            "pages": [
-              "/api-reference/introduction",
-              "/api-reference/status",
-              "/api-reference/integration/checkout",
-              "/api-reference/integration/redirect_to_url",
-              "/api-reference/integration/callbacks",
-              "/api-reference/integration/client_confirm_payment",
-              "/api-reference/go-live-checklist"
-            ]
-          },
-                    {
-            "group": "Криптогейт",
-            "pages": [
-              "/api-reference/introduction",
-              "/api-reference/status",
-              "/api-reference/integration/cryptogate/networks",
-              "/api-reference/integration/cryptogate/get-address",
-              "/api-reference/integration/cryptogate/get-url",
-              "/api-reference/integration/cryptogate/callbacks",
-              "/api-reference/integration/cryptogate/confirm",
-              "/api-reference/integration/cryptogate/checklist"
-            ]
-          },
-          {
-            "group": "API-методы",
-            "openapi": "api-reference/openapi.json"
-          }
-        ]
-      },
+            "tab": "Documentation",
+            "groups": [
               {
-      "tab": "Withdrawal Card API",
-      "groups": [
-        {
-          "group": "Withdrawal API",
-         "openapi": "https://pastebin.com/raw/N0k7Dxea"
-        }
-      ]
-    }
-    ],
-    "global": {
-      
-    }
+                "group": "Documentation",
+                "pages": [
+                  "en/index",
+                  "en/requirements",
+                  "en/faq"
+                ]
+              },
+              {
+                "group": "Fiat Payments",
+                "pages": [
+                  "en/products/card",
+                  "en/products/openbanking",
+                  "en/products/blik",
+                  "en/products/googlepay",
+                  "en/products/applepay",
+                  "en/products/widget"
+                ]
+              },
+              {
+                "group": "Crypto Gate",
+                "pages": [
+                  "en/products/cryptogate/deposit",
+                  "en/products/cryptogate/pay-out"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Finmar API",
+            "groups": [
+              {
+                "group": "Fiat Payments",
+                "pages": [
+                  "en/api-reference/introduction",
+                  "en/api-reference/status",
+                  "en/api-reference/integration/checkout",
+                  "en/api-reference/integration/redirect_to_url",
+                  "en/api-reference/integration/callbacks",
+                  "en/api-reference/integration/client_confirm_payment",
+                  "en/api-reference/error-codes",
+                  "en/api-reference/go-live-checklist"
+                ]
+              },
+              {
+                "group": "Crypto Gate",
+                "pages": [
+                  "en/api-reference/integration/cryptogate/networks",
+                  "en/api-reference/integration/cryptogate/get-address",
+                  "en/api-reference/integration/cryptogate/get-url",
+                  "en/api-reference/integration/cryptogate/callbacks",
+                  "en/api-reference/integration/cryptogate/confirm",
+                  "en/api-reference/integration/cryptogate/checklist"
+                ]
+              },
+              {
+                "group": "API Methods",
+                "openapi": "api-reference/openapi.json"
+              }
+            ]
+          },
+          {
+            "tab": "Withdrawal API",
+            "groups": [
+              {
+                "group": "Withdrawal API v2.1",
+                "openapi": "api-reference/withdrawal_api_v2.1.json",
+                "pages": [
+                  "en/api-reference/withdrawal/overview",
+                  "en/api-reference/withdrawal/generic"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "ru",
+        "href": "/",
+        "default": true,
+        "tabs": [
+          {
+            "tab": "Документация",
+            "groups": [
+              {
+                "group": "Документация",
+                "pages": [
+                  "index",
+                  "requirements",
+                  "faq"
+                ]
+              },
+              {
+                "group": "Фиатные платежи",
+                "pages": [
+                  "products/card",
+                  "products/openbanking",
+                  "products/blik",
+                  "products/googlepay",
+                  "products/applepay",
+                  "products/widget"
+                ]
+              },
+              {
+                "group": "Криптогейт",
+                "pages": [
+                  "products/cryptogate/deposit",
+                  "products/cryptogate/pay-out"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Finmar API",
+            "groups": [
+              {
+                "group": "Фиатные платежи",
+                "pages": [
+                  "api-reference/introduction",
+                  "api-reference/status",
+                  "api-reference/integration/checkout",
+                  "api-reference/integration/redirect_to_url",
+                  "api-reference/integration/callbacks",
+                  "api-reference/integration/client_confirm_payment",
+                  "api-reference/error-codes",
+                  "api-reference/go-live-checklist"
+                ]
+              },
+              {
+                "group": "Криптогейт",
+                "pages": [
+                  "api-reference/integration/cryptogate/networks",
+                  "api-reference/integration/cryptogate/get-address",
+                  "api-reference/integration/cryptogate/get-url",
+                  "api-reference/integration/cryptogate/callbacks",
+                  "api-reference/integration/cryptogate/confirm",
+                  "api-reference/integration/cryptogate/checklist"
+                ]
+              },
+              {
+                "group": "API-методы",
+                "openapi": "api-reference/openapi.json"
+              }
+            ]
+          },
+          {
+            "tab": "API выплат",
+            "groups": [
+              {
+                "group": "API выплат v2.1",
+                "openapi": "api-reference/withdrawal_api_v2.1.json",
+                "pages": [
+                  "api-reference/withdrawal/overview",
+                  "api-reference/withdrawal/generic"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
-   "api": {
+  "api": {
     "playground": {
       "display": "interactive"
     },
+    "mdx": {
+      "auth": {
+        "method": "basic"
+      }
+    },
     "examples": {
-      "languages": ["curl", "javascript" , "python", "php"],
-           "defaults": "all",
-     "prefill": true
+      "languages": [
+        "curl",
+        "javascript",
+        "python",
+        "php"
+      ],
+      "defaults": "all",
+      "prefill": true
     }
   },
   "logo": {

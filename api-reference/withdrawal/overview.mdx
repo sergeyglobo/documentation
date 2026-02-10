@@ -1,0 +1,135 @@
+---
+title: "Обзор Withdrawal Card API v2"
+description: "Как использовать карточное Withdrawal API v2 Vimapay для выплат на банковские карты."
+---
+
+**Withdrawal Card API v2** позволяет автоматизировать выплаты на банковские карты через Vimapay.  
+Этот раздел основан на спецификации OpenAPI `withdrawal_api_v2.1.json` и даёт интерактивную справку по всем методам.
+
+<Note>
+Все детали методов (параметры, ответы и модели ошибок) берутся напрямую из схемы `withdrawal_api_v2.1.json` и остаются синхронизированными с реальным API.
+</Note>
+
+## Когда использовать Withdrawal Card API
+
+Используйте это API, если вам нужно:
+
+- Создавать и управлять **операциями вывода на карту**
+- Проверять **состояние сервиса** и **баланс мерчанта**
+- Контролировать **жизненный цикл операции**: создание → запуск → взаимодействие с пользователем → подтверждение / отмена → финальный статус
+
+Базовый URL для всех запросов:
+
+```bash
+https://crypto.sopogai.com
+```
+
+## Базовый сценарий интеграции
+
+Типовая интеграция карточных выплат выглядит так:
+
+<Steps>
+<Step title="Проверить здоровье сервиса и баланс">
+Вызовите `/public/api/withdraw/card/v2/check_health`, чтобы убедиться, что сервис доступен,  
+и `/public/api/withdraw/card/v2/get_balance`, чтобы проверить достаточность доступного баланса.
+</Step>
+
+<Step title="Создать операцию вывода">
+Создайте операцию вывода с данными карты, суммой и информацией о пользователе через  
+`/public/api/withdraw/card/v2/create_operation` или  
+`/public/api/withdraw/card/v2/create_operation_using_explicit_source`.
+</Step>
+
+<Step title="Запустить операцию">
+Вызовите `/public/api/withdraw/card/v2/start_operation`, чтобы фактически запустить обработку операции.
+</Step>
+
+<Step title="Обработать взаимодействие с пользователем (опционально)">
+Если требуется взаимодействие с пользователем (3‑DS, дополнительные проверки и т.п.),  
+используйте `/public/api/withdraw/card/v2/open_operation_user_input`, чтобы получить URL и перенаправить пользователя.
+</Step>
+
+<Step title="Отслеживать и завершать операцию">
+Опрашивайте `/public/api/withdraw/card/v2/get_operation_state`, чтобы отслеживать статус,  
+при необходимости отменяйте через `/public/api/withdraw/card/v2/abort_operation`  
+и подтверждайте завершение вызовом `/public/api/withdraw/card/v2/confirm_operation`.
+</Step>
+</Steps>
+
+## Пример запроса
+
+Ниже — упрощённый пример запроса для **создания операции вывода на карту**.  
+Используйте точные имена полей и структуру из схемы `WithdrawCardCreateRequest`.
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://crypto.sopogai.com/public/api/withdraw/card/v2/create_operation" \
+  -u "PROJECT_ID:PROJECT_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_operation_id": "your-unique-operation-id",
+    "user": {
+      "user_id": "internal-user-id-123"
+    },
+    "bank_card": {
+      "pan": "4111111111111111",
+      "cardholder": "JOHN DOE",
+      "expiration_month": 12,
+      "expiration_year": 2030
+    },
+    "order_amount": {
+      "currency": "USD",
+      "amount": "10.00"
+    }
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Success
+{
+  "success": true,
+  "trace_id": "example-trace-id",
+  "result": {
+    "operation_state": {
+      "operation_id": "operation-id-123",
+      "client_operation_id": "your-unique-operation-id",
+      "operation_status": "PREPARING",
+      "order_amount": {
+        "currency": "USD",
+        "amount": "10.00"
+      }
+      // другие поля опущены для краткости
+    }
+  }
+}
+```
+</ResponseExample>
+
+<Info>
+Точные структуры запросов и ответов описаны в схемах  
+`WithdrawCardCreateRequest`, `WithdrawCardCreateResponse` и `CardWithdrawalOperationStateApiView`  
+в файле `withdrawal_api_v2.1.json`. Используйте интерактивный раздел **API выплат v2.1** в сайдбаре, чтобы просмотреть все поля.
+</Info>
+
+## Обработка ошибок
+
+Все модели ошибок (например, ошибки валидации или внутренние ошибки) описаны схемами вроде  
+`WithdrawCardCreateErrorCodeApiError`, `WithdrawCardGetBalanceErrorCodeApiError` и др.  
+На страницах методов в разделе **Withdrawal API v2.1** вы увидите:
+
+- HTTP‑коды ответов (`400`, `500` и т.д.)
+- Схему тела ошибки
+- Примеры payload‑ов (если заданы в спецификации OpenAPI)
+
+<Tip>
+Логируйте и HTTP‑код, и полное тело ответа с ошибкой.  
+Это значительно упростит разбор инцидентов совместно с командой поддержки Vimapay.
+</Tip>
+
+## Дальнейшие шаги
+
+- Перейдите в раздел **API выплат v2.1** в навигации и откройте нужные методы.
+- Для начала проверьте доступность API через методы получения списка инстансов и задач.
+- После этого интегрируйте создание задач и отслеживание статусов в ваши бизнес‑процессы выплат.
+
