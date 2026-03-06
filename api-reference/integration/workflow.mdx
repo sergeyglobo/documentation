@@ -1,57 +1,53 @@
 ---
-title: "Банковские карты"
-description: "Приём оплаты банковскими картами"
-icon: "credit-card"
-mode: "frame"
+title: "Общая схема работы"
+sidebarTitle: "Общая схема"
+description: "Описание общего процесса взаимодействия при проведении платежей"
 ---
-import TestCards from '/snippets/test-cards.mdx';
-
-## Общая схема работы
-
+ 
 ```mermaid
 sequenceDiagram
 
 autonumber
 
-    participant site as Ваш сайт #lightGreen
+    participant site as Ваш сайт #lightGreen
 
-    participant server as Ваш сервер
+    participant server as Ваш сервер
 
-    participant finmar as Finmar API
+    participant finmar as Finmar API
 
-    site->>server: Пользователь нажимает кнопку метода
+    site->>server: Пользователь нажимает кнопку метода
 
-    server->>finmar: Запрос на получение ссылки на платёжную страницу
+    server->>finmar: Запрос на получение ссылки на платёжную страницу
 
-    finmar-->>server: Ссылка на платёжную страницу
+    finmar-->>server: Ссылка на платёжную страницу
 
-    server-->>site: Показ пользователю платёжной страницы
+    server-->>site: Показ пользователю платёжной страницы
 
-    note over site:  Пользователь проходит платёжный флоу
+    note over site:  Пользователь проходит платёжный флоу
 
-    finmar-->>site: Перенаправление пользователя на `url_redirect_success` или `url_redirect_fail`
+    finmar-->>site: Перенаправление пользователя на `url_redirect_success` или `url_redirect_fail`
 
-    finmar-->>server: Обратное уведомление
+    finmar-->>server: Обратное уведомление
 
-    server-->>site: Обработка операции (зачисление средств пользователю)
+    server-->>site: Обработка операции (зачисление средств пользователю)
 
-    server->>finmar: Подтверждение операции    
+    server->>finmar: Подтверждение операции    
 
-    loop Запрос успешных неподтверждённых операций
+    loop Запрос успешных неподтверждённых операций
 
-            server->>finmar: GET /collector/api/v3/client_unconfirmed_success_payments
+            server->>finmar: GET /collector/api/v3/client_unconfirmed_success_payments
 
-            finmar-->>server: array()
+            finmar-->>server: array()
 
-        note over server: Обработка операций
+        note over server: Обработка операций
 
-        server -->> site: Обработка операции
+        server -->> site: Обработка операции
 
-        server -->>site: Обновление баланса
+        server -->>site: Обновление баланса
 
-        server->>Finmar: Подтверждение операции        
+        server->>Finmar: Подтверждение операции        
 
-    end
+    end
 ```
 
 <Steps>
@@ -83,18 +79,7 @@ autonumber
     Ваш сервер периодически запрашивает у Finmar список неподтверждённых успешных операций (`GET /collector/api/v3/client_unconfirmed_success_payments`). После получения и обработки этих операций ваш сервер подтверждает обработку каждой операции, обновляет баланс пользователя на вашем сайте и снова устанавливает `operation_ack_id` для предотвращения дублирования. Этот цикл повторяется для обработки всех новых успешных операций.
   </Step>
 </Steps>
- 
- <TestCards />
 
- <Note>
-  Перед началом интеграции запросите имя пользователя и пароль для тестового окружения в чате интеграции
+<Note>
+  Перед началом интеграции убедитесь, что вы получили необходимые учетные данные и настроили URL-адреса для обратных вызовов.
 </Note>
-
-<CardGroup cols={1}>
-  <Card title="Документация по интеграции" icon="book" horizontal href="/api-reference/introduction">
-    Подробная информация о создании операций, обработке уведомлений и подтверждении платежей
-  </Card>  
-</CardGroup>
-
-
- 

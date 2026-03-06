@@ -1,0 +1,49 @@
+---
+title: "Работа с KYC"
+description: "Передача данных KYC для соблюдения требований регуляторов"
+sidebarTitle: "Работа с KYC"
+---
+
+Для некоторых методов оплаты или при достижении определенных лимитов может потребоваться передача информации о KYC (Know Your Customer) статусе пользователя.
+
+### Параметры объекта `user.kyc`
+
+<ParamField body="user.kyc" type="object">
+  Информация о прохождении KYC
+</ParamField>
+
+<ParamField body="user.kyc.result" type="string">
+  Результат проверки KYC: `SUCCESS` или `FAIL`
+</ParamField>
+
+<ParamField body="user.kyc.sumsub_share_token" type="string">
+  Токен шаринга данных (например, от SumSub)
+</ParamField>
+
+### Пример запроса с данными KYC
+
+```bash focus={11-14}
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "card",
+    "client_operation_id": "kyc_test_01",
+    "user": {
+        "user_id": "verified_user",
+        "kyc": {
+            "result": "SUCCESS",
+            "sumsub_share_token": "sumsub-share-token-example"
+        }
+    },
+    "amount": { "amount": "1000", "currency": "EUR" },
+    "url_callback": "https://callback.url",
+    "url_redirect_success": "https://success.url",
+    "url_redirect_fail": "https://fail.url"
+}'
+```
+
+<Note>
+Передача `sumsub_share_token` позволяет автоматически использовать данные пользователя, уже прошедшего верификацию в вашей системе через SumSub, без повторного прохождения процедуры на стороне платёжного провайдера.
+</Note>

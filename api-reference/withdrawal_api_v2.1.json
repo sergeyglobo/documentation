@@ -1,8 +1,9 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Withdrawal card API",
-    "version": "2.0"
+  "title": "Withdrawal card API",
+  "version": "2.0",
+  "description": "Карточное Withdrawal API v2 для создания, запуска и отслеживания выплат на банковские карты."
   },
   "servers": [
     {
@@ -12,11 +13,12 @@
   ],
   "paths": {
     "/public/api/withdraw/card/v2/check_health": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Returns current service status.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Проверка состояния сервиса вывода на карты.",
+      "description": "Используется для проверки доступности API и корректности учётных данных.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -46,11 +48,12 @@
       }
     },
     "/public/api/withdraw/card/v2/get_balance": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Returns current merchant balance info.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Возвращает текущую информацию о доступном балансе для выплат.",
+      "description": "Позволяет получить общий доступный баланс и распределение по источникам ликвидности.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -80,11 +83,12 @@
       }
     },
     "/public/api/withdraw/card/v2/create_operation": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Creates a new card withdrawal operation or get its current state if already exists.\r\nWithdrawal engine will choose a suitable liquidity source automatically.\r\nNew transaction won't be executed until 'start' method's called.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Создаёт новую операцию вывода на карту или возвращает её текущее состояние.",
+      "description": "Источник ликвидности выбирается автоматически. Исполнение не начинается, пока не вызван метод start_operation.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -114,11 +118,12 @@
       }
     },
     "/public/api/withdraw/card/v2/create_operation_using_explicit_source": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Creates a new card withdrawal operation or get its current state if already exists.\r\nWithdrawal engine will use explicitly provided liquidity source.\r\nNew transaction won't be executed until 'start' method's called.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Создаёт операцию вывода на карту с явным источником ликвидности или возвращает её текущее состояние.",
+      "description": "Для исполнения используется явно указанный liquidity_source_id. Исполнение не начинается, пока не вызван метод start_operation.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -148,11 +153,12 @@
       }
     },
     "/public/api/withdraw/card/v2/get_operation_state": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Returns operation's current state by its id.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Возвращает текущее состояние операции по client_operation_id.",
+      "description": "Используется для получения актуального статуса выплаты.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -182,11 +188,12 @@
       }
     },
     "/public/api/withdraw/card/v2/start_operation": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Starts execution of operation.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Запускает исполнение ранее созданной операции вывода.",
+      "description": "Переводит операцию из состояния ожидания запуска в обработку. При некорректном состоянии возвращает ошибку UNACCEPTABLE_COMMAND.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -197,7 +204,7 @@
           }
         },
         "responses": {
-          "200": {
+          "200": {    
             "description": "OK",
             "content": {
               "application/json": {
@@ -216,11 +223,12 @@
       }
     },
     "/public/api/withdraw/card/v2/abort_operation": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Attempts to abort operation's execution if possible.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Пытается отменить выполнение операции, если это ещё возможно.",
+      "description": "При успешной отмене операция завершится со статусом FAILURE или PARTIAL_SUCCESS. Код ACCEPTED_WITHOUT_OBLIGATIONS означает, что отмена зависит от результата на стороне провайдера.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -250,11 +258,12 @@
       }
     },
     "/public/api/withdraw/card/v2/open_operation_user_input": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Configures user input settings and returns user entry point parameters.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Возвращает параметры участия пользователя и ссылку для ввода данных.",
+      "description": "Используется для сценариев, где требуется дополнительное действие пользователя (например, 3‑D Secure).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -284,11 +293,12 @@
       }
     },
     "/public/api/withdraw/card/v2/confirm_operation": {
-      "post": {
-        "tags": [
-          "WithdrawCard"
-        ],
-        "summary": "Confirms operation's completion.",
+    "post": {
+      "tags": [
+      "WithdrawCard"
+      ],
+      "summary": "Подтверждает обработку завершённой операции на стороне партнёра.",
+      "description": "Переводит операцию в финальное состояние COMPLETE_CONFIRMED.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -320,7 +330,8 @@
   },
   "components": {
     "schemas": {
-      "BankCardInfoApiView": {
+    "BankCardInfoApiView": {
+      "description": "Токенизированные реквизиты банковской карты получателя.",
         "required": [
           "bin6",
           "card_token",
@@ -370,7 +381,8 @@
         },
         "additionalProperties": false
       },
-      "BankCardInputApiView": {
+    "BankCardInputApiView": {
+      "description": "Открытые реквизиты банковской карты, передаваемые в запросе.",
         "required": [
           "cardholder",
           "expiration_month",
@@ -398,7 +410,8 @@
         },
         "additionalProperties": false
       },
-      "CardWithdrawalOperationStateApiView": {
+    "CardWithdrawalOperationStateApiView": {
+      "description": "Полное состояние операции вывода на карту.",
         "required": [
           "bank_card",
           "client_operation_id",
@@ -521,7 +534,8 @@
         },
         "additionalProperties": false
       },
-      "FiatCurrencyAmountApiView": {
+    "FiatCurrencyAmountApiView": {
+      "description": "Сумма в фиатной валюте.",
         "required": [
           "amount",
           "currency"
@@ -542,7 +556,8 @@
         },
         "additionalProperties": false
       },
-      "UserApiView": {
+    "UserApiView": {
+      "description": "Информация о конечном пользователе.",
         "required": [
           "user_id"
         ],
@@ -607,7 +622,8 @@
         },
         "additionalProperties": false
       },
-      "UserInputParametersApiView": {
+    "UserInputParametersApiView": {
+      "description": "Параметры участия пользователя и ссылки для перехода.",
         "required": [
           "concurrency_stamp",
           "requested_at",
@@ -634,7 +650,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardAbortOperationErrorCodeApiError": {
+    "WithdrawCardAbortOperationErrorCodeApiError": {
+      "description": "Структура ошибки для метода abort_operation.",
         "required": [
           "code",
           "details"
@@ -662,7 +679,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardAbortOperationRequest": {
+    "WithdrawCardAbortOperationRequest": {
+      "description": "Параметры запроса на отмену операции.",
         "required": [
           "client_operation_id"
         ],
@@ -681,7 +699,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardAbortOperationResponse": {
+    "WithdrawCardAbortOperationResponse": {
+      "description": "Ответ метода отмены операции.",
         "required": [
           "success",
           "trace_id"
@@ -704,7 +723,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardAbortOperationResult": {
+    "WithdrawCardAbortOperationResult": {
+      "description": "Результат отмены операции с её актуальным состоянием.",
         "required": [
           "operation_state"
         ],
@@ -716,7 +736,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCheckHealthErrorCodeApiError": {
+    "WithdrawCardCheckHealthErrorCodeApiError": {
+      "description": "Структура ошибки для метода check_health.",
         "required": [
           "code",
           "details"
@@ -742,11 +763,13 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCheckHealthRequest": {
+    "WithdrawCardCheckHealthRequest": {
+      "description": "Тело запроса для проверки состояния сервиса (пустой объект).",
         "type": "object",
         "additionalProperties": false
       },
-      "WithdrawCardCheckHealthResponse": {
+    "WithdrawCardCheckHealthResponse": {
+      "description": "Ответ проверки состояния сервиса.",
         "required": [
           "success",
           "trace_id"
@@ -766,7 +789,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardConfirmOperationErrorCodeApiError": {
+    "WithdrawCardConfirmOperationErrorCodeApiError": {
+      "description": "Структура ошибки для метода confirm_operation.",
         "required": [
           "code",
           "details"
@@ -793,7 +817,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardConfirmOperationRequest": {
+    "WithdrawCardConfirmOperationRequest": {
+      "description": "Параметры подтверждения завершённой операции.",
         "required": [
           "client_operation_id"
         ],
@@ -817,7 +842,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardConfirmOperationResponse": {
+    "WithdrawCardConfirmOperationResponse": {
+      "description": "Ответ метода подтверждения операции.",
         "required": [
           "success",
           "trace_id"
@@ -840,7 +866,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardConfirmOperationResult": {
+    "WithdrawCardConfirmOperationResult": {
+      "description": "Результат подтверждения операции с её актуальным состоянием.",
         "required": [
           "operation_state"
         ],
@@ -852,7 +879,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateErrorCodeApiError": {
+    "WithdrawCardCreateErrorCodeApiError": {
+      "description": "Структура ошибки для метода create_operation.",
         "required": [
           "code",
           "details"
@@ -880,7 +908,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateExplicitSourceErrorCodeApiError": {
+    "WithdrawCardCreateExplicitSourceErrorCodeApiError": {
+      "description": "Структура ошибки для метода create_operation_using_explicit_source.",
         "required": [
           "code",
           "details"
@@ -908,7 +937,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateExplicitSourceRequest": {
+    "WithdrawCardCreateExplicitSourceRequest": {
+      "description": "Параметры создания операции вывода с явным источником ликвидности.",
         "required": [
           "bank_card",
           "client_operation_id",
@@ -979,7 +1009,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateExplicitSourceResponse": {
+    "WithdrawCardCreateExplicitSourceResponse": {
+      "description": "Ответ на запрос создания операции с явным источником ликвидности.",
         "required": [
           "success",
           "trace_id"
@@ -1002,7 +1033,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateExplicitSourceResult": {
+    "WithdrawCardCreateExplicitSourceResult": {
+      "description": "Результат создания операции с явным источником ликвидности.",
         "required": [
           "operation_state"
         ],
@@ -1014,7 +1046,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateRequest": {
+    "WithdrawCardCreateRequest": {
+      "description": "Параметры создания операции вывода с автоматическим выбором источника ликвидности.",
         "required": [
           "bank_card",
           "client_operation_id",
@@ -1084,7 +1117,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateResponse": {
+    "WithdrawCardCreateResponse": {
+      "description": "Ответ на запрос создания операции вывода.",
         "required": [
           "success",
           "trace_id"
@@ -1107,7 +1141,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardCreateResult": {
+    "WithdrawCardCreateResult": {
+      "description": "Результат создания операции вывода с её текущим состоянием.",
         "required": [
           "operation_state"
         ],
@@ -1119,7 +1154,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetBalanceErrorCodeApiError": {
+    "WithdrawCardGetBalanceErrorCodeApiError": {
+      "description": "Структура ошибки для метода get_balance.",
         "required": [
           "code",
           "details"
@@ -1144,7 +1180,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetBalanceRequest": {
+    "WithdrawCardGetBalanceRequest": {
+      "description": "Параметры запроса баланса.",
         "type": "object",
         "properties": {
           "project_id": {
@@ -1155,7 +1192,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetBalanceResponse": {
+    "WithdrawCardGetBalanceResponse": {
+      "description": "Ответ с информацией о доступном балансе и источниках ликвидности.",
         "required": [
           "success",
           "trace_id"
@@ -1178,7 +1216,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetBalanceResult": {
+    "WithdrawCardGetBalanceResult": {
+      "description": "Детализация доступного баланса по всем источникам ликвидности.",
         "required": [
           "liquidity_sources",
           "total_available"
@@ -1200,7 +1239,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetOperationStateErrorCodeApiError": {
+    "WithdrawCardGetOperationStateErrorCodeApiError": {
+      "description": "Структура ошибки для метода get_operation_state.",
         "required": [
           "code",
           "details"
@@ -1226,7 +1266,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetOperationStateRequest": {
+    "WithdrawCardGetOperationStateRequest": {
+      "description": "Параметры запроса текущего состояния операции.",
         "required": [
           "client_operation_id"
         ],
@@ -1245,7 +1286,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetOperationStateResponse": {
+    "WithdrawCardGetOperationStateResponse": {
+      "description": "Ответ с текущим состоянием операции.",
         "required": [
           "success",
           "trace_id"
@@ -1268,7 +1310,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardGetOperationStateResult": {
+    "WithdrawCardGetOperationStateResult": {
+      "description": "Результат с объектом текущего состояния операции.",
         "required": [
           "operation_state"
         ],
@@ -1280,7 +1323,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardLiquiditySourceBalanceApiView": {
+    "WithdrawCardLiquiditySourceBalanceApiView": {
+      "description": "Баланс по отдельному источнику ликвидности.",
         "required": [
           "source_id",
           "total_available"
@@ -1301,7 +1345,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardOpenUserInputErrorCodeApiError": {
+    "WithdrawCardOpenUserInputErrorCodeApiError": {
+      "description": "Структура ошибки для метода open_operation_user_input.",
         "required": [
           "code",
           "details"
@@ -1328,7 +1373,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardOpenUserInputRequest": {
+    "WithdrawCardOpenUserInputRequest": {
+      "description": "Параметры открытия пользовательского интерфейса для операции.",
         "required": [
           "client_operation_id"
         ],
@@ -1351,7 +1397,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardOpenUserInputResponse": {
+    "WithdrawCardOpenUserInputResponse": {
+      "description": "Ответ с параметрами участия пользователя и текущим состоянием операции.",
         "required": [
           "success",
           "trace_id"
@@ -1374,7 +1421,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardOpenUserInputResult": {
+    "WithdrawCardOpenUserInputResult": {
+      "description": "Результат открытия пользовательского интерфейса с параметрами входа.",
         "required": [
           "operation_state",
           "user_input_parameters"
@@ -1390,7 +1438,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardStartOperationErrorCodeApiError": {
+    "WithdrawCardStartOperationErrorCodeApiError": {
+      "description": "Структура ошибки для метода start_operation.",
         "required": [
           "code",
           "details"
@@ -1417,7 +1466,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardStartOperationRequest": {
+    "WithdrawCardStartOperationRequest": {
+      "description": "Параметры запуска ранее созданной операции.",
         "required": [
           "client_operation_id"
         ],
@@ -1436,7 +1486,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardStartOperationResponse": {
+    "WithdrawCardStartOperationResponse": {
+      "description": "Ответ метода запуска операции.",
         "required": [
           "success",
           "trace_id"
@@ -1459,7 +1510,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawCardStartOperationResult": {
+    "WithdrawCardStartOperationResult": {
+      "description": "Результат запуска операции с её актуальным состоянием.",
         "required": [
           "operation_state"
         ],
@@ -1474,7 +1526,8 @@
         },
         "additionalProperties": false
       },
-      "WithdrawalFailureApiView": {
+    "WithdrawalFailureApiView": {
+      "description": "Причина неуспешного завершения операции вывода.",
         "required": [
           "details"
         ],

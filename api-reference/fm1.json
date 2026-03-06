@@ -1,0 +1,795 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Finmar API",
+        "version": "3.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://finmar.tech/prepare2/api/v3"
+        }
+    ],
+    "paths": {
+        "/checkout": {
+            "post": {
+                "operationId": "mutation.entry.getUrl",
+                "summary": "checkout",
+                "description": "Get url from specific method with default input",
+                "security": [
+                    {
+                        "Basic": [],
+                        "KeyId": [],
+                        "Signature": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "merchant_user_entry_point_url": {
+                                        "type": "string",
+                                        "description": "Полный URL страницы мерчанта, из которой пользователь переходит на платёжную страницу. Используется для возврата пользователя назад (cashier / депозит)."
+                                    },
+                                    "report_metadata": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "description": "Произвольная строка для аналитики и отчётности мерчанта (max length = 255). Не обрабатывается на стороне Finmar."
+                                    },
+                                    "project_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор проекта в Finmar. Если не указан, используется проект по умолчанию для учётных данных интеграции."
+                                    },
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "amount": {
+                                        "type": "object",
+                                        "description": "Сумма и валюта операции.",
+                                        "properties": {
+                                            "amount": {
+                                                "type": "string",
+                                                "pattern": "^[0-9]*[.]?[0-9]*$",
+                                                "example": "10.00",
+                                                "description": "Сумма операции в десятичном формате с точкой в качестве разделителя."
+                                            },
+                                            "currency": {
+                                                "type": "string",
+                                                "description": "Трёхбуквенный код валюты по ISO 4217.",
+                                                "example": "EUR"
+                                            }
+                                        },
+                                        "required": [
+                                            "amount",
+                                            "currency"
+                                        ]
+                                    },
+                                    "url_redirect_success": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL, на который пользователь будет перенаправлен после успешной оплаты."
+                                    },
+                                    "url_redirect_fail": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL, на который пользователь будет перенаправлен в случае ошибки или отмены оплаты."
+                                    },
+                                    "url_callback": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "Endpoint мерчанта для приёма callback‑уведомлений об изменении статуса операции."
+                                    },
+                                    "payment_profile": {
+                                        "type": "string",
+                                        "description": "Платёжный профиль в Finmar, определяющий набор провайдеров, валют и настроек маршрутизации.",
+                                        "example": "sandbox"
+                                    },
+                                    "locale": {
+                                        "type": "string",
+                                        "description": "Локаль интерфейса платёжной страницы в формате RFC 5646.",
+                                        "example": "ru-RU"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Описание операции, которое может отображаться пользователю и в отчётах.",
+                                        "example": "Account top up"
+                                    },
+                                    "metadata": {
+                                        "type": "string",
+                                        "description": "Произвольные данные мерчанта, передаваемые в платёж и возвращаемые в callback‑ах (например, JSON‑строка).",
+                                        "example": "{\"order_id\":\"ORDER-123\"}"
+                                    },
+                                    "amount_alternatives": {
+                                        "type": "array",
+                                        "description": "Набор альтернативных сумм, которые могут быть предложены пользователю (up-sell / выбор суммы).",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "amount": {
+                                                    "type": "string",
+                                                    "pattern": "^[0-9]*[.]?[0-9]*$",
+                                                    "example": "25.00",
+                                                    "description": "Альтернативная сумма депозита."
+                                                },
+                                                "currency": {
+                                                    "type": "string",
+                                                    "description": "Валюта альтернативной суммы (ISO 4217).",
+                                                    "example": "EUR"
+                                                }
+                                            },
+                                            "required": [
+                                                "amount",
+                                                "currency"
+                                            ]
+                                        }
+                                    },
+                                    "method": {
+                                        "type": "string",
+                                        "description": "Метод оплаты / платёжный продукт, который будет использоваться в checkout.",
+                                        "enum": [
+                                            "apm",
+                                            "crypto_protect",
+                                            "widget_integration",
+                                            "cashbox",
+                                            "wallet_invoice",
+                                            "card",
+                                            "multi",
+                                            "googlepay",
+                                            "applepay",
+                                            "blik",
+                                            "openbanking",
+                                            "volt",
+                                            "papara",
+                                            "payco",
+                                            "havale"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "user",
+                                    "amount",
+                                    "payment_profile",
+                                    "method"
+                                ],
+                                "additionalProperties": true,
+                                "example": {
+                                    "user": {
+                                        "user_id": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0",
+                                        "email": "user@example.com",
+                                        "profile_country": "PL"
+                                    },
+                                    "amount": {
+                                        "amount": "10.00",
+                                        "currency": "EUR"
+                                    },
+                                    "payment_profile": "sandbox",
+                                    "project_id": "demo_project",
+                                    "method": "card",
+                                    "url_redirect_success": "https://merchant.site/cashier/success",
+                                    "url_redirect_fail": "https://merchant.site/cashier/fail",
+                                    "url_callback": "https://merchant.site/api/finmar/callback"
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "description": "Флаг логического успеха операции. true — ссылка успешно сгенерирована, false — произошла ошибка."
+                                        },
+                                        "trace_id": {
+                                            "type": "string",
+                                            "description": "Уникальный идентификатор запроса в системе Finmar. Используется для трассировки и обращения в поддержку.",
+                                            "example": "260498e19c04410fb67de6093b8218b2"
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "description": "Ссылка на платёжную страницу, на которую нужно перенаправить пользователя."
+                                                },
+                                                "launch_type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "iframe",
+                                                        "new_window"
+                                                    ]
+                                                },
+                                                "kyc_status": {
+                                                    "type": "string",
+                                                    "description": "Агрегированный статус KYC пользователя, если доступен.",
+                                                    "enum": [
+                                                        "approved",
+                                                        "rejected",
+                                                        "none"
+                                                    ]
+                                                },
+                                                "user_stats": {
+                                                    "type": "string",
+                                                    "description": "Наличие статистики по пользователю в системе Finmar.",
+                                                    "enum": [
+                                                        "present",
+                                                        "not_present",
+                                                        "unknown"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "url"
+                                            ],
+                                            "additionalProperties": true
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "description": "Информация об ошибке, заполняется, когда success = false.",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "description": "Код ошибки верхнего уровня.",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string",
+                                                    "description": "Подробное текстовое описание ошибки. Для ошибок валидации может содержать сериализованный JSON с деталями по полям."
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/set-data": {
+            "post": {
+                "operationId": "mutation.user.setData",
+                "summary": "/user/set-data",
+                "description": "Update external user info and statistics, all not-null fields will replace current values stored on server side.",
+                "security": [
+                    {
+                        "Basic": [],
+                        "KeyId": [],
+                        "Signature": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "project_id": {
+                                        "type": "string",
+                                        "description": "Идентификатор проекта в Finmar, к которому относится пользователь.",
+                                        "example": "demo_project"
+                                    },
+                                    "user": {
+                                        "$ref": "#/components/schemas/User"
+                                    },
+                                    "payment_profile": {
+                                        "type": "string",
+                                        "description": "Платёжный профиль, внутри которого будут храниться данные пользователя.",
+                                        "example": "sandbox"
+                                    }
+                                },
+                                "required": [
+                                    "user",
+                                    "payment_profile"
+                                ]
+                            },
+                            "examples": {
+                                "MaxStatistics": {
+                                    "summary": "Запрос с максимально заполненной статистикой",
+                                    "value": {
+                                        "project_id": "demo_project",
+                                        "payment_profile": "sandbox",
+                                        "user": {
+                                            "user_id": "user_123456",
+                                            "email": "john.doe@example.com",
+                                            "statistics": {
+                                                "registered_at": "2023-10-01T12:00:00Z",
+                                                "registration_ip_address": "192.168.1.1",
+                                                "registration_traffic_source": "organic",
+                                                "most_recent_retention_at": "2024-03-01T15:30:00Z",
+                                                "most_recent_retention_ip_address": "1.1.1.1",
+                                                "most_recent_retention_traffic_source": "email_campaign",
+                                                "total_deposit_count": 15,
+                                                "total_withdrawal_count": 3,
+                                                "most_recent_deposit_at": "2024-02-28T10:00:00Z",
+                                                "most_recent_deposit_amout": "100.00",
+                                                "most_recent_deposit_currency": "USD",
+                                                "most_recent_withdrawal_at": "2024-01-15T09:00:00Z",
+                                                "most_recent_withdrawl_amout": "50.00",
+                                                "most_recent_withdrawl_currency": "USD",
+                                                "most_recent_ip_address": "8.8.8.8",
+                                                "card_deposit_count": 10,
+                                                "card_deposit_amount": "800.00",
+                                                "crypto_deposit_count": 2,
+                                                "crypto_deposit_amount": "0.05",
+                                                "apm_deposit_count": 3,
+                                                "apm_deposit_amount": "150.00"
+                                            }
+                                        }
+                                    }
+                                },
+                                "WithKYC": {
+                                    "summary": "Запрос с данными KYC",
+                                    "value": {
+                                        "project_id": "demo_project",
+                                        "payment_profile": "sandbox",
+                                        "user": {
+                                            "user_id": "user_789012",
+                                            "first_name": "Ivan",
+                                            "last_name": "Ivanov",
+                                            "kyc": {
+                                                "result": "SUCCESS",
+                                                "verification_kind": "ID_DOCUMENT",
+                                                "id_document_kind": "PASSPORT",
+                                                "id_document_country": "RU",
+                                                "sumsub_share_token": "token_abc123",
+                                                "sumsub_client_id": "client_999",
+                                                "sumsub_applicant_id": "applicant_777",
+                                                "date_of_verification": "2024-02-20T14:00:00Z",
+                                                "full_name": "Ivan Ivanov",
+                                                "age": 30,
+                                                "gender": "MALE"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "description": "Флаг логического успеха операции обновления пользователя."
+                                        },
+                                        "trace_id": {
+                                            "type": "string",
+                                            "description": "Уникальный идентификатор запроса в системе Finmar.",
+                                            "example": "085e44116fcd4bde9862d903e43ec3cc"
+                                        },
+                                        "result": {
+                                            "type": "object",
+                                            "description": "Дополнительная информация о результате операции (зарезервировано для будущих расширений).",
+                                            "properties": {}
+                                        },
+                                        "error": {
+                                            "type": "object",
+                                            "description": "Информация об ошибке, если success = false.",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "description": "Код ошибки верхнего уровня.",
+                                                    "enum": [
+                                                        "PARSE_ERROR",
+                                                        "BAD_REQUEST",
+                                                        "INTERNAL_SERVER_ERROR",
+                                                        "NOT_IMPLEMENTED",
+                                                        "UNAUTHORIZED",
+                                                        "FORBIDDEN",
+                                                        "NOT_FOUND",
+                                                        "METHOD_NOT_SUPPORTED",
+                                                        "TIMEOUT",
+                                                        "CONFLICT",
+                                                        "PRECONDITION_FAILED",
+                                                        "PAYLOAD_TOO_LARGE",
+                                                        "UNPROCESSABLE_CONTENT",
+                                                        "TOO_MANY_REQUESTS",
+                                                        "CLIENT_CLOSED_REQUEST"
+                                                    ]
+                                                },
+                                                "details": {
+                                                    "type": "string",
+                                                    "description": "Текстовое описание причины ошибки."
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "success",
+                                        "trace_id"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "Authorization": {
+                "type": "http",
+                "scheme": "bearer"
+            },
+            "Basic": {
+                "type": "http",
+                "scheme": "basic"
+            },
+            "ECDSA-key": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "x-ecdsa-key-id"
+            },
+            "ECDSA-signature": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "x-ecdsa-sha256-sign"
+            },
+            "KeyId": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "x-signing-key-id"
+            },
+            "Signature": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "x-sha256-sign"
+            }
+        },
+        "schemas": {
+            "BillingAddress": {
+                "type": "object",
+                "description": "Платёжный (биллинг) адрес держателя карты/пользователя. Используется для KYC/AML и риск-оценки.",
+                "properties": {
+                    "country": {
+                        "type": "string",
+                        "description": "Код страны (ISO 3166-1 alpha-2).",
+                        "example": "PL"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "Регион / штат / область (если применяется)."
+                    },
+                    "city": {
+                        "type": "string",
+                        "description": "Город.",
+                        "example": "Warsaw"
+                    },
+                    "zip_code": {
+                        "type": "string",
+                        "description": "Почтовый индекс.",
+                        "example": "00-001"
+                    },
+                    "address_line_1": {
+                        "type": "string",
+                        "description": "Первая строка адреса (улица, дом, квартира).",
+                        "example": "Main Street 1/2"
+                    }
+                },
+                "required": [
+                    "country"
+                ]
+            },
+            "Statistics": {
+                "type": "object",
+                "description": "Агрегированная статистика по платёжной активности пользователя в системе мерчанта и Finmar. Используется для скоринга и антифрода.",
+                "properties": {
+                    "registered_at": {
+                        "type": "string",
+                        "description": "Дата и время регистрации пользователя в системе мерчанта (ISO 8601).",
+                        "example": "2024-01-15T10:30:00Z"
+                    },
+                    "registration_ip_address": {
+                        "type": "string",
+                        "description": "IP‑адрес, с которого пользователь зарегистрировался.",
+                        "example": "203.0.113.10"
+                    },
+                    "registration_traffic_source": {
+                        "type": "string",
+                        "description": "Источник трафика при регистрации пользователя (utm‑метка, канал и т.п.).",
+                        "example": "google_ads"
+                    },
+                    "most_recent_retention_at": {
+                        "type": "string",
+                        "description": "Время последней активности/возврата пользователя (ISO 8601)."
+                    },
+                    "most_recent_retention_ip_address": {
+                        "type": "string",
+                        "description": "IP‑адрес последней активности пользователя."
+                    },
+                    "most_recent_retention_traffic_source": {
+                        "type": "string",
+                        "description": "Источник трафика последней активности пользователя."
+                    },
+                    "total_deposit_count": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Общее количество депозитных операций пользователя.",
+                        "example": 5
+                    },
+                    "total_withdrawal_count": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Общее количество выводов средств пользователя.",
+                        "example": 2
+                    },
+                    "most_recent_deposit_at": {
+                        "type": "string",
+                        "description": "Дата и время последнего депозита (ISO 8601)."
+                    },
+                    "most_recent_deposit_amout": {
+                        "type": "string",
+                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                        "example": "50.00",
+                        "description": "Сумма последнего депозита."
+                    },
+                    "most_recent_deposit_currency": {
+                        "type": "string",
+                        "description": "Валюта последнего депозита (ISO 4217).",
+                        "example": "EUR"
+                    },
+                    "most_recent_withdrawal_at": {
+                        "type": "string",
+                        "description": "Дата и время последнего вывода (ISO 8601)."
+                    },
+                    "most_recent_withdrawl_amout": {
+                        "type": "string",
+                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                        "example": "20.00",
+                        "description": "Сумма последнего вывода."
+                    },
+                    "most_recent_withdrawl_currency": {
+                        "type": "string",
+                        "description": "Валюта последнего вывода (ISO 4217).",
+                        "example": "EUR"
+                    },
+                    "most_recent_ip_address": {
+                        "type": "string",
+                        "description": "IP‑адрес последней авторизации/сессии пользователя."
+                    },
+                    "card_deposit_count": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Количество депозитов по банковским картам."
+                    },
+                    "card_deposit_amount": {
+                        "type": "string",
+                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                        "example": "150.00",
+                        "description": "Суммарный объём депозитов по картам в валюте счёта."
+                    },
+                    "crypto_deposit_count": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Количество криптодепозитов."
+                    },
+                    "crypto_deposit_amount": {
+                        "type": "string",
+                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                        "example": "0.75",
+                        "description": "Суммарный объём криптодепозитов (в валюте учёта или crypto‑эквиваленте, в зависимости от настроек профиля)."
+                    },
+                    "apm_deposit_count": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Количество депозитов через альтернативные платёжные методы (APM)."
+                    },
+                    "apm_deposit_amount": {
+                        "type": "string",
+                        "pattern": "^[0-9]*[.]?[0-9]*$",
+                        "example": "30.00",
+                        "description": "Суммарный объём депозитов через APM."
+                    }
+                }
+            },
+            "KYC": {
+                "type": "object",
+                "properties": {
+                    "result": {
+                        "type": "string",
+                        "description": "Результат верификации.",
+                        "enum": [
+                            "SUCCESS",
+                            "FAIL"
+                        ]
+                    },
+                    "verification_kind": {
+                        "default": "NONE",
+                        "type": "string",
+                        "description": "Тип верификации.",
+                        "enum": [
+                            "NONE",
+                            "ID_DOCUMENT",
+                            "SELFIE"
+                        ]
+                    },
+                    "id_document_kind": {
+                        "type": "string",
+                        "description": "Тип документа.",
+                        "enum": [
+                            "ID_CARD",
+                            "PASSPORT",
+                            "DRIVING_LICENSE",
+                            "RESIDENCE_PERMIT"
+                        ]
+                    },
+                    "id_document_country": {
+                        "type": "string",
+                        "description": "Страна выдачи документа (ISO 3166-1 alpha-2)."
+                    },
+                    "sumsub_share_token": {
+                        "type": "string",
+                        "description": "Токен Sumsub для обмена данными (если применимо)."
+                    },
+                    "sumsub_client_id": {
+                        "type": "string",
+                        "description": "Идентификатор клиента в системе Sumsub."
+                    },
+                    "sumsub_applicant_id": {
+                        "type": "string",
+                        "description": "Идентификатор заявителя в системе Sumsub."
+                    },
+                    "date_of_verification": {
+                        "type": "string",
+                        "description": "Дата и время прохождения верификации (ISO 8601)."
+                    },
+                    "full_name": {
+                        "type": "string",
+                        "description": "Полное имя пользователя по документам."
+                    },
+                    "age": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Возраст пользователя."
+                    },
+                    "gender": {
+                        "type": "string",
+                        "description": "Пол пользователя.",
+                        "enum": [
+                            "MALE",
+                            "FEMALE"
+                        ]
+                    }
+                },
+                "required": [
+                    "result"
+                ]
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "description": "Уникальный идентификатор пользователя в системе мерчанта.",
+                        "example": "42d555d0-bdcb-4b47-a34c-731e3e91a2d0"
+                    },
+                    "user_display_id": {
+                        "type": "string",
+                        "description": "Публичный или отображаемый идентификатор пользователя."
+                    },
+                    "login": {
+                        "type": "string",
+                        "description": "Логин пользователя в системе мерчанта."
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Email пользователя. Используется для риск-оценки и уведомлений (если поддерживается провайдером).",
+                        "example": "user@example.com"
+                    },
+                    "email_verified": {
+                        "type": "boolean",
+                        "description": "Флаг подтверждения email."
+                    },
+                    "email_verified_at": {
+                        "type": "string",
+                        "description": "Дата и время подтверждения email (ISO 8601)."
+                    },
+                    "phone": {
+                        "type": "string",
+                        "description": "Телефон пользователя в формате E.164 или локальном формате в зависимости от требований провайдера.",
+                        "example": "+48555111222"
+                    },
+                    "phone_verified": {
+                        "type": "boolean",
+                        "description": "Флаг подтверждения номера телефона."
+                    },
+                    "phone_verified_at": {
+                        "type": "string",
+                        "description": "Дата и время подтверждения номера телефона (ISO 8601)."
+                    },
+                    "preferred_locale": {
+                        "type": "string",
+                        "description": "Предпочтительный язык пользователя (RFC 5646)."
+                    },
+                    "preferred_timezone": {
+                        "type": "string",
+                        "description": "Предпочтительный часовой пояс пользователя (IANA)."
+                    },
+                    "profile_country": {
+                        "type": "string",
+                        "description": "Код страны (ISO 3166-1 alpha-2), указанной в профиле пользователя.",
+                        "example": "PL"
+                    },
+                    "current_ip_address": {
+                        "type": "string",
+                        "description": "Текущий IP-адрес пользователя."
+                    },
+                    "billing_address": {
+                        "$ref": "#/components/schemas/BillingAddress"
+                    },
+                    "statistics": {
+                        "$ref": "#/components/schemas/Statistics"
+                    },
+                    "kyc": {
+                        "$ref": "#/components/schemas/KYC"
+                    },
+                    "telegram_id": {
+                        "type": "string",
+                        "description": "Идентификатор пользователя в Telegram."
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "description": "Имя пользователя."
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "description": "Фамилия пользователя."
+                    }
+                },
+                "required": [
+                    "user_id"
+                ]
+            }
+        }
+    },
+    "externalDocs": {
+        "url": "https://finmar.tech/prepare2/docsV3/json"
+    }
+}

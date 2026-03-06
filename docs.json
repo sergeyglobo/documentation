@@ -87,6 +87,10 @@
                   "en/api-reference/withdrawal/overview",
                   "en/api-reference/withdrawal/generic"
                 ]
+              },
+              {
+                "group": "Withdrawal Generic API v2",
+                "openapi": "api-reference/withdraw_generic_v2.json"
               }
             ]
           }
@@ -109,9 +113,23 @@
                 ]
               },
               {
+                "group": "Банковские карты",
+                "pages": [
+                  "products/card/overview",
+                  "products/card/create",
+                  "products/card/redirect",
+                  "products/card/callbacks",
+                  "products/card/confirm",
+                  "products/card/unconfirmed",
+                  "products/card/stats",
+                  "products/card/kyc",
+                  "products/card/errors",
+                  "products/card/check"
+                ]
+              },
+              {
                 "group": "Фиатные платежи",
                 "pages": [
-                  "products/card",
                   "products/openbanking",
                   "products/blik",
                   "products/googlepay",
@@ -135,6 +153,8 @@
                 "group": "Фиатные платежи",
                 "pages": [
                   "api-reference/introduction",
+                  "api-reference/integration/workflow",
+                  "api-reference/integration/test_cards",
                   "api-reference/status",
                   "api-reference/integration/checkout",
                   "api-reference/integration/redirect_to_url",
@@ -171,6 +191,10 @@
                   "api-reference/withdrawal/overview",
                   "api-reference/withdrawal/generic"
                 ]
+              },
+              {
+                "group": "Withdrawal Generic API v2",
+                "openapi": "api-reference/withdraw_generic_v2.json"
               }
             ]
           }

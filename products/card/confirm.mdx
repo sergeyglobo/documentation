@@ -1,0 +1,45 @@
+---
+title: "Подтверждение операции"
+description: "Подтверждение успешной обработки платёжной операции"
+sidebarTitle: "Подтверждение операции"
+---
+ 
+
+После обработки операции, необходимо сообщить сервису о том что обработка успешно выполнена.
+
+## Подтверждение обработки операции
+
+После успешной обработки операции (получения успешного уведомления или проверки статуса) необходимо подтвердить её обработку в Finmar API.
+
+### Методы подтверждения
+
+#### 1. По reference_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_reference_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "reference_id": "op_123456789"
+}'
+```
+
+#### 2. По client_operation_id
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_by_client_operation_id' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{
+    "client_operation_id": "unique-operation-id"
+}'
+```
+
+#### 3. Подтверждение всех неподтверждённых операций
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_confirm_payment_all' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic YOUR_CREDENTIALS' \
+--data '{}'
+```

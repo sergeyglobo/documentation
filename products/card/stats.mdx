@@ -1,0 +1,50 @@
+---
+title: "Передача статистики"
+description: "Передача статистических данных пользователя для улучшения проходимости платежей"
+sidebarTitle: "Передача статистики"
+---
+
+Передача статистики о пользователе помогает антифрод-системе точнее оценивать риски, что может повысить проходимость платежей. Данные передаются в объекте `user.statistics` при создании операции.
+
+### Параметры объекта `user.statistics`
+
+<ParamField body="user.statistics" type="object">
+  Объект со статистическими данными пользователя
+</ParamField>
+
+<ParamField body="user.statistics.registered_at" type="string" placeholder="YYYY-MM-DD">
+  Дата регистрации пользователя
+</ParamField>
+
+<ParamField body="user.statistics.total_deposit_count" type="integer">
+  Общее количество успешных депозитов
+</ParamField>
+
+<ParamField body="user.statistics.total_withdrawal_count" type="integer">
+  Общее количество успешных выводов средств
+</ParamField>
+
+### Пример запроса с передачей статистики
+
+```bash focus={11-15}
+curl --location 'https://sandbox.finmar.tech/prepare2/api/v3/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic BASE64_LOGIN_PASSWORD' \
+--data '{
+    "payment_profile": "sandbox",
+    "method": "card",
+    "client_operation_id": "stat_test_01",
+    "user": {
+        "user_id": "user_with_stats",
+        "statistics": {
+            "registered_at": "2023-01-15",
+            "total_deposit_count": 5,
+            "total_withdrawal_count": 2
+        }
+    },
+    "amount": { "amount": "10", "currency": "EUR" },
+    "url_callback": "https://callback.url",
+    "url_redirect_success": "https://success.url",
+    "url_redirect_fail": "https://fail.url"
+}'
+```

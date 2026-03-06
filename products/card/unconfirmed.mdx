@@ -1,0 +1,63 @@
+---
+title: "Проверка неподтверждённых операций"
+description: "Получение списка успешных операций, которые не были подтверждены"
+sidebarTitle: "Проверка неподтверждённых"
+---
+
+Рекомендуется периодически запрашивать список неподтверждённых успешных операций для обработки тех, которые могли быть пропущены (например, из-за сетевых проблем при отправке уведомления).
+
+### Запрос неподтверждённых операций
+
+```bash
+curl --location 'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments' \
+--header 'Authorization: Basic YOUR_CREDENTIALS'
+```
+
+### Ответ
+
+```json
+[
+    {
+        "reference_id": "op_123456789",
+        "client_operation_id": "unique-operation-id",
+        "user_id": "user-123",
+        "complete_amount": "100",
+        "complete_currency": "EUR",
+        "status": "success",
+        "payment_method_type": "card",
+        "payment_method_product": "widget_card"
+    }
+]
+```
+
+### Обработка массива операций
+
+```javascript
+async function processUnconfirmedOperations() {
+    // 1. Запрос неподтверждённых операций
+    const response = await fetch(
+        'https://sandbox.finmar.tech/collector/api/v3/client_unconfirmed_success_payments',
+        {
+            headers: {
+                'Authorization': 'Basic YOUR_CREDENTIALS'
+            }
+        }
+    );
+    
+    const operations = await response.json();
+    
+    // 2. Обработка каждой операции
+    for (const operation of operations) {
+        try {
+            await processOperation(operation);
+            // Не забудьте подтвердить операцию после обработки!
+            await confirmOperation(operation.reference_id);
+        } catch (error) {
+            console.error(`Error processing operation ${operation.reference_id}:`, error);
+        }
+    }
+}
+
+// Запуск каждые 5 минут
+setInterval(processUnconfirmedOperations, 5 * 60 * 1000);
+```
