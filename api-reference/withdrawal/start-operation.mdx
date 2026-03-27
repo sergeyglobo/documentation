@@ -1,0 +1,71 @@
+---
+title: "Запуск выплаты"
+---
+
+```text
+POST /public/api/withdraw/generic/v2/start_operation
+```
+
+С помощью этого метода выплата запускается на исполнение. Для этого она должна находиться в состоянии `START_WAIT`.
+
+Запрос:
+
+```json
+{
+  "client_operation_id": "93ca1dac-7479-42e6-b0b3-e721572fdc0f"
+}
+```
+
+В случае успеха вернется актуальное состояние:
+
+```json
+{
+  "success": true,
+  "trace_id": "05a38b61a9985fcbd1c5a026c5260882",
+  "result": {
+    "operation_state": {
+      "operation_id": "01903af45f5e720db0656a8e20067fa4",
+      "project_id": "check",
+      "client_operation_id": "93ca1dac-7479-42e6-b0b3-e721572fdc0f",
+      "reference_id": "01903af45f607272a2584e921e9c721a",
+      "created_at": "2024-06-21T13:20:12.125Z",
+      "updated_at": "2024-06-21T13:21:03.886Z",
+      "version": 3,
+      "order_amount": {
+        "currency": "EUR",
+        "amount": "50.99"
+      },
+      "explicit_liquidity_source_id": "some_eur",
+      "recipient_payment_method": {
+        "bank_card": {
+          // токенизированная карта
+          "pan_token": "pan_jiqt8hefrimm6ouaa64rxnx4n60l3dhu",
+          "card_token": "card_ltq5lkp0gzfqnx660foqrutls8kdr0f3",
+          // с частичным раскрытием данных
+          "bin6": "444444",
+          "last_four_digits": "0008",
+          "expiration_month": "03",
+          "expiration_year": "2033",
+          // и расширенной информацией при ее доступности
+          "network": "Visa",
+          "country": "PL",
+          "issuer": "CREDIT AGRICOLE BANK POLSKA S.A."
+        }
+      },
+      "url_callback": "https://devnull-as-a-service.com/dev/null",
+      "description": "some order description",
+      "metadata": "arbitrary_data",
+      "report_metadata": "billing_id_fe9057dbd7644c5cbe01ac3d454d6570",
+      "disallow_end_user_interaction": true,
+      "disallow_transaction_split": true,
+      // выплата начал исполняться на стороне сервиса
+      "operation_status": "PROCESSING"
+    }
+  }
+}
+```
+
+Возможны несколько специальных случаев ошибки:
+
+- `OPERATION_NOT_FOUND`: выплата с переданным `client_operation_id` не существует на стороне сервиса
+- `UNACCEPTABLE_COMMAND`: метод не может быть вызван в текущем состоянии выплаты, необходимо проверить актуальное состояние

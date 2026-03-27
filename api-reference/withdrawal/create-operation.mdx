@@ -1,0 +1,116 @@
+---
+title: "Создание выплаты с автоматическим выбором источника ликвидности"
+---
+
+```text
+POST /public/api/withdraw/generic/v2/create_operation
+```
+
+Запрос создания выплаты имеет множество параметров:
+
+```json
+{
+  // идентификатор операции на вызывающей стороне
+  "client_operation_id": "string",
+  // информация о конечном пользователе
+  "user": {
+    "user_id": "u1",
+    "email": "user@example.domain",
+    "email_verified": true
+  },
+  "recipient_payment_method": {
+    // данные банковской карты на которую должны быть выплачены средства
+    "bank_card": {
+      "pan": "4444 4444 4444 0008",
+      "cardholder": "JOHN SMITH",
+      "expiration_month": 3,
+      "expiration_year": 2033
+    }
+  },
+  // опциональный идентификатор профиля, влияет на выбор методов процессинга выплаты,
+  // значение по умолчанию привязано к учетным данным
+  "profile": "payout_default_profile",
+  // сумма выплаты
+  "order_amount": {
+    "currency": "EUR",
+    "amount": "50.99"
+  },
+  // адрес, на который необходимо отправлять уведомления о смене состояния
+  "url_callback": "https://devnull-as-a-service.com/dev/null",
+  // произвольное описание назначения выплаты
+  "description": "some order description",
+  // произвольные данные, которые будут доступны в состоянии выплаты
+  "metadata": "arbitrary_data",
+  // произвольные данные, которые попадут в финансовую отчетность
+  // (может помочь при клиринге)
+  "report_metadata": "billing_id_fe9057dbd7644c5cbe01ac3d454d6570",
+  // запрет на переход в состояние USER_INPUT
+  "disallow_end_user_interaction": true,
+  // запрет разбивки выплаты на несколько отдельных переводов
+  "disallow_transaction_split": true,
+  // синхронная обработка состояния PREPARING, ответ на запрос будет возвращен только после перехода в START_WAIT/UNPROCESSABLE
+  "await_preparing": false
+}
+```
+
+В случае успеха будет получено _текущее_ состояние выплаты (и для повторных запросов тоже):
+
+```json
+{
+  "success": true,
+  "trace_id": "4198ea2e172cce9236b0a5f327593819",
+  "result": {
+    "operation_state": {
+      // глобально уникальный идентификатор операции
+      "operation_id": "01903af45f5e720db0656a8e20067fa4",
+      "project_id": "check",
+      "client_operation_id": "93ca1dac-7479-42e6-b0b3-e721572fdc0f",
+      "reference_id": "01903af45f607272a2584e921e9c721a",
+      "created_at": "2024-06-21T13:20:12.125Z",
+      "updated_at": "2024-06-21T13:20:12.125Z",
+      // при каждом существенном изменении состояния версия состояния повышается
+      "version": 1,
+      "order_amount": {
+        "currency": "EUR",
+        "amount": "50.99"
+      },
+      "recipient_payment_method": {
+        "bank_card": {
+          // токенизированная карта
+          "pan_token": "pan_jiqt8hefrimm6ouaa64rxnx4n60l3dhu",
+          "card_token": "card_ltq5lkp0gzfqnx660foqrutls8kdr0f3",
+          // с частичным раскрытием данных
+          "bin6": "444444",
+          "last_four_digits": "0008",
+          "expiration_month": "03",
+          "expiration_year": "2033",
+          // и расширенной информацией при ее доступности
+          "network": "Visa",
+          "country": "PL",
+          "issuer": "CREDIT AGRICOLE BANK POLSKA S.A."
+        }
+      },
+      // установленные при создании параметры
+      "url_callback": "https://devnull-as-a-service.com/dev/null",
+      "description": "some order description",
+      "metadata": "arbitrary_data",
+      "report_metadata": "billing_id_fe9057dbd7644c5cbe01ac3d454d6570",
+      "disallow_end_user_interaction": true,
+      "disallow_transaction_split": true,
+      // текущий статус операции
+      "operation_status": "PREPARING"
+    }
+  }
+}
+```
+
+В случае неуспешного вызова возможны следующие особенные ситуации:
+
+- `AMBIGUOUS_PARAMETERS`: получен запрос с ранее обработанным `client_operation_id`, но отличающимися _другими параметрами_, в этом случае необходимо проверить текущее состояние выплаты по `client_operation_id`
+- `UNSUPPORTED_CURRENCY`: источник ликвидности не поддерживает переданную валюту
+
+При создании выплаты следует обратить внимание на feature flags:
+
+- `disallow_end_user_interaction`: при установке в `true` гарантированно не возникнет состояние `USER_INPUT`. По умолчанию стоит значение `false`, при котором состояние `USER_INPUT` _может_ возникнуть и должно быть правильно обработано на стороне партнера. Установка значения `true` _может_ приводить к неуспешным результатам выплаты в случаях, когда использование `USER_INPUT` помогло бы ее исполнить успешно.
+- `disallow_transaction_split`: при установке в `true` гарантированно исполняет выплату с помощью не более чем одной транзакции перевода на карту. По умолчанию стоит значение `false`, при котором сервис _может_ выполнить оптимизацию и разбить выплату на несколько транзакций. По аналогии с предыдущим флагом, значение `true` может повысить вероятность неуспешного результата исполнения выплаты.
+- `await_preparing`: при установке в `true` обработка состояния `PREPARING` будет произведена синхронно внутри обработки запроса создания и ответ на этот запрос будет возвращен только после перехода в состояние `START_WAIT` или `UNPROCESSABLE`. Этот режим позволяет не использовать опрос состояния/обработку уведомлений для проверки возможности запуска выплаты - при получении ответа с `START_WAIT` можно сразу запустить выплату на исполнение.

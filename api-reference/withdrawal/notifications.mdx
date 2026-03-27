@@ -1,0 +1,65 @@
+---
+title: "Уведомления"
+---
+
+Переходы в некоторые состояния выплаты требуют реакции, например, переходы в `UNPROCESSABLE`, `START_WAIT`, `START_REJECTED` (может быть не только явным вызовом но и по тайм ауту), `USER_INPUT`, `COMPLETE`. Для повышения скорости реакции сервис отправляет уведомления типом `card_withdrawal_state` на заказанный при создании выплаты адрес.
+
+Пример тела уведомления:
+
+```json
+{
+  // тип сообщения
+  "message_type": "card_withdrawal_state",
+
+  // текущее состояние выплаты
+  // структура совпадает с состоянием выплаты в запросах API
+  "payload": {
+    "operation_id": "01903af45f5e720db0656a8e20067fa4",
+    "project_id": "check",
+    "client_operation_id": "93ca1dac-7479-42e6-b0b3-e721572fdc0f",
+    "reference_id": "01903af45f607272a2584e921e9c721a",
+    "created_at": "2024-06-21T13:20:12.125Z",
+    "updated_at": "2024-06-21T13:21:51.761Z",
+    "version": 4,
+    "order_amount": {
+      "currency": "EUR",
+      "amount": "50.99"
+    },
+    "explicit_liquidity_source_id": "some_eur",
+    "recipient_payment_method": {
+      "bank_card": {
+        // токенизированная карта
+        "pan_token": "pan_jiqt8hefrimm6ouaa64rxnx4n60l3dhu",
+        "card_token": "card_ltq5lkp0gzfqnx660foqrutls8kdr0f3",
+        // с частичным раскрытием данных
+        "bin6": "444444",
+        "last_four_digits": "0008",
+        "expiration_month": "03",
+        "expiration_year": "2033",
+        // и расширенной информацией при ее доступности
+        "network": "Visa",
+        "country": "PL",
+        "issuer": "CREDIT AGRICOLE BANK POLSKA S.A."
+      }
+    },
+    "url_callback": "https://devnull-as-a-service.com/dev/null",
+    "description": "some order description",
+    "metadata": "arbitrary_data",
+    "report_metadata": "billing_id_fe9057dbd7644c5cbe01ac3d454d6570",
+    "disallow_end_user_interaction": true,
+    "disallow_transaction_split": true,
+    "operation_status": "COMPLETE",
+    "result_status": "SUCCESS",
+    "transferred_total_amount": {
+      "currency": "EUR",
+      "amount": "50.99"
+    }
+  }
+}
+```
+
+Уведомление считается успешно доставленным в случае, если сервис получит HTTP ответ с статусным кодом `200 OK` или любым другим `2xx` кодом.
+
+В случае неуспешной доставки (не `2xx` код, сетевая ошибка) будет предпринято ограниченное количество повторных попыток отправки с увеличивающимися интервалами времени.
+
+Поскольку доставка уведомлений не может гарантироваться в силу сетевого характера взаимодействия, необходимо реализовать механизм активного периодического запроса состояния по всем запущенным и еще не завершенным выплатам - это единственный надежный способ получения состояния выплаты.

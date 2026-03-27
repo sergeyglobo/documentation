@@ -1,0 +1,1766 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Withdrawal Generic API",
+        "version": "2.0",
+        "description": "Generic Withdrawal API v2 allows identifying the most suitable liquidity source and executing payouts to bank cards, SEPA accounts, and other payment methods."
+    },
+    "servers": [
+        {
+            "url": "https://crypto.sopogai.com",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/public/api/withdraw/generic/v2/check_health": {
+            "post": {
+                "operationId": "checkHealth",
+                "summary": "Check service health",
+                "description": "Checks the availability of the withdrawal service and validates the current credentials.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericCheckHealthRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Service is healthy",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericCheckHealthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/get_balance": {
+            "post": {
+                "operationId": "getBalance",
+                "summary": "Get merchant balance",
+                "description": "Retrieves the current available balance for withdrawals, including a breakdown by liquidity sources.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericGetBalanceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Balance information",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericGetBalanceResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/create_operation": {
+            "post": {
+                "operationId": "createOperation",
+                "summary": "Create withdrawal operation",
+                "description": "Creates a new withdrawal operation or returns the state of an existing one. The engine automatically selects the best liquidity source. The operation remains in a pending state until `start_operation` is called.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericCreateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operation created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericCreateResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/create_operation_using_explicit_source": {
+            "post": {
+                "operationId": "createOperationExplicit",
+                "summary": "Create withdrawal with explicit source",
+                "description": "Creates a new withdrawal operation or returns the state of an existing one using a specific liquidity source ID. The operation remains in a pending state until `start_operation` is called.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericCreateExplicitSourceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operation created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericCreateExplicitSourceResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/get_operation_state": {
+            "post": {
+                "operationId": "getwithdrawtate",
+                "summary": "Get operation state",
+                "description": "Retrieves the current status and details of a withdrawal operation by its client ID.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericGetwithdrawtateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operation state",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericGetwithdrawtateResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/start_operation": {
+            "post": {
+                "operationId": "startOperation",
+                "summary": "Start operation execution",
+                "description": "Initiates the execution of a previously created withdrawal operation. If the operation is not in a valid state to start, an error is returned.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericStartOperationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Operation started",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericStartOperationResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/abort_operation": {
+            "post": {
+                "operationId": "abortOperation",
+                "summary": "Abort operation",
+                "description": "Attempts to stop the execution of a withdrawal operation. Success depends on the current stage of processing by the liquidity provider.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericAbortOperationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Abort result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericAbortOperationResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/open_operation_user_input": {
+            "post": {
+                "operationId": "openOperationUserInput",
+                "summary": "Get user input parameters",
+                "description": "Retrieves the URL and parameters needed for user interaction (e.g., 3DS verification) when the operation is in `USER_INPUT` state.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericOpenUserInputRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User input parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericOpenUserInputResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        },
+        "/public/api/withdraw/generic/v2/confirm_operation": {
+            "post": {
+                "operationId": "confirmOperation",
+                "summary": "Confirm operation completion",
+                "description": "Acknowledges that the operation has reached a final state on the client side. Transitions the operation to `COMPLETE_CONFIRMED`.",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawGenericConfirmOperationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Confirmation result",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/WithdrawGenericConfirmOperationResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Basic": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BankCardInfoApiView": {
+                "description": "Tokenized recipient bank card details.",
+                "required": [
+                    "bin6",
+                    "card_token",
+                    "expiration_month",
+                    "expiration_year",
+                    "last_four_digits",
+                    "pan_token"
+                ],
+                "type": "object",
+                "properties": {
+                    "pan_token": {
+                        "description": "Tokenized PAN.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "tkn_pan_123456"
+                    },
+                    "card_token": {
+                        "description": "Unique card token.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "tkn_card_987654"
+                    },
+                    "bin6": {
+                        "description": "First 6 digits of the card.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "411111"
+                    },
+                    "last_four_digits": {
+                        "description": "Last 4 digits of the card.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "1111"
+                    },
+                    "expiration_month": {
+                        "description": "Card expiration month (MM).",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "12"
+                    },
+                    "expiration_year": {
+                        "description": "Card expiration year (YY).",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "25"
+                    },
+                    "network": {
+                        "description": "Card network (e.g. Visa, Mastercard).",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Visa"
+                    },
+                    "country": {
+                        "description": "Issuer country code.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "US"
+                    },
+                    "issuer": {
+                        "description": "Card issuer bank name.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Chase Bank"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "BankCardInputApiView": {
+                "description": "Bank card details provided for the transaction.",
+                "required": [
+                    "cardholder",
+                    "expiration_month",
+                    "expiration_year",
+                    "pan"
+                ],
+                "type": "object",
+                "properties": {
+                    "pan": {
+                        "description": "Primary Account Number.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "4111111111111111"
+                    },
+                    "cardholder": {
+                        "description": "Name of the cardholder.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "JOHN DOE"
+                    },
+                    "expiration_month": {
+                        "description": "Expiration month.",
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 12
+                    },
+                    "expiration_year": {
+                        "description": "Expiration year (4 digits or 2 digits).",
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 2025
+                    }
+                },
+                "additionalProperties": false
+            },
+            "FiatCurrencyAmountApiView": {
+                "description": "Amount in fiat currency.",
+                "required": [
+                    "amount",
+                    "currency"
+                ],
+                "type": "object",
+                "properties": {
+                    "currency": {
+                        "description": "Three-letter currency code (ISO 4217).",
+                        "maxLength": 3,
+                        "minLength": 3,
+                        "type": "string",
+                        "example": "EUR"
+                    },
+                    "amount": {
+                        "description": "Decimal amount as a string.",
+                        "type": "string",
+                        "format": "decimal",
+                        "default": "0",
+                        "example": "100.50"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "GenericWithdrawalwithdrawtateApiView": {
+                "description": "Full details of the withdrawal operation state.",
+                "required": [
+                    "client_operation_id",
+                    "created_at",
+                    "disallow_end_user_interaction",
+                    "disallow_transaction_split",
+                    "operation_id",
+                    "operation_status",
+                    "order_amount",
+                    "project_id",
+                    "recipient_payment_method",
+                    "reference_id",
+                    "updated_at",
+                    "version"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_id": {
+                        "description": "Unique system operation ID.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "project_id": {
+                        "description": "Project ID associated with the operation.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "description": "Client-provided unique operation ID.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    },
+                    "reference_id": {
+                        "description": "Human-readable reference ID.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "REF-123456"
+                    },
+                    "created_at": {
+                        "description": "Timestamp of creation.",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-10-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Timestamp of last update.",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-10-01T12:05:00Z"
+                    },
+                    "version": {
+                        "description": "Version of the operation state (optimistic locking).",
+                        "type": "integer",
+                        "format": "int32",
+                        "example": 1
+                    },
+                    "order_amount": {
+                        "description": "Requested withdrawal amount.",
+                        "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                    },
+                    "explicit_liquidity_source_id": {
+                        "description": "ID of the explicitly requested liquidity source (if any).",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "ls_card_provider_a"
+                    },
+                    "order_amount_alternatives": {
+                        "description": "Alternative amounts in different currencies (if applicable).",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                        },
+                        "nullable": true
+                    },
+                    "recipient_payment_method": {
+                        "description": "Payment method details of the recipient.",
+                        "$ref": "#/components/schemas/RecipientPaymentMethodApiView"
+                    },
+                    "url_callback": {
+                        "description": "Callback URL for status updates.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "https://merchant.com/callback"
+                    },
+                    "description": {
+                        "description": "Operation description.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Payout for services"
+                    },
+                    "metadata": {
+                        "description": "Custom metadata.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "{\"customer_segment\": \"vip\"}"
+                    },
+                    "report_metadata": {
+                        "description": "Metadata for reporting.",
+                        "maxLength": 255,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "disallow_end_user_interaction": {
+                        "description": "If true, user interaction is not allowed.",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "disallow_transaction_split": {
+                        "description": "If true, transaction splitting is not allowed.",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "operation_status": {
+                        "description": "Current status of the operation.",
+                        "enum": [
+                            "PREPARING",
+                            "UNPROCESSABLE",
+                            "START_WAIT",
+                            "START_REJECTED",
+                            "PROCESSING",
+                            "USER_INPUT",
+                            "COMPLETE",
+                            "COMPLETE_CONFIRMED"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "PROCESSING"
+                    },
+                    "execution_suspended": {
+                        "description": "Indicates if execution is currently suspended.",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "result_status": {
+                        "description": "Final result status of the operation.",
+                        "enum": [
+                            "SUCCESS",
+                            "PARTIAL_SUCCESS",
+                            "FAILURE"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "nullable": true,
+                        "example": "SUCCESS"
+                    },
+                    "transferred_total_amount": {
+                        "description": "Total amount successfully transferred.",
+                        "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                    },
+                    "failure_details": {
+                        "description": "Details in case of failure.",
+                        "$ref": "#/components/schemas/WithdrawalFailureApiView"
+                    },
+                    "sub_account_id": {
+                        "description": "Sub-account ID used for the operation.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "sub_main"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RecipientPaymentMethodApiView": {
+                "description": "Details of the payment recipient.",
+                "type": "object",
+                "properties": {
+                    "bank_card": {
+                        "$ref": "#/components/schemas/BankCardInfoApiView"
+                    },
+                    "sepa_account": {
+                        "$ref": "#/components/schemas/SepaAccountApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RecipientPaymentMethodInputApiView": {
+                "description": "Recipient payment details provided for the transaction.",
+                "type": "object",
+                "properties": {
+                    "bank_card": {
+                        "$ref": "#/components/schemas/BankCardInputApiView"
+                    },
+                    "sepa_account": {
+                        "$ref": "#/components/schemas/SepaAccountApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SepaAccountApiView": {
+                "description": "SEPA account details.",
+                "required": [
+                    "iban"
+                ],
+                "type": "object",
+                "properties": {
+                    "iban": {
+                        "description": "International Bank Account Number.",
+                        "maxLength": 34,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "DE89370400440532013000"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UserApiView": {
+                "description": "User information associated with the operation.",
+                "required": [
+                    "user_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "user_id": {
+                        "description": "Unique user identifier in your system.",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "usr_556677"
+                    },
+                    "user_display_id": {
+                        "description": "Display ID for the user.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "User #556677"
+                    },
+                    "login": {
+                        "description": "User login.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "john_doe"
+                    },
+                    "email": {
+                        "description": "User email.",
+                        "type": "string",
+                        "format": "email",
+                        "nullable": true,
+                        "example": "john@example.com"
+                    },
+                    "email_verified": {
+                        "description": "Is email verified.",
+                        "type": "boolean",
+                        "nullable": true,
+                        "example": true
+                    },
+                    "email_verified_at": {
+                        "description": "Verification timestamp.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "description": "User phone number.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "+15551234567"
+                    },
+                    "phone_verified": {
+                        "description": "Is phone verified.",
+                        "type": "boolean",
+                        "nullable": true,
+                        "example": true
+                    },
+                    "phone_verified_at": {
+                        "description": "Verification timestamp.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "preferred_locale": {
+                        "description": "Preferred locale.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "en-US"
+                    },
+                    "preferred_timezone": {
+                        "description": "Preferred timezone.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "America/New_York"
+                    },
+                    "profile_country": {
+                        "description": "User country.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "US"
+                    },
+                    "current_ip_address": {
+                        "description": "User IP address.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "192.168.1.1"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UserInputParametersApiView": {
+                "description": "Parameters for user interaction.",
+                "required": [
+                    "concurrency_stamp",
+                    "requested_at",
+                    "url"
+                ],
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "description": "URL to redirect the user to.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "https://checkout.provider.com/pay/123"
+                    },
+                    "concurrency_stamp": {
+                        "description": "Concurrency check stamp.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "stamp_abc123"
+                    },
+                    "requested_at": {
+                        "description": "Request timestamp.",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-10-01T12:00:00Z"
+                    },
+                    "url_redirect": {
+                        "description": "Redirect URL after interaction.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericAbortOperationErrorCodeApiError": {
+                "description": "Error structure for abort operation.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "OPERATION_NOT_FOUND",
+                            "UNACCEPTABLE_COMMAND",
+                            "ACCEPTED_WITHOUT_OBLIGATIONS"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "OPERATION_NOT_FOUND"
+                    },
+                    "details": {
+                        "description": "Error details.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Operation with this ID does not exist."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericAbortOperationRequest": {
+                "description": "Request to abort an operation.",
+                "required": [
+                    "client_operation_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "description": "Project ID.",
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "description": "Client operation ID to abort.",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericAbortOperationResponse": {
+                "description": "Response for abort operation.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_abc123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericAbortOperationErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericAbortOperationResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericAbortOperationResult": {
+                "description": "Result of the abort operation.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericAccountBalanceApiView": {
+                "description": "Balance information for an account.",
+                "required": [
+                    "sources",
+                    "sub_account_id",
+                    "total_available"
+                ],
+                "type": "object",
+                "properties": {
+                    "sub_account_id": {
+                        "description": "Sub-account identifier.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "default"
+                    },
+                    "total_available": {
+                        "description": "Total available funds.",
+                        "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                    },
+                    "sources": {
+                        "description": "List of liquidity sources.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "source_a",
+                            "source_b"
+                        ]
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCheckHealthErrorCodeApiError": {
+                "description": "Error structure for check health.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "DEGRADED"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "MAINTENANCE"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Service is under scheduled maintenance."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCheckHealthRequest": {
+                "description": "Empty object for health check request.",
+                "type": "object",
+                "additionalProperties": false
+            },
+            "WithdrawGenericCheckHealthResponse": {
+                "description": "Response for health check.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_health_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericCheckHealthErrorCodeApiError"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericConfirmOperationErrorCodeApiError": {
+                "description": "Error structure for confirm operation.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "OPERATION_NOT_FOUND",
+                            "UNACCEPTABLE_COMMAND"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "UNACCEPTABLE_COMMAND"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Operation is not in a state to be confirmed."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericConfirmOperationRequest": {
+                "description": "Request to confirm operation completion.",
+                "required": [
+                    "client_operation_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    },
+                    "operation_ack_id": {
+                        "description": "Optional acknowledgement ID.",
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericConfirmOperationResponse": {
+                "description": "Response for confirm operation.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_conf_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericConfirmOperationErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericConfirmOperationResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericConfirmOperationResult": {
+                "description": "Result of confirm operation.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateErrorCodeApiError": {
+                "description": "Error structure for create operation.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "AMBIGUOUS_PARAMETERS",
+                            "UNSUPPORTED_CURRENCY",
+                            "UNSUPPORTED_PROFILE"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "BAD_REQUEST"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Invalid parameters."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateExplicitSourceErrorCodeApiError": {
+                "description": "Error structure for create explicit source operation.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "AMBIGUOUS_PARAMETERS",
+                            "SOURCE_NOT_FOUND",
+                            "UNSUPPORTED_CURRENCY"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "SOURCE_NOT_FOUND"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Liquidity source not found."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateExplicitSourceRequest": {
+                "description": "Request to create operation with explicit source.",
+                "required": [
+                    "client_operation_id",
+                    "liquidity_source_id",
+                    "order_amount",
+                    "recipient_payment_method",
+                    "user"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserApiView"
+                    },
+                    "recipient_payment_method": {
+                        "$ref": "#/components/schemas/RecipientPaymentMethodInputApiView"
+                    },
+                    "liquidity_source_id": {
+                        "description": "Explicit ID of the liquidity source.",
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "ls_provider_x"
+                    },
+                    "order_amount": {
+                        "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                    },
+                    "url_callback": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "https://callback.com"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Payout 123"
+                    },
+                    "metadata": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "report_metadata": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "merchant_user_entry_point_url": {
+                        "maxLength": 128,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "disallow_end_user_interaction": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "disallow_transaction_split": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "await_preparing": {
+                        "description": "Wait for preparation to complete.",
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateExplicitSourceResponse": {
+                "description": "Response for create explicit source operation.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_create_exp_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericCreateExplicitSourceErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericCreateExplicitSourceResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateExplicitSourceResult": {
+                "description": "Result of create explicit source operation.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateRequest": {
+                "description": "Request to create operation.",
+                "required": [
+                    "client_operation_id",
+                    "order_amount",
+                    "recipient_payment_method",
+                    "user"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserApiView"
+                    },
+                    "recipient_payment_method": {
+                        "$ref": "#/components/schemas/RecipientPaymentMethodInputApiView"
+                    },
+                    "profile": {
+                        "description": "Profile ID.",
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "order_amount": {
+                        "$ref": "#/components/schemas/FiatCurrencyAmountApiView"
+                    },
+                    "url_callback": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "https://callback.com"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Payout 123"
+                    },
+                    "metadata": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "report_metadata": {
+                        "maxLength": 255,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "merchant_user_entry_point_url": {
+                        "maxLength": 128,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "disallow_end_user_interaction": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "disallow_transaction_split": {
+                        "type": "boolean",
+                        "nullable": true
+                    },
+                    "await_preparing": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateResponse": {
+                "description": "Response for create operation.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_create_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericCreateErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericCreateResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericCreateResult": {
+                "description": "Result of create operation.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetBalanceErrorCodeApiError": {
+                "description": "Error structure for get balance.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "INTERNAL_ERROR"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Internal error."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetBalanceRequest": {
+                "description": "Request for balance.",
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetBalanceResponse": {
+                "description": "Response for get balance.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_bal_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericGetBalanceErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericGetBalanceResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetBalanceResult": {
+                "description": "Result of get balance.",
+                "required": [
+                    "sub_accounts"
+                ],
+                "type": "object",
+                "properties": {
+                    "sub_accounts": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/WithdrawGenericAccountBalanceApiView"
+                        }
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetwithdrawtateErrorCodeApiError": {
+                "description": "Error structure for get operation state.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "OPERATION_NOT_FOUND"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "OPERATION_NOT_FOUND"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Operation not found."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetwithdrawtateRequest": {
+                "description": "Request for operation state.",
+                "required": [
+                    "client_operation_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetwithdrawtateResponse": {
+                "description": "Response for get operation state.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_state_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericGetwithdrawtateErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericGetwithdrawtateResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericGetwithdrawtateResult": {
+                "description": "Result of get operation state.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericOpenUserInputErrorCodeApiError": {
+                "description": "Error structure for open user input.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "OPERATION_NOT_FOUND",
+                            "UNACCEPTABLE_COMMAND"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "UNACCEPTABLE_COMMAND"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Operation is not in USER_INPUT state."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericOpenUserInputRequest": {
+                "description": "Request for user input parameters.",
+                "required": [
+                    "client_operation_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    },
+                    "url_redirect": {
+                        "description": "Redirect URL to override the one in initial details.",
+                        "type": "string",
+                        "nullable": true,
+                        "example": "https://myapp.com/return"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericOpenUserInputResponse": {
+                "description": "Response for open user input.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_ui_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericOpenUserInputErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericOpenUserInputResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericOpenUserInputResult": {
+                "description": "Result of open user input.",
+                "required": [
+                    "operation_state",
+                    "user_input_parameters"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    },
+                    "user_input_parameters": {
+                        "$ref": "#/components/schemas/UserInputParametersApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericStartOperationErrorCodeApiError": {
+                "description": "Error structure for start operation.",
+                "required": [
+                    "code",
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "INTERNAL_ERROR",
+                            "MAINTENANCE",
+                            "UNAUTHORIZED",
+                            "BAD_REQUEST",
+                            "OPERATION_NOT_FOUND",
+                            "UNACCEPTABLE_COMMAND"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "UNACCEPTABLE_COMMAND"
+                    },
+                    "details": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Operation cannot be started from current state."
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericStartOperationRequest": {
+                "description": "Request to start operation.",
+                "required": [
+                    "client_operation_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "maxLength": 64,
+                        "type": "string",
+                        "nullable": true,
+                        "example": "prj_12345"
+                    },
+                    "client_operation_id": {
+                        "maxLength": 64,
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "order_998877"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericStartOperationResponse": {
+                "description": "Response for start operation.",
+                "required": [
+                    "success",
+                    "trace_id"
+                ],
+                "type": "object",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "trace_id": {
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "trace_start_123"
+                    },
+                    "error": {
+                        "$ref": "#/components/schemas/WithdrawGenericStartOperationErrorCodeApiError"
+                    },
+                    "result": {
+                        "$ref": "#/components/schemas/WithdrawGenericStartOperationResult"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawGenericStartOperationResult": {
+                "description": "Result of start operation.",
+                "required": [
+                    "operation_state"
+                ],
+                "type": "object",
+                "properties": {
+                    "operation_state": {
+                        "$ref": "#/components/schemas/GenericWithdrawalwithdrawtateApiView"
+                    },
+                    "user_input_parameters": {
+                        "description": "Params if immediate user input is needed.",
+                        "$ref": "#/components/schemas/UserInputParametersApiView"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "WithdrawalFailureApiView": {
+                "description": "Failure details.",
+                "required": [
+                    "details"
+                ],
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "enum": [
+                            "NO_SUITABLE_METHODS",
+                            "INSUFFICIENT_BALANCE",
+                            "WITHDRAWAL_START_TIMEOUT",
+                            "ABORTED_BY_REQUEST",
+                            "UNSUPPORTED_WITHDRAWAL_PARAMETERS",
+                            "INTERNAL_ERROR",
+                            "PROVIDER_PROCESSING_ERROR",
+                            "UNSPECIFIED"
+                        ],
+                        "type": "string",
+                        "format": "enum",
+                        "example": "INSUFFICIENT_BALANCE"
+                    },
+                    "details": {
+                        "description": "Human readable error details.",
+                        "minLength": 1,
+                        "type": "string",
+                        "example": "Not enough funds."
+                    },
+                    "raw_provider_error_code": {
+                        "description": "Raw code from provider.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "raw_provider_error_message": {
+                        "description": "Raw message from provider.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "Basic": {
+                "type": "http",
+                "scheme": "Basic"
+            }
+        }
+    }
+}

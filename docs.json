@@ -53,7 +53,7 @@
               "/api-reference/go-live-checklist"
             ]
           },
-                    {
+          {
             "group": "Криптогейт",
             "pages": [
               "/api-reference/introduction",
@@ -72,28 +72,46 @@
           }
         ]
       },
-              {
-      "tab": "Withdrawal Card API",
-      "groups": [
-        {
-          "group": "Withdrawal API",
-         "openapi": "https://pastebin.com/raw/N0k7Dxea"
-        }
-      ]
-    }
+      {
+        "tab": "Withdrawal Generic API",
+        "groups": [
+          {
+            "group": "Withdrawal Generic API",
+            "pages": [
+              "/api-reference/withdrawal/integration",
+              "/api-reference/withdrawal/authentication",
+              "/api-reference/withdrawal/failure-codes",
+              "/api-reference/withdrawal/notifications",
+              "/api-reference/withdrawal/check-health",
+              "/api-reference/withdrawal/get-balance",
+              "/api-reference/withdrawal/create-operation",
+              "/api-reference/withdrawal/create-operation-explicit-source",
+              "/api-reference/withdrawal/get-operation-state",
+              "/api-reference/withdrawal/start-operation",
+              "/api-reference/withdrawal/abort-operation",
+              "/api-reference/withdrawal/confirm-operation",
+              "/api-reference/withdrawal/open-user-input"
+            ],
+            "openapi": "/api-reference/withdrawal/withdraw_generic_v2.json"
+          }
+        ]
+      }
     ],
-    "global": {
-      
-    }
+    "global": {}
   },
-   "api": {
+  "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": ["curl", "javascript" , "python", "php"],
-           "defaults": "all",
-     "prefill": true
+      "languages": [
+        "curl",
+        "javascript",
+        "python",
+        "php"
+      ],
+      "defaults": "all",
+      "prefill": true
     }
   },
   "logo": {

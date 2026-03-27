@@ -1,0 +1,49 @@
+---
+title: "Проверка баланса"
+---
+
+Для проверки текущего доступного баланса используется метод
+
+```text
+POST /public/api/withdraw/generic/v2/get_balance
+```
+
+Тело запроса:
+
+```json
+{
+  "project_id": "check"
+}
+```
+
+В случае успешного вызова будет получен список доступных проекту субсчетов и текущий доступный баланс по каждому из них. Если к субсчету привязаны источники ликвидности, они дополнительно возвращаются в информации об этом субсчете:
+
+```json
+{
+  "success": true,
+  "trace_id": "c56af15c7fc617bd34a10f555e611bc2",
+  "result": {
+    "sub_accounts": [
+      {
+        "sub_account_id": "subaccount_2",
+        "total_available": {
+          "currency": "EUR",
+          "amount": "250.00"
+        },
+        "sources": []
+      },
+      {
+        "sub_account_id": "subaccount",
+        "total_available": {
+          "currency": "EUR",
+          "amount": "999879.79"
+        },
+        "sources": [
+          "some_eur",
+          "some_eur_2"
+        ]
+      }
+    ]
+  }
+}
+```

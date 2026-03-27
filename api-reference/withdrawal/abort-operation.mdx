@@ -1,0 +1,72 @@
+---
+title: "Отмена выплаты"
+---
+
+```text
+POST /public/api/withdraw/generic/v2/abort_operation
+```
+
+В некоторых ситуациях выплату можно отменить: если в настоящий момент нет незавершенного движения средств по ней.
+
+Запрос:
+
+```json
+{
+  "client_operation_id": "3c1a9b19-02d4-4768-846c-cd3996bc0100"
+}
+```
+
+В случае успеха выплата перейдет в состояние `COMPLETE`, а `result` станет `FAILURE` (если движения средств не было) или `PARTIAL_SUCCESS` если выплата успела частично исполниться на момент отмены.
+
+В ответе вернется актуальное состояние выплаты:
+
+```json
+{
+  "success": true,
+  "trace_id": "90e0a2dfc369ba15c80ab73570eb1fb9",
+  "result": {
+    "operation_state": {
+      "operation_id": "019039825e2571168b60935b99719820",
+      "project_id": "check",
+      "client_operation_id": "3c1a9b19-02d4-4768-846c-cd3996bc0100",
+      "reference_id": "019039825e2571179f4ae2203cce6dfa",
+      "created_at": "2024-06-21T06:36:03.493Z",
+      "updated_at": "2024-06-21T06:37:53.828Z",
+      "version": 3,
+      "order_amount": {
+        "currency": "EUR",
+        "amount": "5.25"
+      },
+      "explicit_liquidity_source_id": "some",
+      "recipient_payment_method" : {
+        "bank_card": {
+          "pan_token": "pan_jiqt8hefrimm6ouaa64rxnx4n60l3dhu",
+          "card_token": "card_n856sbm8s5uygjq8mb3uklpneombabed",
+          "bin6": "444444",
+          "last_four_digits": "0008",
+          "expiration_month": "03",
+          "expiration_year": "2033",
+          "network": "Visa",
+          "country": "PL",
+          "issuer": "CREDIT AGRICOLE BANK POLSKA S.A."
+        }
+      },
+      "url_callback": "https://devnull-as-a-service.com/dev/null",
+      "disallow_end_user_interaction": true,
+      "disallow_transaction_split": true,
+      "operation_status": "START_REJECTED",
+      "result_status": "FAILURE",
+      "failure_details": {
+        "code": "ABORTED_BY_REQUEST",
+        "details": "operation aborted"
+      }
+    }
+  }
+}
+```
+
+Возможны несколько специальных случаев ошибки:
+
+- `OPERATION_NOT_FOUND`: выплата с переданным `client_operation_id` не существует на стороне сервиса
+- `UNACCEPTABLE_COMMAND`: метод не может быть вызван в текущем состоянии выплаты, необходимо проверить актуальное состояние
+- `ACCEPTED_WITHOUT_OBLIGATIONS`: отменить выплату прямо сейчас невозможно (например, уже отправлена заявка на выплату в банк), но в будущем возможно отменить получится если текущая работа над выплатой не приведет к ее успешному завершению. В этом случае сервис самостоятельно попытается отменить выплату _если у него появится такая возможность_. Отмена при этом не гарантируется.
